@@ -1,8 +1,7 @@
 import * as yup from "yup";
 
-const technicianRegistrationSchema = () => {
+const ownerLoginSchema = () => {
   return yup.object().shape({
-    name: yup.string().required("Name is required"),
     email: yup
       .string()
       .email("Invalid email format")
@@ -14,4 +13,4 @@ const technicianRegistrationSchema = () => {
   });
 };
 
-export { technicianRegistrationSchema };
+export { ownerLoginSchema };

@@ -1,0 +1,105 @@
+import { Request, Response, NextFunction } from "express";
+import { ApiResponse } from "../helpers/api-response";
+import productService from "../services/product.service";
+
+class ProductController {
+  async create(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await productService.create(req.body);
+      ApiResponse({
+        res,
+        statusCode: 201,
+        message: "Product created",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getAll(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await productService.getAll(req.query);
+      ApiResponse({
+        res,
+        statusCode: 200,
+        message: "Product list",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await productService.getById(req.params.id);
+      ApiResponse({
+        res,
+        statusCode: 200,
+        message: "Product detail",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await productService.update(req.params.id, req.body);
+      ApiResponse({
+        res,
+        statusCode: 200,
+        message: "Product updated",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async delete(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await productService.delete(req.params.id);
+      ApiResponse({
+        res,
+        statusCode: 200,
+        message: "Product deleted",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async restock(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await productService.restock(req.params.id, req.body);
+      ApiResponse({
+        res,
+        statusCode: 200,
+        message: "Product restocked",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deactivate(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await productService.deactivate(req.params.id);
+      ApiResponse({
+        res,
+        statusCode: 200,
+        message: "Product deactivated",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+}
+
+export default new ProductController();

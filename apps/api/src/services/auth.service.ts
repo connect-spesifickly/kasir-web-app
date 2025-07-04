@@ -1,19 +1,17 @@
-import prisma from "../prisma";
-import { generateHashedPassword } from "../utils/generate-password";
+import { compare } from "bcrypt";
+import { getUserByEmail } from "../helpers/user.prisma";
+import { UserLogin } from "../interfaces/user.interface";
+import { ResponseError } from "../helpers/error";
+import { putOwnerAccessToken } from "../helpers/jwt";
 
 class AuthService {
-  async register(data: { name: string; email: string; password: string }) {
-    const { name, email, password } = data;
-    const technicianPassword = await generateHashedPassword(password);
-    await prisma.accounts.create({
-      data: {
-        name,
-        email,
-        password: technicianPassword,
-        role: "Admin",
-        isVerified: true,
-      },
-    });
+  async login(data: { email: string; password: string }) {
+    const { email, password } = data;
+    const user = (await getUserByEmail(email)) as UserLogin;
+    if (!(await compare(password, user.password as string))) {
+      throw new ResponseError(401, "Invalid password");
+    }
+    return putOwnerAccessToken(user);
   }
 }
 

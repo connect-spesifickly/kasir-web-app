@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  stockAdjustments StockAdjustment[]
+
+  @@map("users")
+}
+
+model Product {
+  id          String  @id @default(uuid())
+  productCode String  @unique @map("product_code")
+  productName String  @map("product_name")
+  costPrice   Decimal @map("cost_price") @db.Decimal(10, 2)
+  price       Decimal @db.Decimal(10, 2)
+  stock       Int
+isActive    Boolean @default(true) @map("is_active")
+
+  saleDetails      SaleDetail[]
+  stockAdjustments StockAdjustment[]
+
+  @@map("products")
+}
+
+model Sale {
+  id              String   @id @default(uuid())
+  transactionTime DateTime @default(now()) @map("transaction_time")
+  totalAmount     Decimal  @map("total_amount") @db.Decimal(10, 2)
+
+// Relasi
+  saleDetails SaleDetail[]
+
+  @@map("sales")
+}
+
+model SaleDetail {
+  id          String  @id @default(uuid())
+  saleId      String  @map("sale_id")
+  productId   String  @map("product_id")
+  quantity    Int
+  priceAtSale Decimal @map("price_at_sale") @db.Decimal(10, 2)
+  costAtSale  Decimal @map("cost_at_sale") @db.Decimal(10, 2)
+
+  sale    Sale    @relation(fields: [saleId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  @@map("sale_details")
+}
+
+model StockAdjustment {
+  id             String   @id @default(uuid())
+  productId      String   @map("product_id")
+  userId         String   @map("user_id")
+  quantityChange Int      @map("quantity_change")
+  lastStock      Int      @map("last_stock")
+  reason         String
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  product Product @relation(fields: [productId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@map("stock_adjustments")
+}

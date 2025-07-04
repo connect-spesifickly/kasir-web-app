@@ -3,13 +3,13 @@ import { ApiResponse } from "../helpers/api-response";
 import authService from "../services/auth.service";
 
 class AuthController {
-  async register(req: Request, res: Response, next: NextFunction) {
+  async login(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await authService.register(req.body);
+      const result = await authService.login(req.body);
       ApiResponse({
         res,
-        statusCode: 201,
-        message: "Technician registered successfully",
+        statusCode: 200,
+        message: "Owner logged in successfully",
         data: result,
       });
     } catch (error) {
