@@ -6,7 +6,6 @@ import {
   validateDeleteSale,
 } from "../middlewares/sale.middleware";
 import { verifyOwner } from "../middlewares/auth.middleware";
-
 export const saleRouter = () => {
   const router = Router();
   router.use(
