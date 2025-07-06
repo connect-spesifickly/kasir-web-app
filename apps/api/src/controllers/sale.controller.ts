@@ -39,34 +39,6 @@ class SaleController {
       next(error);
     }
   }
-
-  async update(req: Request, res: Response, next: NextFunction) {
-    try {
-      const result = await saleService.update(req.params.id, req.body);
-      ApiResponse({
-        res,
-        statusCode: 200,
-        message: "Sale updated",
-        data: result,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async delete(req: Request, res: Response, next: NextFunction) {
-    try {
-      const result = await saleService.delete(req.params.id);
-      ApiResponse({
-        res,
-        statusCode: 200,
-        message: "Sale deleted",
-        data: result,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
 }
 
 export default new SaleController();

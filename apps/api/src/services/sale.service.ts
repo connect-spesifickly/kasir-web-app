@@ -1,47 +1,66 @@
 import prisma from "../prisma";
 import { ResponseError } from "../helpers/error";
+import { Product } from "../interfaces/product.interface";
 
 class SaleService {
   async create({ cart }: { cart: { productId: string; quantity: number }[] }) {
-    return prisma.$transaction(async (tx: typeof prisma) => {
+    // 1. Ambil semua ID produk dari keranjang
+    const productIds = cart.map((item) => item.productId);
+    // 2. Lakukan SATU kali query untuk mendapatkan semua data produk yang relevan
+    const productsInCart = await prisma.product.findMany({
+      where: {
+        id: { in: productIds }, // Gunakan 'in' untuk mengambil banyak produk sekaligus
+      },
+    });
+    // Untuk akses cepat nanti, ubah array menjadi Map (Object)
+    const productMap = new Map<string, Product>(
+      productsInCart.map((p: Product) => [p.id, p])
+    );
+    return prisma.$transaction(async (tx: any) => {
+      // 3. Validasi Stok (Loop pertama dan satu-satunya untuk validasi)
       for (const item of cart) {
-        const product = await tx.product.findUnique({
-          where: { id: item.productId },
-        });
-        if (!product)
-          throw new ResponseError(404, `Product not found: ${item.productId}`);
-        if (product.stock < item.quantity)
+        const product = productMap.get(item.productId);
+        if (!product) {
+          throw new ResponseError(
+            404,
+            `Produk tidak ditemukan: ${item.productId}`
+          );
+        }
+        if (product.stock < item.quantity) {
           throw new ResponseError(
             400,
-            `Stock not enough for product: ${product.productName}`
+            `Stok tidak cukup untuk produk: ${product.productName}`
           );
+        }
       }
-      let totalAmount = 0;
-      for (const item of cart) {
-        const product = await tx.product.findUnique({
-          where: { id: item.productId },
-        });
-        totalAmount += Number(product.price) * item.quantity;
-      }
+      // 4. Hitung Total Amount (Tidak perlu cek if !product lagi)
+      const totalAmount = cart.reduce((total, item) => {
+        const product = productMap.get(item.productId)!; // '!' memberitahu TypeScript bahwa kita yakin ini ada
+        return total + Number(product.price) * item.quantity;
+      }, 0);
+      // 5. CREATE 'Sale'
       const sale = await tx.sale.create({ data: { totalAmount } });
-      for (const item of cart) {
-        const product = await tx.product.findUnique({
-          where: { id: item.productId },
-        });
-        await tx.saleDetail.create({
-          data: {
-            saleId: sale.id,
-            productId: item.productId,
-            quantity: item.quantity,
-            priceAtSale: product.price,
-            costAtSale: product.costPrice,
-          },
-        });
-        await tx.product.update({
+      // 6. Siapkan data (Tidak perlu cek if !product lagi)
+      const saleDetailCreates = cart.map((item) => {
+        const product = productMap.get(item.productId)!;
+        return {
+          saleId: sale.id,
+          productId: item.productId,
+          quantity: item.quantity,
+          priceAtSale: product.price,
+          costAtSale: product.costPrice,
+        };
+      });
+      const productUpdates = cart.map((item) =>
+        tx.product.update({
           where: { id: item.productId },
           data: { stock: { decrement: item.quantity } },
-        });
-      }
+        })
+      );
+      // 7. Lakukan penulisan massal
+      await tx.saleDetail.createMany({ data: saleDetailCreates });
+      await Promise.all(productUpdates);
+      // 8. Ambil data nota final
       return tx.sale.findUnique({
         where: { id: sale.id },
         include: { saleDetails: true },
@@ -55,7 +74,24 @@ class SaleService {
     if (search) {
       filter.saleDetails = {
         some: {
-          product: { productName: { contains: search, mode: "insensitive" } },
+          OR: [
+            {
+              product: {
+                productName: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+            },
+            {
+              product: {
+                productCode: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+            },
+          ],
         },
       };
     }
@@ -65,12 +101,35 @@ class SaleService {
         lte: new Date(endDate),
       };
     }
-    return prisma.sale.findMany({
+    const sales = await prisma.sale.findMany({
       where: filter,
       skip: Number(skip) || 0,
-      take: Number(take) || 100,
-      include: { saleDetails: true },
+      take: Number(take) || 10,
+      include: {
+        _count: {
+          select: { saleDetails: true },
+        },
+      },
+      orderBy: {
+        transactionTime: "desc",
+      },
     });
+
+    const transformedSales = sales.map(
+      (sale: {
+        id: any;
+        transactionTime: any;
+        totalAmount: any;
+        _count: { saleDetails: any };
+      }) => ({
+        id: sale.id,
+        transactionTime: sale.transactionTime,
+        totalAmount: sale.totalAmount,
+        totalItems: sale._count.saleDetails,
+      })
+    );
+    const totalSales = await prisma.sale.count({ where: filter });
+    return { sales: transformedSales, total: totalSales };
   }
 
   async getById(id: string) {
@@ -80,84 +139,6 @@ class SaleService {
     });
     if (!sale) throw new ResponseError(404, "Sale not found");
     return sale;
-  }
-
-  async update(
-    id: string,
-    { cart }: { cart: { productId: string; quantity: number }[] }
-  ) {
-    return prisma.$transaction(async (tx: typeof prisma) => {
-      const sale = await tx.sale.findUnique({ where: { id } });
-      if (!sale) throw new ResponseError(404, "Sale not found");
-      const oldDetails = await tx.saleDetail.findMany({
-        where: { saleId: id },
-      });
-      for (const detail of oldDetails) {
-        await tx.product.update({
-          where: { id: detail.productId },
-          data: { stock: { increment: detail.quantity } },
-        });
-      }
-      await tx.saleDetail.deleteMany({ where: { saleId: id } });
-      for (const item of cart) {
-        const product = await tx.product.findUnique({
-          where: { id: item.productId },
-        });
-        if (!product)
-          throw new ResponseError(404, `Product not found: ${item.productId}`);
-        if (product.stock < item.quantity)
-          throw new ResponseError(
-            400,
-            `Stock not enough for product: ${product.productName}`
-          );
-      }
-      let totalAmount = 0;
-      for (const item of cart) {
-        const product = await tx.product.findUnique({
-          where: { id: item.productId },
-        });
-        totalAmount += Number(product.price) * item.quantity;
-      }
-      await tx.sale.update({ where: { id }, data: { totalAmount } });
-      for (const item of cart) {
-        const product = await tx.product.findUnique({
-          where: { id: item.productId },
-        });
-        await tx.saleDetail.create({
-          data: {
-            saleId: id,
-            productId: item.productId,
-            quantity: item.quantity,
-            priceAtSale: product.price,
-            costAtSale: product.costPrice,
-          },
-        });
-        await tx.product.update({
-          where: { id: item.productId },
-          data: { stock: { decrement: item.quantity } },
-        });
-      }
-      return tx.sale.findUnique({
-        where: { id },
-        include: { saleDetails: true },
-      });
-    });
-  }
-
-  async delete(id: string) {
-    return prisma.$transaction(async (tx: typeof prisma) => {
-      const sale = await tx.sale.findUnique({ where: { id } });
-      if (!sale) throw new ResponseError(404, "Sale not found");
-      const details = await tx.saleDetail.findMany({ where: { saleId: id } });
-      for (const detail of details) {
-        await tx.product.update({
-          where: { id: detail.productId },
-          data: { stock: { increment: detail.quantity } },
-        });
-      }
-      await tx.saleDetail.deleteMany({ where: { saleId: id } });
-      return tx.sale.delete({ where: { id } });
-    });
   }
 }
 

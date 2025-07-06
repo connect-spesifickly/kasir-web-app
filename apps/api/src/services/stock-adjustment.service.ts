@@ -40,20 +40,44 @@ class StockAdjustmentService {
   async getAll(query: any) {
     const { search, skip, take, startDate, endDate } = query;
     const filter: any = {};
+
     if (search) {
-      filter.product = {
-        productName: { contains: search, mode: "insensitive" },
-      };
+      // Filter ini sudah efisien
+      filter.OR = [
+        { product: { productName: { contains: search, mode: "insensitive" } } },
+        { product: { productCode: { contains: search, mode: "insensitive" } } },
+        { reason: { contains: search, mode: "insensitive" } }, // Bonus: cari juga di alasan
+      ];
     }
     if (startDate && endDate) {
       filter.createdAt = { gte: new Date(startDate), lte: new Date(endDate) };
     }
-    return prisma.stockAdjustment.findMany({
+
+    // Ambil daftar data yang sudah dioptimalkan
+    const adjustments = await prisma.stockAdjustment.findMany({
       where: filter,
       skip: Number(skip) || 0,
-      take: Number(take) || 100,
-      include: { product: true, user: true },
+      take: Number(take) || 10,
+      include: {
+        product: {
+          select: {
+            productName: true,
+            productCode: true,
+          },
+        },
+        user: {
+          select: {
+            email: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
+    // Ambil total data untuk pagination di frontend
+    const total = await prisma.stockAdjustment.count({ where: filter });
+    return { adjustments, total };
   }
 }
 

@@ -16,6 +16,19 @@ class StockAdjustmentController {
       next(error);
     }
   }
+  async getAll(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await stockAdjustmentService.getAll(req.query);
+      ApiResponse({
+        res,
+        statusCode: 200,
+        message: "Stock adjustment list",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new StockAdjustmentController();

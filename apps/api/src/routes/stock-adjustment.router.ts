@@ -17,5 +17,6 @@ export const stockAdjustmentRouter = () => {
     validateCreateStockAdjustment,
     StockAdjustmentController.create
   );
+  router.get("/", StockAdjustmentController.getAll);
   return router;
 };
