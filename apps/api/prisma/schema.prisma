@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -27,13 +26,13 @@ model User {
 }
 
 model Product {
-  id          String  @id @default(uuid())
-  productCode String  @unique @map("product_code")
-  productName String  @map("product_name")
-  costPrice   Decimal @map("cost_price") @db.Decimal(10, 2)
-  price       Decimal @db.Decimal(10, 2)
-  stock       Int
-isActive    Boolean @default(true) @map("is_active")
+  id           String   @id @default(uuid())
+  productCode  String   @unique
+  productName  String
+  costPrice    Decimal
+  price        Decimal
+  stock        Int
+  isActive     Boolean  @default(true)
 
   saleDetails      SaleDetail[]
   stockAdjustments StockAdjustment[]

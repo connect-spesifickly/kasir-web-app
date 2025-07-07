@@ -13,7 +13,7 @@ class StockAdjustmentService {
     quantityChange: number;
     reason: string;
   }) {
-    return prisma.$transaction(async (tx: typeof prisma) => {
+    return prisma.$transaction(async (tx: { product: { findUnique: (arg0: { where: { id: string; }; }) => any; update: (arg0: { where: { id: string; }; data: { stock: { increment: number; }; }; }) => any; }; stockAdjustment: { create: (arg0: { data: { productId: string; userId: string; quantityChange: number; lastStock: any; reason: string; }; }) => any; }; }) => {
       // 1. Ambil stok terakhir
       const product = await tx.product.findUnique({ where: { id: productId } });
       if (!product) throw new ResponseError(404, "Product not found");

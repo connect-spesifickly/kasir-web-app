@@ -11,7 +11,14 @@ class AuthService {
     if (!(await compare(password, user.password as string))) {
       throw new ResponseError(401, "Invalid password");
     }
-    return putOwnerAccessToken(user);
+    const token = await putOwnerAccessToken(user);
+    return {
+      user: {
+        id: user.id,
+        email: user.email,
+      },
+      token,
+    };
   }
 }
 

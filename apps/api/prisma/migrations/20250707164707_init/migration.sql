@@ -16,6 +16,7 @@ CREATE TABLE "products" (
     "cost_price" DECIMAL(10,2) NOT NULL,
     "price" DECIMAL(10,2) NOT NULL,
     "stock" INTEGER NOT NULL,
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "products_pkey" PRIMARY KEY ("id")
 );

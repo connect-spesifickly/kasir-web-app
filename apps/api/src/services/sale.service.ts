@@ -14,7 +14,9 @@ class SaleService {
     });
     // Untuk akses cepat nanti, ubah array menjadi Map (Object)
     const productMap = new Map<string, Product>(
-      productsInCart.map((p: Product) => [p.id, p])
+      productsInCart
+        .filter((p): p is Product => p.id !== undefined)
+        .map((p) => [p.id as string, p])
     );
     return prisma.$transaction(async (tx: any) => {
       // 3. Validasi Stok (Loop pertama dan satu-satunya untuk validasi)

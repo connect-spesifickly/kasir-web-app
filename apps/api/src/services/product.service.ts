@@ -1,6 +1,6 @@
 import prisma from "../prisma";
 import { ResponseError } from "../helpers/error";
-import { Prisma } from "../generated/prisma";
+import { Prisma } from "@prisma/client";
 import { Product } from "../interfaces/product.interface";
 
 class ProductService {
