@@ -24,8 +24,8 @@ export const NODEMAILER_USER = process.env.NODEMAILER_USER;
 export const NODEMAILER_PASS = process.env.NODEMAILER_PASS;
 
 // jwt config
-export const JWT_ACCESS_SECRET = process.env.ACCESS_TOKEN_SECRET || "";
-export const JWT_REFRESH_SECRET = process.env.ACCESS_TOKEN_SECRET || "";
+export const JWT_ACCESS_SECRET = process.env.ACCESS_TOKEN_SECRET || " ";
+export const JWT_REFRESH_SECRET = process.env.REFRESH_TOKEN_SECRET || " ";
 
 // nodemailer config
 export const node_account = {

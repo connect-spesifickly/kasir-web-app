@@ -1,5 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { ownerLoginSchema } from "../validations/owner-login.validation";
+import {
+  ownerLoginSchema,
+  ownerRegisterSchema,
+} from "../validations/owner-login.validation";
 import { OwnerRequest, OwnerToken } from "../interfaces/middleware.interface";
 import { JWT_ACCESS_SECRET } from "../config";
 import { ResponseError } from "../helpers/error";
@@ -12,6 +15,20 @@ const validateOwnerLogin = async (
 ) => {
   try {
     const schema = ownerLoginSchema();
+    await schema.validate(req.body, { abortEarly: false });
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+const validateOwnerRegister = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const schema = ownerRegisterSchema();
     await schema.validate(req.body, { abortEarly: false });
     next();
   } catch (error) {
@@ -41,4 +58,4 @@ export function verifyOwner(
   }
 }
 
-export { validateOwnerLogin };
+export { validateOwnerLogin, validateOwnerRegister };

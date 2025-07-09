@@ -1,57 +1,59 @@
 "use client";
-import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/ui/logo";
 import * as React from "react";
 import { Formik, Form } from "formik";
 import * as yup from "yup";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { PasswordInput } from "@/components/ui/password-input/password-input";
 import { toast } from "sonner";
+import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import { api } from "@/utils/axios";
 
 const validationSchema = yup.object({
-  email: yup.string().email().required("email field cannot be empty"),
-  password: yup
+  newPassword: yup
     .string()
     .min(8, "Password must be at least 8 characters long")
     .required("Password is required"),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref("newPassword"), undefined], "Passwords must match")
+    .required("Confirm Password is required"),
 });
 
 interface FormValues {
-  email: string;
-  password: string;
+  newPassword: string;
+  confirmPassword: string;
 }
 
-export default function Login() {
-  const [isLogin, setIsLogin] = React.useState(false);
+export default function ResetPassword() {
+  const [isResetPassword, setIsResetPassword] = React.useState(false);
   const router = useRouter();
-
+  const params = useParams();
+  const token = params.token;
   const initialValues: FormValues = {
-    email: "",
-    password: "",
+    newPassword: "",
+    confirmPassword: "",
   };
 
   async function handleSubmit(values: FormValues) {
-    setIsLogin(true);
-    console.log("Submittzing login with values:", values);
+    setIsResetPassword(true);
+    console.log("Submittzing ResetPassword with values:", values);
     try {
-      const result = await signIn("credentials", {
-        email: values.email,
-        password: values.password,
+      await api.post("/auth/reset-password", {
+        newPassword: values.newPassword,
+        token: token,
         redirect: false,
       });
-      if (result?.error) {
-        console.error(result.error);
-      } else {
-        toast("Login success");
-        router.push("/dashboard");
-      }
+
+      toast("Reset Password success");
+      router.push("/");
     } catch (error) {
-      toast("Login Failed");
+      toast("Reset Password Failed");
       console.error(error);
     } finally {
-      setIsLogin(false);
+      setIsResetPassword(false);
     }
   }
 
@@ -68,53 +70,56 @@ export default function Login() {
             <Form className="flex flex-col gap-[24px] w-full">
               <div className="flex flex-col gap-[12px]">
                 <div className="flex flex-col gap-[6px]">
-                  <label className="text-sm font-medium">Email</label>
-                  <Input
-                    name="email"
-                    placeholder="e.g. user@example.com"
-                    value={values.email}
+                  <label className="text-sm font-medium">New Password</label>
+                  <PasswordInput
+                    name="newPassword"
+                    placeholder="e.g. yourpassword1945"
+                    value={values.newPassword}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     className="h-10 font-normal text-gray-900"
                   />
-                  {errors.email && touched.email && (
+                  {errors.newPassword && touched.newPassword && (
                     <p className="text-sm font-medium text-destructive">
-                      {errors.email}
+                      {errors.newPassword}
                     </p>
                   )}
                 </div>
 
                 <div className="flex flex-col gap-[6px]">
-                  <label className="text-sm font-medium">Password</label>
-                  <PasswordInput
-                    name="password"
+                  <label className="text-sm font-medium">
+                    Confirm Password
+                  </label>
+                  <Input
+                    name="confirmPassword"
+                    type="password"
                     placeholder="e.g. yourpassword1945"
-                    value={values.password}
+                    value={values.confirmPassword}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     className="h-10 font-normal text-slate-900"
                   />
-                  {errors.password && touched.password && (
+                  {errors.confirmPassword && touched.confirmPassword && (
                     <p className="text-sm font-medium text-destructive">
-                      {errors.password}
+                      {errors.confirmPassword}
                     </p>
                   )}
                 </div>
               </div>
               <Button
-                disabled={isLogin}
+                disabled={isResetPassword}
                 type="submit"
                 className="w-full text-slate-50"
               >
-                Login
+                Reset Password
               </Button>
             </Form>
           )}
         </Formik>
         <p className="font-normal text-[14px] text-sm text-slate-600">
-          <a href="/forgot-password" className="text-blue-600 font-semibold">
-            Reset Password
-          </a>
+          <Link href="/login" className="text-blue-600 font-semibold">
+            login
+          </Link>
         </p>
       </div>
     </div>

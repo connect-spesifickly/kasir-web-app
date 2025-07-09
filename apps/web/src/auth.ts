@@ -11,17 +11,21 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         try {
           const response = await api.post<{
             data: {
-              user: { id?: string; email?: string };
-              accessToken: string;
-              refreshToken?: string;
+              user: { id: string; email: string };
+              token: {
+                accessToken: string;
+                refreshToken: string;
+              };
             };
           }>("/auth/login", credentials);
           // Return an object that matches the expected User shape
 
           const user = {
             data: {
-              accessToken: response.data.data.accessToken,
-              refreshToken: response.data.data.refreshToken,
+              tokens: {
+                accessToken: response.data.data.token.accessToken,
+                refreshToken: response.data.data.token.refreshToken,
+              },
               id: response.data.data.user.id,
               email: response.data.data.user.email,
             },

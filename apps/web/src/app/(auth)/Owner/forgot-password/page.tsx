@@ -4,10 +4,11 @@ import { Logo } from "@/components/ui/logo";
 import * as React from "react";
 import { Formik, Form } from "formik";
 import * as yup from "yup";
-import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import Link from "next/link";
+import { api } from "@/utils/axios";
 
 const validationSchema = yup.object({
   email: yup.string().email().required("email field cannot be empty"),
@@ -28,16 +29,15 @@ export default function ForgotPasswordRequest() {
   async function handleSubmit(values: FormValues) {
     setIsRequest(true);
     try {
-      const result = await signIn("credentials", {
+      await api.post<{
+        data: {
+          message: string;
+        };
+      }>("/auth/forgot-password-request", {
         email: values.email,
-        redirect: false,
       });
-      if (result?.error) {
-        console.error(result.error);
-      } else {
-        toast("Request success");
-        router.push("/dashboard");
-      }
+      toast("Request success");
+      router.push("/login");
     } catch (error) {
       toast("Request Failed");
       console.error(error);
@@ -86,9 +86,9 @@ export default function ForgotPasswordRequest() {
           )}
         </Formik>
         <p className="font-normal text-[14px] text-sm text-slate-600">
-          <a href="/login" className="text-blue-600 font-semibold">
+          <Link href="/login" className="text-blue-600 font-semibold">
             Login
-          </a>
+          </Link>
         </p>
       </div>
     </div>
