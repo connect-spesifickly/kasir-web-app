@@ -42,7 +42,7 @@ export default function MainLayout({
           />
         </svg>
       ),
-      href: "/",
+      href: "/sale",
     },
     {
       id: 2,
@@ -116,7 +116,7 @@ export default function MainLayout({
   ];
 
   const handlePageChange = (page: PageType) => {
-    if (page === "sale") router.push("/");
+    if (page === "sale") router.push("/sale");
     else if (page === "product") router.push("/product");
     else if (page === "report") router.push("/report");
     else if (page === "adjustment") router.push("/adjustment");
