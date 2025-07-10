@@ -2,8 +2,8 @@ import "next-auth";
 declare module "next-auth" {
   interface User {
     data: {
-      accessToken?: string;
-      refreshToken?: string;
+      tokens:{accessToken?: string;
+      refreshToken?: string;}
       email?: string;
       id?: string;
     };

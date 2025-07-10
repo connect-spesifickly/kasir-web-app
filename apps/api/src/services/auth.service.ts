@@ -54,7 +54,12 @@ class AuthService {
       };
       const user = await getUserByEmail(payload.email);
       if (!user) throw new ResponseError(404, "User not found");
-      return await putOwnerAccessToken(user);
+      if (!user.password)
+        throw new ResponseError(401, "User has no password set");
+      return await putOwnerAccessToken({
+        ...user,
+        password: user.password as string,
+      });
     } catch (err) {
       throw new ResponseError(401, "Invalid or expired refresh token");
     }

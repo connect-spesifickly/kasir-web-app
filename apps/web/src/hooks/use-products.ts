@@ -1,45 +1,85 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { Product } from "@/lib/types";
 import { productApi } from "@/lib/utils";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 
 export function useProducts(search?: string) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const fetchProducts = async () => {
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === "authenticated";
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await productApi.getAll({ search, take: 100 });
-      setProducts(response.data);
+      const response = await productApi.getAll(
+        { search },
+        session?.accessToken
+      );
+      const data = response.data.data;
+      setProducts(Array.isArray(data) ? data : []);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to fetch products";
       setError(errorMessage);
-      toast("Failed to fetch products");
+      toast("Produk gagal diambil");
     } finally {
       setLoading(false);
     }
-  };
+  }, [search, session?.accessToken]);
 
   useEffect(() => {
-    fetchProducts();
-  }, [search]);
+    if (isAuthenticated) {
+      fetchProducts();
+    }
+  }, [fetchProducts, isAuthenticated]);
 
   const createProduct = async (
     data: Omit<Product, "id" | "createdAt" | "updatedAt">
   ) => {
     try {
-      const newProduct = await productApi.create(data);
+      const newProduct = await productApi.create(data, session?.accessToken);
       setProducts((prev) => [...prev, newProduct]);
       toast("Produk berhasil ditambahkan");
       return newProduct;
     } catch (err) {
       toast("Failed to create product");
+      throw err;
+    }
+  };
+
+  const updateProduct = async (
+    id: string,
+    data: Partial<Omit<Product, "id" | "createdAt" | "updatedAt">>
+  ) => {
+    try {
+      const updatedProduct = await productApi.update(
+        id,
+        data,
+        session?.accessToken
+      );
+      setProducts((prev) =>
+        prev.map((p) => (p.id === id ? updatedProduct : p))
+      );
+      toast("Produk berhasil diupdate");
+      return updatedProduct;
+    } catch (err) {
+      toast("Failed to update product");
+      throw err;
+    }
+  };
+
+  const deleteProduct = async (id: string) => {
+    try {
+      await productApi.delete(id, session?.accessToken);
+      setProducts((prev) => prev.filter((p) => p.id !== id));
+      toast("Produk berhasil dihapus");
+    } catch (err) {
+      toast("Failed to delete product");
       throw err;
     }
   };
@@ -50,10 +90,14 @@ export function useProducts(search?: string) {
     newCostPrice: number
   ) => {
     try {
-      const updatedProduct = await productApi.restock(id, {
-        quantityAdded,
-        newCostPrice,
-      });
+      const updatedProduct = await productApi.restock(
+        id,
+        {
+          quantityAdded,
+          newCostPrice,
+        },
+        session?.accessToken
+      );
       setProducts((prev) =>
         prev.map((p) => (p.id === id ? updatedProduct : p))
       );
@@ -67,23 +111,25 @@ export function useProducts(search?: string) {
 
   const deactivateProduct = async (id: string) => {
     try {
-      await productApi.deactivate(id);
+      await productApi.deactivate(id, session?.accessToken);
       setProducts((prev) =>
         prev.map((p) => (p.id === id ? { ...p, isActive: false } : p))
       );
       toast("Produk berhasil dinonaktifkan");
     } catch (err) {
-      toast("Failed to deactivate product");
+      toast("Gagal menonaktifkan produk, stok product masih ada");
       throw err;
     }
   };
 
   return {
-    products: products.filter((p) => p.isActive),
+    products,
     loading,
     error,
     refetch: fetchProducts,
     createProduct,
+    updateProduct,
+    deleteProduct,
     restockProduct,
     deactivateProduct,
   };

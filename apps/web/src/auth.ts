@@ -43,8 +43,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   callbacks: {
     async jwt({ token, user, trigger }) {
       if (user) {
-        token.accessToken = user.data.accessToken;
-        token.refreshToken = user.data.refreshToken;
+        token.accessToken = user.data.tokens.accessToken;
+        token.refreshToken = user.data.tokens.refreshToken;
         token.email = user.data.email;
         token.id = user.data.id;
       } else if (token.accessToken || trigger === "update") {

@@ -1,0 +1,263 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { ChevronDown, Download, FileSpreadsheet, FileText } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import type { StockAdjustment as OriginalStockAdjustment } from "@/hooks/use-report";
+
+type StockAdjustment = OriginalStockAdjustment & {
+  date?: string;
+  item?: string;
+  quantity?: number;
+  description?: string;
+};
+
+interface ReportHeaderProps {
+  reportData: {
+    totalOmzet: number;
+    totalProfit: number;
+    totalLossValue: number;
+    jumlahTransaksi: number;
+  };
+  dateFrom: string;
+  dateTo: string;
+  stockAdjustments: StockAdjustment[];
+}
+
+export function ReportHeader({
+  reportData,
+  dateFrom,
+  dateTo,
+  stockAdjustments,
+}: ReportHeaderProps) {
+  const handleExportCSV = async () => {
+    try {
+      const csvContent = [
+        ["Laporan Bisnis"],
+        ["Periode", `${dateFrom} - ${dateTo}`],
+        [""],
+        ["Ringkasan Keuangan"],
+        ["Total Omzet", `Rp ${reportData.totalOmzet.toLocaleString()}`],
+        ["Total Laba", `Rp ${reportData.totalProfit.toLocaleString()}`],
+        ["Total Transaksi", reportData.jumlahTransaksi.toString()],
+        ["Kerugian Stok", `Rp ${reportData.totalLossValue.toLocaleString()}`],
+      ]
+        .map((row) => row.join(","))
+        .join("\n");
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `laporan-bisnis-${dateFrom}-${dateTo}.csv`);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast("Laporan telah diunduh dalam format CSV");
+    } catch {
+      toast("Gagal mengexport laporan CSV");
+    }
+  };
+
+  const handleExportExcel = async () => {
+    try {
+      // Import XLSX library dynamically
+      const XLSX = await import("xlsx");
+
+      // Create workbook
+      const wb = XLSX.utils.book_new();
+
+      // Create main report data
+      const reportWsData = [
+        ["Laporan Bisnis"],
+        [`Periode: ${dateFrom} - ${dateTo}`],
+        [""],
+        ["Ringkasan Keuangan"],
+        ["Total Omzet", reportData.totalOmzet],
+        ["Total Laba", reportData.totalProfit],
+        ["Total Transaksi", reportData.jumlahTransaksi],
+        ["Kerugian Stok", reportData.totalLossValue],
+      ];
+
+      // Add stock adjustments if available
+      if (stockAdjustments && stockAdjustments.length > 0) {
+        reportWsData.push([""]);
+        reportWsData.push(["Penyesuaian Stok"]);
+        reportWsData.push(["Tanggal", "Item", "Jumlah", "Keterangan"]);
+
+        stockAdjustments.forEach((adj) => {
+          reportWsData.push([
+            adj.date || "",
+            adj.item || "",
+            adj.quantity || 0,
+            adj.description || "",
+          ]);
+        });
+      }
+
+      const ws = XLSX.utils.aoa_to_sheet(reportWsData);
+
+      // Set column widths
+      ws["!cols"] = [
+        { width: 20 },
+        { width: 20 },
+        { width: 15 },
+        { width: 30 },
+      ];
+
+      // Format currency cells
+      const currencyStyle = { numFmt: '"Rp"#,##0' };
+      if (ws["B5"]) ws["B5"].z = currencyStyle.numFmt;
+      if (ws["B6"]) ws["B6"].z = currencyStyle.numFmt;
+      if (ws["B8"]) ws["B8"].z = currencyStyle.numFmt;
+
+      XLSX.utils.book_append_sheet(wb, ws, "Laporan Bisnis");
+
+      // Write and download
+      XLSX.writeFile(wb, `laporan-bisnis-${dateFrom}-${dateTo}.xlsx`);
+
+      toast("Laporan telah diunduh dalam format Excel");
+    } catch (error) {
+      console.error("Excel export error:", error);
+      toast("Gagal mengexport laporan Excel");
+    }
+  };
+
+  const handleExportPDF = async () => {
+    try {
+      // Import jsPDF library dynamically
+      const { jsPDF } = await import("jspdf");
+
+      const doc = new jsPDF();
+
+      // Set font
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(20);
+      doc.text("Laporan Bisnis", 20, 30);
+
+      // Period
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "normal");
+      doc.text(`Periode: ${dateFrom} - ${dateTo}`, 20, 45);
+
+      // Financial summary
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(14);
+      doc.text("Ringkasan Keuangan", 20, 65);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
+
+      const yStart = 80;
+      const lineHeight = 8;
+
+      const financialData = [
+        `Total Omzet: Rp ${reportData.totalOmzet.toLocaleString()}`,
+        `Total Laba: Rp ${reportData.totalProfit.toLocaleString()}`,
+        `Total Transaksi: ${reportData.jumlahTransaksi}`,
+        `Kerugian Stok: Rp ${reportData.totalLossValue.toLocaleString()}`,
+      ];
+
+      financialData.forEach((item, index) => {
+        doc.text(item, 20, yStart + index * lineHeight);
+      });
+
+      // Add stock adjustments if available
+      if (stockAdjustments && stockAdjustments.length > 0) {
+        let currentY = yStart + financialData.length * lineHeight + 20;
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(14);
+        doc.text("Penyesuaian Stok", 20, currentY);
+
+        currentY += 15;
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+
+        // Table headers
+        doc.text("Tanggal", 20, currentY);
+        doc.text("Item", 60, currentY);
+        doc.text("Jumlah", 120, currentY);
+        doc.text("Keterangan", 150, currentY);
+
+        currentY += 10;
+
+        stockAdjustments.slice(0, 20).forEach((adj) => {
+          if (currentY > 270) {
+            // Check if we need a new page
+            doc.addPage();
+            currentY = 30;
+          }
+
+          doc.text(adj.date || "", 20, currentY);
+          doc.text(adj.item || "", 60, currentY);
+          doc.text(adj.quantity?.toString() || "0", 120, currentY);
+          doc.text(adj.description || "", 150, currentY);
+          currentY += 8;
+        });
+      }
+
+      // Footer
+      const pageCount = doc.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.text(`Halaman ${i} dari ${pageCount}`, 170, 285);
+        doc.text(
+          `Dibuat pada: ${new Date().toLocaleDateString("id-ID")}`,
+          20,
+          285
+        );
+      }
+
+      doc.save(`laporan-bisnis-${dateFrom}-${dateTo}.pdf`);
+
+      toast("Laporan telah diunduh dalam format PDF");
+    } catch (error) {
+      console.error("PDF export error:", error);
+      toast("Gagal mengexport laporan PDF");
+    }
+  };
+
+  return (
+    <div className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+      <Separator orientation="vertical" className="mr-2 h-4 hidden lg:block" />
+      <div className="flex items-center justify-between flex-1">
+        <h1 className="text-2xl md:text-3xl font-bold">Laporan Bisnis</h1>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">
+              <Download className="h-4 w-4 mr-2" />
+              Export Laporan
+              <ChevronDown className="h-4 w-4 ml-2" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={handleExportCSV}>
+              <FileText className="h-4 w-4 mr-2" />
+              Export CSV
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleExportExcel}>
+              <FileSpreadsheet className="h-4 w-4 mr-2" />
+              Export Excel
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleExportPDF}>
+              <FileText className="h-4 w-4 mr-2" />
+              Export PDF
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
+  );
+}

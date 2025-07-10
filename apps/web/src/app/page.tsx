@@ -3,10 +3,9 @@ import { auth } from "@/auth";
 
 export default async function RootPage() {
   const session = await auth();
-
   if (session) {
     redirect("/sale");
   } else {
-    redirect("/login");
+    redirect("/Owner/login");
   }
 }

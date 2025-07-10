@@ -27,12 +27,10 @@ interface FormValues {
 export default function Login() {
   const [isLogin, setIsLogin] = React.useState(false);
   const router = useRouter();
-
   const initialValues: FormValues = {
     email: "",
     password: "",
   };
-
   async function handleSubmit(values: FormValues) {
     setIsLogin(true);
     console.log("Submittzing login with values:", values);
@@ -55,7 +53,6 @@ export default function Login() {
       setIsLogin(false);
     }
   }
-
   return (
     <div className="sm:bg-gray-100 bg-white w-full h-[100vh] flex justify-center items-center">
       <div className=" bg-white rounded-[12px] w-[400px] flex flex-col items-center py-[40px] px-[16px] gap-[24px]">
@@ -84,7 +81,6 @@ export default function Login() {
                     </p>
                   )}
                 </div>
-
                 <div className="flex flex-col gap-[6px]">
                   <label className="text-sm font-medium">Password</label>
                   <PasswordInput
@@ -113,7 +109,10 @@ export default function Login() {
           )}
         </Formik>
         <p className="font-normal text-[14px] text-sm text-slate-600">
-          <Link href="/forgot-password" className="text-blue-600 font-semibold">
+          <Link
+            href="/Owner/forgot-password"
+            className="text-blue-600 font-semibold"
+          >
             Reset Password
           </Link>
         </p>

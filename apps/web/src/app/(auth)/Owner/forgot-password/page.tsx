@@ -37,7 +37,7 @@ export default function ForgotPasswordRequest() {
         email: values.email,
       });
       toast("Request success");
-      router.push("/login");
+      router.push("/Owner/login");
     } catch (error) {
       toast("Request Failed");
       console.error(error);
@@ -86,7 +86,7 @@ export default function ForgotPasswordRequest() {
           )}
         </Formik>
         <p className="font-normal text-[14px] text-sm text-slate-600">
-          <Link href="/login" className="text-blue-600 font-semibold">
+          <Link href="/Owner/login" className="text-blue-600 font-semibold">
             Login
           </Link>
         </p>

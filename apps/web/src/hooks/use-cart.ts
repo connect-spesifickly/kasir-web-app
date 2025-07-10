@@ -4,6 +4,7 @@ import { useState } from "react";
 import { saleApi } from "@/lib/utils";
 import { toast } from "sonner";
 import type { Product } from "@/lib/types";
+import { useSession } from "next-auth/react";
 
 interface CartItem {
   productId: string;
@@ -13,8 +14,9 @@ interface CartItem {
 
 export function useCart() {
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [isProcessing, setIsProcessing] = useState(false);
 
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { data: session } = useSession();
   const addToCart = (product: Product, quantity = 1) => {
     setCart((prev) => {
       const existingItem = prev.find((item) => item.productId === product.id);
@@ -87,7 +89,6 @@ export function useCart() {
       toast("Tambahkan produk ke keranjang terlebih dahulu");
       return null;
     }
-
     setIsProcessing(true);
     try {
       const cartData = cart.map((item) => ({
@@ -95,11 +96,14 @@ export function useCart() {
         quantity: item.quantity,
       }));
 
-      const sale = await saleApi.create(cartData);
+      const sale = await saleApi.create(cartData, session?.accessToken);
 
-      toast(`Total: Rp ${getTotalPrice().toLocaleString()}`);
+      toast(
+        `Transaksi dengan Total: Rp ${getTotalPrice().toLocaleString()} berhasil dilakukan`
+      );
 
       clearCart();
+
       return sale;
     } catch {
       toast("Transaksi gagal");
