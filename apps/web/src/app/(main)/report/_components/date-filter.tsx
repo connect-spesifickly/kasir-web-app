@@ -26,7 +26,7 @@ export function DateFilter({
 }: DateFilterProps) {
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex justify-between items-center">
         <CardTitle>Filter Periode Laporan</CardTitle>
       </CardHeader>
       <CardContent>

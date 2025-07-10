@@ -10,14 +10,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { StockAdjustment as OriginalStockAdjustment } from "@/hooks/use-report";
+import { StockAdjustment } from "@/hooks/use-report";
 
-type StockAdjustment = OriginalStockAdjustment & {
+interface ReportAdjustment {
   date?: string;
   item?: string;
   quantity?: number;
   description?: string;
-};
+}
 
 interface ReportHeaderProps {
   reportData: {
@@ -29,6 +29,18 @@ interface ReportHeaderProps {
   dateFrom: string;
   dateTo: string;
   stockAdjustments: StockAdjustment[];
+}
+
+// Helper to map StockAdjustment to ReportAdjustment
+function mapStockAdjustmentToReport(adj: StockAdjustment): ReportAdjustment {
+  return {
+    date: adj.createdAt
+      ? new Date(adj.createdAt).toLocaleDateString("id-ID")
+      : "",
+    item: adj.product?.productName || "",
+    quantity: adj.quantityChange,
+    description: adj.reason || "",
+  };
 }
 
 export function ReportHeader({
@@ -95,11 +107,12 @@ export function ReportHeader({
         reportWsData.push(["Tanggal", "Item", "Jumlah", "Keterangan"]);
 
         stockAdjustments.forEach((adj) => {
+          const mapped = mapStockAdjustmentToReport(adj);
           reportWsData.push([
-            adj.date || "",
-            adj.item || "",
-            adj.quantity || 0,
-            adj.description || "",
+            mapped.date || "",
+            mapped.item || "",
+            mapped.quantity || 0,
+            mapped.description || "",
           ]);
         });
       }
@@ -198,10 +211,11 @@ export function ReportHeader({
             currentY = 30;
           }
 
-          doc.text(adj.date || "", 20, currentY);
-          doc.text(adj.item || "", 60, currentY);
-          doc.text(adj.quantity?.toString() || "0", 120, currentY);
-          doc.text(adj.description || "", 150, currentY);
+          const mapped = mapStockAdjustmentToReport(adj);
+          doc.text(mapped.date || "", 20, currentY);
+          doc.text(mapped.item || "", 60, currentY);
+          doc.text(mapped.quantity?.toString() ?? "0", 120, currentY);
+          doc.text(mapped.description || "", 150, currentY);
           currentY += 8;
         });
       }

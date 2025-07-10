@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ReportHeader } from "./_components/report-header";
 import { DateFilter } from "./_components/date-filter";
 import { FinancialSummary } from "./_components/financial-summary";
 import { StockAdjustmentList } from "./_components/stock-adjustment-list";
 import { useReportData } from "@/hooks/use-report";
+import { ReportHeader } from "./_components/report-header";
 
 export default function BusinessReportPage() {
   const [dateFrom, setDateFrom] = useState(() => {
@@ -32,7 +32,6 @@ export default function BusinessReportPage() {
         dateTo={dateTo}
         stockAdjustments={stockAdjustments}
       />
-
       <div className="flex flex-1 flex-col gap-4 p-4 md:py-6">
         <div className="space-y-6">
           <DateFilter

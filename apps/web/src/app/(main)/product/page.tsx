@@ -23,6 +23,7 @@ import { UpdateProductForm } from "./_components/update-product-form";
 import { RestockForm } from "./_components/re-stock-form";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { PageHeader } from "./_components/product-header";
 export default function ProdukPage() {
   const [searchTerm, setSearchTerm] = React.useState("");
   const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
@@ -115,15 +116,11 @@ export default function ProdukPage() {
 
   return (
     <div className="flex flex-col w-full h-full">
+      <PageHeader onOpenCreateModal={() => setIsCreateModalOpen(true)} />
+
       <div className="flex flex-1 flex-col gap-4 py-4 md:p-6">
         <div className="flex items-center justify-between gap-6">
           <SearchInput searchTerm={searchTerm} onSearchChange={setSearchTerm} />
-          <div className="hidden md:block">
-            <Button onClick={() => setIsCreateModalOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Tambah Produk
-            </Button>
-          </div>
         </div>
         {/* Desktop Table View */}
         <div className="hidden md:block">
