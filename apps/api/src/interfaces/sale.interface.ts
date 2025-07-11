@@ -1,3 +1,5 @@
+import { Decimal } from "@prisma/client/runtime/library";
+
 export interface Sale {
   id: string;
   transactionTime: Date;
@@ -9,6 +11,6 @@ export interface SaleDetail {
   saleId: string;
   productId: string;
   quantity: number;
-  priceAtSale: number;
+  priceAtSale: Decimal;
   costAtSale: number;
 }

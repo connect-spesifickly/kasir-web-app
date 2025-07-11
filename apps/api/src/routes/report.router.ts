@@ -14,5 +14,6 @@ export const reportRouter = () => {
   router.get("/sales", ReportController.sales);
   router.get("/profit", ReportController.profit);
   router.get("/losses", ReportController.losses);
+  router.get("/daily-transactions", ReportController.dailyTransactions);
   return router;
 };

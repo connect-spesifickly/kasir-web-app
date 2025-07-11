@@ -132,7 +132,7 @@ export const reportApi = {
     endDate: string,
     token?: string
   ) => {
-    const response = await api.get(`/report/sales`, {
+    const response = await api.get(`/reports/sales`, {
       params: { startDate, endDate },
       headers: {
         Authorization: `Bearer ${token}`,
@@ -146,7 +146,7 @@ export const reportApi = {
     endDate: string,
     token?: string
   ) => {
-    const response = await api.get(`/report/profit`, {
+    const response = await api.get(`/reports/profit`, {
       params: { startDate, endDate },
       headers: {
         Authorization: `Bearer ${token}`,
@@ -160,7 +160,21 @@ export const reportApi = {
     endDate: string,
     token?: string
   ) => {
-    const response = await api.get(`/report/losses`, {
+    const response = await api.get(`/reports/losses`, {
+      params: { startDate, endDate },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  },
+
+  getDailyTransactions: async (
+    startDate: string,
+    endDate: string,
+    token?: string
+  ) => {
+    const response = await api.get(`/reports/daily-transactions`, {
       params: { startDate, endDate },
       headers: {
         Authorization: `Bearer ${token}`,

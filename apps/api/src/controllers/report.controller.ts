@@ -56,6 +56,24 @@ class ReportController {
       next(error);
     }
   }
+
+  async dailyTransactions(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { startDate, endDate } = req.query;
+      const result = await reportService.dailyTransactionsReport({
+        startDate: String(startDate),
+        endDate: String(endDate),
+      });
+      ApiResponse({
+        res,
+        statusCode: 200,
+        message: "Daily transactions report",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new ReportController();

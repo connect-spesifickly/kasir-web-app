@@ -32,7 +32,9 @@ export function DateFilter({
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
           <div>
-            <Label htmlFor="dateFrom">Dari Tanggal</Label>
+            <Label className="pb-2" htmlFor="dateFrom">
+              Dari Tanggal
+            </Label>
             <Input
               id="dateFrom"
               type="date"
@@ -42,7 +44,9 @@ export function DateFilter({
             />
           </div>
           <div>
-            <Label htmlFor="dateTo">Sampai Tanggal</Label>
+            <Label className="pb-2" htmlFor="dateTo">
+              Sampai Tanggal
+            </Label>
             <Input
               id="dateTo"
               type="date"

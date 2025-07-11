@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Download, FileSpreadsheet, FileText } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import {
   DropdownMenu,
@@ -243,16 +242,17 @@ export function ReportHeader({
   };
 
   return (
-    <div className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-      <Separator orientation="vertical" className="mr-2 h-4 hidden lg:block" />
+    <div className="flex h-16 shrink-0 items-center gap-2 border-b px-2 ">
       <div className="flex items-center justify-between flex-1">
-        <h1 className="text-2xl md:text-3xl font-bold">Laporan Bisnis</h1>
+        <h1 className="text-2xl md:text-3xl font-bold  md:px-5 font-[stencil]">
+          Laporan Bisnis
+        </h1>
 
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger asChild className="md:mr-4">
             <Button variant="outline">
-              <Download className="h-4 w-4 mr-2" />
-              Export Laporan
+              <Download className="h-4 w-4 md:mr-2" />
+              <div className="hidden sm:block"> Export Laporan</div>
               <ChevronDown className="h-4 w-4 ml-2" />
             </Button>
           </DropdownMenuTrigger>

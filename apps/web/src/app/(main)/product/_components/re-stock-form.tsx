@@ -40,7 +40,7 @@ export const RestockForm = ({
         </p>
       </div>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-[10px]">
           <div>
             <Label className="pb-2" htmlFor="quantityAdded">
               Jumlah Tambahan

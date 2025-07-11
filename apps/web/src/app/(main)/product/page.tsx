@@ -115,10 +115,10 @@ export default function ProdukPage() {
   };
 
   return (
-    <div className="flex flex-col w-full h-full">
+    <div className="flex flex-col w-full min-h-[92vh] lg:border-l-2 pb-12 md:pb-0">
       <PageHeader onOpenCreateModal={() => setIsCreateModalOpen(true)} />
 
-      <div className="flex flex-1 flex-col gap-4 py-4 md:p-6">
+      <div className="flex flex-1 flex-col gap-4 p-2 md:p-6">
         <div className="flex items-center justify-between gap-6">
           <SearchInput searchTerm={searchTerm} onSearchChange={setSearchTerm} />
         </div>

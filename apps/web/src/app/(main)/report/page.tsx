@@ -17,22 +17,28 @@ export default function BusinessReportPage() {
     () => new Date().toISOString().split("T")[0]
   );
 
-  const { reportData, stockAdjustments, loading, refreshing, fetchReports } =
-    useReportData(dateFrom, dateTo);
+  const {
+    reportData,
+    stockAdjustments,
+    loading,
+    refreshing,
+    fetchReports,
+    dailyTransactions,
+  } = useReportData(dateFrom, dateTo);
 
   useEffect(() => {
     fetchReports();
   }, []);
 
   return (
-    <div className="flex flex-col h-full w-full">
+    <div className="flex flex-col w-full min-h-[92vh] lg:border-l-2 pb-12 md:pb-0">
       <ReportHeader
         reportData={reportData}
         dateFrom={dateFrom}
         dateTo={dateTo}
         stockAdjustments={stockAdjustments}
       />
-      <div className="flex flex-1 flex-col gap-4 p-4 md:py-6">
+      <div className="flex flex-1 flex-col gap-4 p-2 md:p-6">
         <div className="space-y-6">
           <DateFilter
             dateFrom={dateFrom}
@@ -49,6 +55,7 @@ export default function BusinessReportPage() {
             dateFrom={dateFrom}
             dateTo={dateTo}
             loading={loading}
+            dailyTransactions={dailyTransactions}
           />
 
           <StockAdjustmentList

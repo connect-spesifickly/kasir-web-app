@@ -1,12 +1,21 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { reportApi, stockAdjustmentApi } from "@/lib/utils";
+import { useSession } from "next-auth/react";
 
 interface ReportData {
   totalOmzet: number;
   jumlahTransaksi: number;
   totalProfit: number;
   totalLossValue: number;
+}
+
+export interface DailyTransaction {
+  date: string;
+  revenue: number;
+  profit: number;
+  loss: number;
+  transactionCount: number;
 }
 
 export interface StockAdjustment {
@@ -38,31 +47,54 @@ export function useReportData(dateFrom: string, dateTo: string) {
   const [stockAdjustments, setStockAdjustments] = useState<StockAdjustment[]>(
     []
   );
+  const [dailyTransactions, setDailyTransactions] = useState<
+    DailyTransaction[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-
+  const { data: session } = useSession();
   const fetchReports = async () => {
     try {
       setRefreshing(true);
-      const [salesReport, profitReport, lossesReport] = await Promise.all([
-        reportApi.getSalesReport(dateFrom, dateTo) as Promise<{
-          totalOmzet: number;
-          jumlahTransaksi: number;
-        }>,
-        reportApi.getProfitReport(dateFrom, dateTo) as Promise<{
-          totalProfit: number;
-        }>,
-        reportApi.getLossesReport(dateFrom, dateTo) as Promise<{
-          totalLossValue: number;
-        }>,
-      ]);
-
+      const [salesReport, profitReport, lossesReport, dailyTransactionsRes] =
+        await Promise.all([
+          reportApi.getSalesReport(
+            dateFrom,
+            dateTo,
+            session?.accessToken
+          ) as Promise<{
+            data: { totalOmzet: number; jumlahTransaksi: number };
+          }>,
+          reportApi.getProfitReport(
+            dateFrom,
+            dateTo,
+            session?.accessToken
+          ) as Promise<{ data: { totalProfit: number } }>,
+          reportApi.getLossesReport(
+            dateFrom,
+            dateTo,
+            session?.accessToken
+          ) as Promise<{ data: { totalLossValue: number } }>,
+          reportApi.getDailyTransactions(
+            dateFrom,
+            dateTo,
+            session?.accessToken
+          ) as Promise<{ data: DailyTransaction[] }>,
+        ]);
+      console.log(
+        "hasil report",
+        salesReport.data,
+        profitReport.data,
+        lossesReport.data,
+        dailyTransactionsRes.data
+      );
       setReportData({
-        totalOmzet: salesReport.totalOmzet || 0,
-        jumlahTransaksi: salesReport.jumlahTransaksi || 0,
-        totalProfit: profitReport.totalProfit || 0,
-        totalLossValue: lossesReport.totalLossValue || 0,
+        totalOmzet: salesReport.data.totalOmzet || 0,
+        jumlahTransaksi: salesReport.data.jumlahTransaksi || 0,
+        totalProfit: profitReport.data.totalProfit || 0,
+        totalLossValue: lossesReport.data.totalLossValue || 0,
       });
+      setDailyTransactions(dailyTransactionsRes.data || []);
 
       try {
         const adjustmentsData = (await stockAdjustmentApi.getAll({
@@ -90,5 +122,6 @@ export function useReportData(dateFrom: string, dateTo: string) {
     loading,
     refreshing,
     fetchReports,
+    dailyTransactions,
   };
 }
