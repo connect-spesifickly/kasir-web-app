@@ -16,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ADJUSTMENT_REASONS } from "@/types/stock-adjustment";
 import type { Product } from "@/lib/types";
 import type { StockAdjustmentCreateData } from "@/types/stock-adjustment";
+import { useSession } from "next-auth/react";
 
 interface AdjustmentFormProps {
   products: Product[];
@@ -35,12 +36,11 @@ export function AdjustmentForm({
   const [selectedReason, setSelectedReason] = useState("");
   const [customReason, setCustomReason] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const { data: session } = useSession();
   const handleSubmit = async () => {
     if (!selectedProduct || !quantityChange || !selectedReason) {
       return;
     }
-
     setIsSubmitting(true);
     try {
       const reason =
@@ -48,10 +48,9 @@ export function AdjustmentForm({
           ? customReason
           : ADJUSTMENT_REASONS.find((r) => r.value === selectedReason)?.label ||
             "";
-
       await onSubmit({
         productId: selectedProduct,
-        userId: "current-user-id", // TODO: Get from auth context
+        userId: session?.id as string,
         quantityChange: parseInt(quantityChange),
         reason,
       });

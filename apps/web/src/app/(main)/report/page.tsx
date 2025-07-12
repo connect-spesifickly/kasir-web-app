@@ -31,14 +31,16 @@ export default function BusinessReportPage() {
   }, []);
 
   return (
-    <div className="flex flex-col w-full ">
-      <ReportHeader
-        reportData={reportData}
-        dateFrom={dateFrom}
-        dateTo={dateTo}
-        stockAdjustments={stockAdjustments}
-      />
-      <div className="flex flex-1 flex-col gap-4 p-2 md:p-6">
+    <div className="w-full h-full relative">
+      <div className="sticky top-16  z-40 bg-background border-b ">
+        <ReportHeader
+          reportData={reportData}
+          dateFrom={dateFrom}
+          dateTo={dateTo}
+          stockAdjustments={stockAdjustments}
+        />
+      </div>
+      <div className="flex flex-col gap-4 p-2 md:p-6">
         <div className="space-y-6">
           <DateFilter
             dateFrom={dateFrom}

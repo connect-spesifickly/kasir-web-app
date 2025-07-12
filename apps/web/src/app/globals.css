@@ -120,3 +120,29 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background-color: hsl(var(--background));
+    border-bottom: 1px solid hsl(var(--border));
+  }
+
+  .report-header-fixed {
+    position: fixed;
+    top: 64px; /* navbar height */
+    left: 0;
+    right: 0;
+    z-index: 40;
+    background-color: hsl(var(--background));
+    border-bottom: 1px solid hsl(var(--border));
+  }
+
+  @media (min-width: 1024px) {
+    .report-header-fixed {
+      left: 240px; /* sidebar width on lg screens */
+    }
+  }
+}

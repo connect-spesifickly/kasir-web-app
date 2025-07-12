@@ -12,23 +12,28 @@ export const stockAdjustmentApi = {
     },
     token?: string
   ): Promise<{ adjustments: StockAdjustment[]; total: number }> => {
-    const response = await api.get(`/stock-adjustments`, {
-      params,
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (
-      response.data &&
-      typeof response.data === "object" &&
-      "data" in response.data
-    ) {
-      return (
-        response.data as {
-          data: { adjustments: StockAdjustment[]; total: number };
-        }
-      ).data;
+    try {
+      const response = await api.get(`/stock-adjustments`, {
+        params,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (
+        response.data &&
+        typeof response.data === "object" &&
+        "data" in response.data
+      ) {
+        return (
+          response.data as {
+            data: { adjustments: StockAdjustment[]; total: number };
+          }
+        ).data;
+      }
+      // fallback
+      return { adjustments: [], total: 0 };
+    } catch (err) {
+      console.log(err);
+      return { adjustments: [], total: 0 };
     }
-    // fallback
-    return { adjustments: [], total: 0 };
   },
   create: async (
     data: {
@@ -39,16 +44,21 @@ export const stockAdjustmentApi = {
     },
     token?: string
   ): Promise<StockAdjustment> => {
-    const response = await api.post(`/stock-adjustments`, data, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (
-      response.data &&
-      typeof response.data === "object" &&
-      "data" in response.data
-    ) {
-      return (response.data as { data: StockAdjustment }).data;
+    try {
+      const response = await api.post(`/stock-adjustments`, data, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (
+        response.data &&
+        typeof response.data === "object" &&
+        "data" in response.data
+      ) {
+        return (response.data as { data: StockAdjustment }).data;
+      }
+      throw new Error("Gagal membuat penyesuaian stok: response tidak valid");
+    } catch (err) {
+      console.log(err);
+      throw new Error("Gagal membuat penyesuaian stok: " + err);
     }
-    throw new Error("Gagal membuat penyesuaian stok: response tidak valid");
   },
 };

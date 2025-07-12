@@ -1,6 +1,5 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-// import { Separator } from "@/components/ui/separator";
 import { ShoppingCart } from "lucide-react";
 interface PageHeaderProps {
   totalItems: number;
@@ -10,8 +9,7 @@ export const PageHeader = ({
   totalItems,
   onOpenMobileCart,
 }: PageHeaderProps) => (
-  <div className="flex h-16 shrink-0 items-center gap-2 border-b px-2 ">
-    {/* <Separator orientation="vertical" className=" h-4 hidden lg:block" /> */}
+  <div className="flex h-16 shrink-0 items-center gap-2 md:px-1 px-2">
     <div className="flex items-center justify-between flex-1">
       <h1 className="text-2xl md:text-3xl font-bold md:px-5 font-[stencil]">
         Kasir

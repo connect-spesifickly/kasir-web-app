@@ -115,98 +115,107 @@ export default function ProdukPage() {
   };
 
   return (
-    <div className="flex flex-col w-full">
-      <PageHeader onOpenCreateModal={() => setIsCreateModalOpen(true)} />
-
-      <div className="flex flex-1 flex-col gap-4 p-2 md:p-6">
-        <div className="flex items-center justify-between gap-6">
-          <SearchInput searchTerm={searchTerm} onSearchChange={setSearchTerm} />
-        </div>
-        {/* Desktop Table View */}
-        <div className="hidden md:block">
-          <Card>
-            <CardContent className="p-0">
-              <ProductTable
-                products={products}
-                loading={loading}
-                onEdit={handleEditProduct}
-                onRestock={handleRestockClick}
-                onDelete={handleDeleteProduct}
-                onDeactivate={handleDeactivateProduct}
-              />
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Mobile Card View */}
-        <div className="md:hidden">
-          <ProductCards
-            products={products}
-            loading={loading}
-            onEdit={handleEditProduct}
-            onRestock={handleRestockClick}
-            onDelete={handleDeleteProduct}
-            onDeactivate={handleDeactivateProduct}
-          />
-        </div>
-
-        {/* Create Product Modal */}
-        <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Tambah Produk Baru</DialogTitle>
-            </DialogHeader>
-            <CreateProductForm
-              onSubmit={handleCreateProduct}
-              isLoading={isCreating}
+    <div className="w-full h-full relative">
+      <div className="sticky top-16  z-40 bg-background border-b ">
+        <PageHeader onOpenCreateModal={() => setIsCreateModalOpen(true)} />
+      </div>
+      <div className="flex flex-col w-full">
+        <div className="flex flex-1 flex-col gap-4 p-2 md:p-6">
+          <div className="flex items-center justify-between gap-6">
+            <SearchInput
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
             />
-          </DialogContent>
-        </Dialog>
+          </div>
+          {/* Desktop Table View */}
+          <div className="hidden md:block">
+            <Card>
+              <CardContent className="p-0">
+                <ProductTable
+                  products={products}
+                  loading={loading}
+                  onEdit={handleEditProduct}
+                  onRestock={handleRestockClick}
+                  onDelete={handleDeleteProduct}
+                  onDeactivate={handleDeactivateProduct}
+                />
+              </CardContent>
+            </Card>
+          </div>
 
-        {/* Edit Product Modal */}
-        <Dialog open={!!editProduct} onOpenChange={() => setEditProduct(null)}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Edit Produk</DialogTitle>
-            </DialogHeader>
-            {editProduct && (
-              <UpdateProductForm
-                product={editProduct}
-                onSubmit={handleUpdateProduct}
-                isLoading={isUpdating}
-                onClose={() => setEditProduct(null)}
+          {/* Mobile Card View */}
+          <div className="md:hidden">
+            <ProductCards
+              products={products}
+              loading={loading}
+              onEdit={handleEditProduct}
+              onRestock={handleRestockClick}
+              onDelete={handleDeleteProduct}
+              onDeactivate={handleDeactivateProduct}
+            />
+          </div>
+
+          {/* Create Product Modal */}
+          <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Tambah Produk Baru</DialogTitle>
+              </DialogHeader>
+              <CreateProductForm
+                onSubmit={handleCreateProduct}
+                isLoading={isCreating}
               />
-            )}
-          </DialogContent>
-        </Dialog>
+            </DialogContent>
+          </Dialog>
 
-        {/* Restock Modal */}
-        <Dialog
-          open={!!restockProduct}
-          onOpenChange={() => setRestockProduct(null)}
-        >
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Restock Produk</DialogTitle>
-            </DialogHeader>
-            {restockProduct && (
-              <RestockForm
-                product={restockProduct}
-                onSubmit={handleRestockProduct}
-                isLoading={isRestocking}
-                onClose={() => setRestockProduct(null)}
-              />
-            )}
-          </DialogContent>
-        </Dialog>
+          {/* Edit Product Modal */}
+          <Dialog
+            open={!!editProduct}
+            onOpenChange={() => setEditProduct(null)}
+          >
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Edit Produk</DialogTitle>
+              </DialogHeader>
+              {editProduct && (
+                <UpdateProductForm
+                  product={editProduct}
+                  onSubmit={handleUpdateProduct}
+                  isLoading={isUpdating}
+                  onClose={() => setEditProduct(null)}
+                />
+              )}
+            </DialogContent>
+          </Dialog>
 
-        {/* Floating Action Button - Mobile */}
-        <Button
-          className="fixed bottom-20 right-4 h-14 w-14 rounded-full shadow-lg md:hidden"
-          onClick={() => setIsCreateModalOpen(true)}
-        >
-          <Plus className="h-6 w-6" />
-        </Button>
+          {/* Restock Modal */}
+          <Dialog
+            open={!!restockProduct}
+            onOpenChange={() => setRestockProduct(null)}
+          >
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Restock Produk</DialogTitle>
+              </DialogHeader>
+              {restockProduct && (
+                <RestockForm
+                  product={restockProduct}
+                  onSubmit={handleRestockProduct}
+                  isLoading={isRestocking}
+                  onClose={() => setRestockProduct(null)}
+                />
+              )}
+            </DialogContent>
+          </Dialog>
+
+          {/* Floating Action Button - Mobile */}
+          <Button
+            className="fixed bottom-20 right-4 h-14 w-14 rounded-full shadow-lg md:hidden"
+            onClick={() => setIsCreateModalOpen(true)}
+          >
+            <Plus className="h-6 w-6" />
+          </Button>
+        </div>
       </div>
     </div>
   );

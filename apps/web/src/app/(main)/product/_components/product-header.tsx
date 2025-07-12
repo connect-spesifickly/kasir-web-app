@@ -6,7 +6,7 @@ export const PageHeader = ({
 }: {
   onOpenCreateModal: () => void;
 }) => (
-  <div className="flex h-16 shrink-0 items-center gap-2 border-b px-2">
+  <div className="flex h-16 shrink-0 items-center gap-2 md:px-1 px-2 sm:mr-[2px]">
     <div className="flex items-center justify-between flex-1">
       <h1 className="text-2xl md:text-3xl font-bold md:px-5 font-[stencil]">
         Manajemen Produk

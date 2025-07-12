@@ -21,7 +21,7 @@ export const CartItem = ({
   onRemoveFromCart,
   showDeleteButton = true,
 }: CartItemProps) => (
-  <div className="flex items-center justify-between p-3 border rounded-lg">
+  <div className="flex lg:items-center md:items-start items-center lg:flex-row md:flex-col flex-row md:gap-1 lg:gap-0 justify-between p-3 border rounded-lg ">
     <div className="flex-1">
       <p className="font-medium text-sm">{item.product.productName}</p>
       <p className="text-sm text-muted-foreground">

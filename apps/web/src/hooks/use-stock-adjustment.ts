@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import type { StockAdjustment } from "@/types/stock-adjustment";
 import { stockAdjustmentApi } from "@/lib/api/stock-adjustment";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 
 // Types
 interface UseStockAdjustmentParams {
@@ -43,20 +44,23 @@ export function useStockAdjustments(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
-
+  const { data: session } = useSession();
   // Memoized fetch function
   const fetchAdjustments = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-
-      const response = await stockAdjustmentApi.getAll({
-        search: params?.search,
-        startDate: params?.startDate,
-        endDate: params?.endDate,
-        take: params?.take || DEFAULT_TAKE,
-        skip: params?.skip || DEFAULT_SKIP,
-      });
+      console.log("ini params stock-adjustment", params);
+      const response = await stockAdjustmentApi.getAll(
+        {
+          search: params?.search,
+          startDate: params?.startDate,
+          endDate: params?.endDate,
+          take: params?.take || DEFAULT_TAKE,
+          skip: params?.skip || DEFAULT_SKIP,
+        },
+        session?.accessToken
+      );
       setAdjustments(response.adjustments);
       setTotal(response.total);
     } catch (err) {
@@ -87,7 +91,11 @@ export function useStockAdjustments(
   const createAdjustment = useCallback(
     async (data: CreateAdjustmentData): Promise<StockAdjustment> => {
       try {
-        const newAdjustment = await stockAdjustmentApi.create(data);
+        console.log("ini data yang mau disesuaikan", data);
+        const newAdjustment = await stockAdjustmentApi.create(
+          data,
+          session?.accessToken
+        );
 
         // Optimistically update the list
         setAdjustments((prev) => [newAdjustment, ...prev]);
@@ -101,8 +109,8 @@ export function useStockAdjustments(
           err instanceof Error
             ? err.message
             : "Failed to create stock adjustment";
-
-        toast(errorMessage);
+        console.log(errorMessage);
+        toast("Penyesuaian stok gagal dibuat");
 
         throw err;
       }
