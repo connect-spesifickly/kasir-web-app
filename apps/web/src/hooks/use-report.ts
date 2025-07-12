@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { reportApi, stockAdjustmentApi } from "@/lib/utils";
+import { reportApi } from "@/lib/api/report";
+import { stockAdjustmentApi } from "@/lib/api/stock-adjustment";
 import { useSession } from "next-auth/react";
+import type { StockAdjustment } from "@/types/stock-adjustment";
 
 interface ReportData {
   totalOmzet: number;
@@ -16,25 +18,6 @@ export interface DailyTransaction {
   profit: number;
   loss: number;
   transactionCount: number;
-}
-
-export interface StockAdjustment {
-  id: string;
-  productId: string;
-  userId: string;
-  quantityChange: number;
-  lastStock: number;
-  reason: string;
-  createdAt: string;
-  product: {
-    id: string;
-    productName: string;
-    costPrice: number;
-  };
-  user: {
-    id: string;
-    email: string;
-  };
 }
 
 export function useReportData(dateFrom: string, dateTo: string) {
@@ -81,13 +64,6 @@ export function useReportData(dateFrom: string, dateTo: string) {
             session?.accessToken
           ) as Promise<{ data: DailyTransaction[] }>,
         ]);
-      console.log(
-        "hasil report",
-        salesReport.data,
-        profitReport.data,
-        lossesReport.data,
-        dailyTransactionsRes.data
-      );
       setReportData({
         totalOmzet: salesReport.data.totalOmzet || 0,
         jumlahTransaksi: salesReport.data.jumlahTransaksi || 0,
@@ -97,12 +73,15 @@ export function useReportData(dateFrom: string, dateTo: string) {
       setDailyTransactions(dailyTransactionsRes.data || []);
 
       try {
-        const adjustmentsData = (await stockAdjustmentApi.getAll({
-          startDate: dateFrom,
-          endDate: dateTo,
-          take: 10,
-        })) as { adjustments?: StockAdjustment[] };
-        setStockAdjustments(adjustmentsData.adjustments || []);
+        const { adjustments } = await stockAdjustmentApi.getAll(
+          {
+            startDate: dateFrom,
+            endDate: dateTo,
+            take: 10,
+          },
+          session?.accessToken
+        );
+        setStockAdjustments(adjustments);
       } catch (error) {
         console.warn("Failed to fetch stock adjustments:", error);
         setStockAdjustments([]);

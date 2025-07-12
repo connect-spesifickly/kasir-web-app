@@ -113,28 +113,30 @@ export function SidebarPage({ activePage, onPageChange }: SidebarProps) {
     return null;
   }
   return (
-    <div className="relative z-30 hidden h-full ml-1 mr-1 bg-white w-60 lg:block">
-      {/* SIdebar content */}
-      <div className="px-4 py-4">
-        <nav>
-          <ul className="space-y-2 text-[14px]">
-            {sidebarItems.map((item) => (
-              <li key={item.id}>
-                <button
-                  onClick={() => onPageChange(item.id)}
-                  className={`flex w-full items-center rounded-md px-4 py-3 ${
-                    activePage === item.id
-                      ? "bg-blue-600 text-white hover:bg-blue-500"
-                      : "text-gray-600 hover:text-white hover:bg-blue-500"
-                  }`}
-                >
-                  <span className="mr-3">{getIcon(item.icon)}</span>
-                  <span className="text-[15px]">{item.label}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
+    <div className="sticky left-0 top-16 z-50">
+      <div className="relative z-30 hidden h-full ml-1 mr-1 bg-transparent w-60 lg:block">
+        {/* SIdebar content */}
+        <div className="px-4 py-4">
+          <nav>
+            <ul className="space-y-2 text-[14px]">
+              {sidebarItems.map((item) => (
+                <li key={item.id}>
+                  <button
+                    onClick={() => onPageChange(item.id)}
+                    className={`flex w-full items-center rounded-md px-4 py-3 ${
+                      activePage === item.id
+                        ? "bg-blue-600 text-white hover:bg-blue-500"
+                        : "text-gray-600 hover:text-white hover:bg-blue-500"
+                    }`}
+                  >
+                    <span className="mr-3">{getIcon(item.icon)}</span>
+                    <span className="text-[15px]">{item.label}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
       </div>
     </div>
   );

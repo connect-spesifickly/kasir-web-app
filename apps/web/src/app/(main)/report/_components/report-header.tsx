@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { StockAdjustment } from "@/hooks/use-report";
+import { StockAdjustment } from "@/types/stock-adjustment";
 
 interface ReportAdjustment {
   date?: string;

@@ -15,7 +15,7 @@ const Navbar = React.forwardRef<
 
   return (
     <div
-      className={`${className} flex justify-between items-center w-full h-[64px]  sm:px-[32px] py-[16px] px-[20px] ${
+      className={`${className} sticky top-0 z-50 bg-white flex justify-between items-center w-full h-[64px]  sm:px-[32px] py-[16px] px-[20px] ${
         location == "homepage" ? "bg-transparent sm:flex hidden" : ""
       }`}
       ref={ref}

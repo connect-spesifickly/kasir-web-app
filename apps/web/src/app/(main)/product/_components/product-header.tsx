@@ -12,7 +12,7 @@ export const PageHeader = ({
         Manajemen Produk
       </h1>
       <div className="hidden md:block md:mr-4">
-        <Button onClick={onOpenCreateModal} className="bg-primary">
+        <Button onClick={onOpenCreateModal} className="">
           <Plus className="h-4 w-4 mr-2" />
           Tambah Produk
         </Button>

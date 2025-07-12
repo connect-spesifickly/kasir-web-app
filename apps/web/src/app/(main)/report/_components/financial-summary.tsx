@@ -170,6 +170,17 @@ export function FinancialSummary({
     ? getWeeklyChartData()
     : getChartData();
 
+  const formatCurrencyCompact = (amount: number) => {
+    if (amount >= 1000000000) {
+      return `${(amount / 1000000000).toFixed(1)}M`;
+    } else if (amount >= 1000000) {
+      return `${(amount / 1000000).toFixed(1)}Jt`;
+    } else if (amount >= 1000) {
+      return `${(amount / 1000).toFixed(0)}K`;
+    }
+    return amount.toString();
+  };
+
   return (
     <Collapsible defaultOpen>
       <CollapsibleTrigger asChild>
@@ -243,7 +254,11 @@ export function FinancialSummary({
                     <BarChart data={finalChartData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="date" />
-                      <YAxis />
+                      <YAxis
+                        tickFormatter={(value) => formatCurrencyCompact(value)}
+                        domain={[0, "dataMax"]}
+                        width={80}
+                      />
                       <Tooltip
                         formatter={(value, name) => [
                           formatCurrency(Number(value)),
@@ -277,7 +292,11 @@ export function FinancialSummary({
                     <LineChart data={finalChartData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="date" />
-                      <YAxis />
+                      <YAxis
+                        tickFormatter={(value) => formatCurrencyCompact(value)}
+                        domain={[0, "dataMax"]}
+                        width={80}
+                      />
                       <Tooltip
                         formatter={(value) => [
                           formatCurrency(Number(value)),

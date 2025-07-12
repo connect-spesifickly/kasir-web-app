@@ -122,9 +122,9 @@ export default function MainLayout({
     else if (page === "adjustment") router.push("/adjustment");
   };
   return (
-    <div className="flex-col h-[80vh]">
+    <div className="flex-col  ">
       <Navbar className="border-b-[1px] border-slate-200 " />
-      <div className="flex min-h-[calc(80vh-0px-0px)] min-w-[calc(100vw)] bg-white md:min-h-[calc(80vh-0px-0px)]">
+      <div className="flex h-full min-h-[90vh] min-w-[calc(100vw)]">
         <aside className="">
           <SidebarPage
             activePage={getActivePage()}
@@ -132,8 +132,10 @@ export default function MainLayout({
           />
         </aside>
         <BottomNavigation items={bottomNavItems} />
-        <main className="w-full h-[80vh] ">
-          <div className="flex px-7 pt-[0px]">{children}</div>
+        <main className="w-full h-full min-h-[90vh]">
+          <div className="flex px-7 pt-[0px] lg:border-l-2 min-h-[91vh] pb-12 md:pb-0">
+            {children}
+          </div>
         </main>
       </div>
     </div>

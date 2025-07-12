@@ -27,7 +27,7 @@ export function DateFilter({
   return (
     <Card>
       <CardHeader className="flex justify-between items-center">
-        <CardTitle>Filter Periode Laporan</CardTitle>
+        <CardTitle className="text-xl">Filter Periode Laporan</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">

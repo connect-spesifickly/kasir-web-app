@@ -41,7 +41,7 @@ export default function KasirPage() {
   const totalPrice = getTotalPrice();
 
   return (
-    <div className="flex flex-col w-full min-h-[92vh] lg:border-l-2 pb-12 md:pb-0">
+    <div className="flex flex-col w-full ">
       <PageHeader
         totalItems={totalItems}
         onOpenMobileCart={handleOpenMobileCart}

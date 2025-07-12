@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import type { Product } from "@/lib/types";
-import { productApi } from "@/lib/utils";
+import { productApi } from "@/lib/api/product";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 
@@ -79,7 +79,7 @@ export function useProducts(search?: string) {
       setProducts((prev) => prev.filter((p) => p.id !== id));
       toast("Produk berhasil dihapus");
     } catch (err) {
-      toast("Failed to delete product");
+      toast("Product yang telah ada riwayat transaksi tidak bisa dihapus");
       throw err;
     }
   };
@@ -111,6 +111,7 @@ export function useProducts(search?: string) {
 
   const deactivateProduct = async (id: string) => {
     try {
+      console.log(id, "ini access tokennya", session?.accessToken);
       await productApi.deactivate(id, session?.accessToken);
       setProducts((prev) =>
         prev.map((p) => (p.id === id ? { ...p, isActive: false } : p))

@@ -19,8 +19,8 @@ class ReportService {
       _count: { id: true },
       where: {
         transactionTime: {
-          gte: new Date(startDate),
-          lte: new Date(endDate),
+          gte: startOfDay,
+          lte: endOfDay,
         },
       },
     });

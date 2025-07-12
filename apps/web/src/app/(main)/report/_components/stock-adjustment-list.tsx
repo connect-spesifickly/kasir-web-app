@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { StockAdjustment } from "@/types/stock-adjustment";
 import {
   Collapsible,
   CollapsibleContent,
@@ -11,19 +12,7 @@ import { ChevronDown, AlertTriangle } from "lucide-react";
 import { StockAdjustmentItem } from "./stock-adjustment-item";
 
 interface StockAdjustmentListProps {
-  stockAdjustments: Array<{
-    id: string;
-    quantityChange: number;
-    reason: string;
-    createdAt: string;
-    product: {
-      productName: string;
-      costPrice: number;
-    };
-    user: {
-      email: string;
-    };
-  }>;
+  stockAdjustments: StockAdjustment[];
   totalLossValue: number;
   loading: boolean;
 }
@@ -81,7 +70,19 @@ export function StockAdjustmentList({
                 stockAdjustments.map((adjustment) => (
                   <StockAdjustmentItem
                     key={adjustment.id}
-                    adjustment={adjustment}
+                    adjustment={{
+                      id: adjustment.id,
+                      quantityChange: adjustment.quantityChange,
+                      reason: adjustment.reason,
+                      createdAt: adjustment.createdAt,
+                      product: {
+                        productName: adjustment.product.productName,
+                        costPrice: adjustment.product.costPrice,
+                      },
+                      user: {
+                        email: adjustment.user.email,
+                      },
+                    }}
                   />
                 ))
               ) : (

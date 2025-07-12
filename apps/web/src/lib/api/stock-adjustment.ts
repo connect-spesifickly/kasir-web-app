@@ -1,0 +1,54 @@
+import type { StockAdjustment } from "@/types/stock-adjustment";
+import { api } from "@/utils/axios";
+
+export const stockAdjustmentApi = {
+  getAll: async (
+    params: {
+      search?: string;
+      startDate?: string;
+      endDate?: string;
+      take?: number;
+      skip?: number;
+    },
+    token?: string
+  ): Promise<{ adjustments: StockAdjustment[]; total: number }> => {
+    const response = await api.get(`/stock-adjustments`, {
+      params,
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (
+      response.data &&
+      typeof response.data === "object" &&
+      "data" in response.data
+    ) {
+      return (
+        response.data as {
+          data: { adjustments: StockAdjustment[]; total: number };
+        }
+      ).data;
+    }
+    // fallback
+    return { adjustments: [], total: 0 };
+  },
+  create: async (
+    data: {
+      productId: string;
+      userId: string;
+      quantityChange: number;
+      reason: string;
+    },
+    token?: string
+  ): Promise<StockAdjustment> => {
+    const response = await api.post(`/stock-adjustments`, data, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (
+      response.data &&
+      typeof response.data === "object" &&
+      "data" in response.data
+    ) {
+      return (response.data as { data: StockAdjustment }).data;
+    }
+    throw new Error("Gagal membuat penyesuaian stok: response tidak valid");
+  },
+};

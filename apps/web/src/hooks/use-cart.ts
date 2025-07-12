@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { saleApi } from "@/lib/utils";
+import { saleApi } from "@/lib/api/sale";
 import { toast } from "sonner";
 import type { Product } from "@/lib/types";
 import { useSession } from "next-auth/react";
