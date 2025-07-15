@@ -16,6 +16,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { StockBadge } from "./stock-badge";
+import { formatRupiah } from "@/lib/utils";
 export const ProductCards = ({
   products,
   loading,
@@ -59,7 +60,7 @@ export const ProductCards = ({
           <CardContent className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-lg font-bold text-primary">
-                Rp {product.price.toLocaleString()}
+                {formatRupiah(Number(product.price))}
               </span>
               <StockBadge stock={product.stock} minStock={product.minStock} />
             </div>

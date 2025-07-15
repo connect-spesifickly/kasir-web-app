@@ -12,6 +12,7 @@ import {
 import { StockAdjustment } from "@/types/stock-adjustment";
 import { api } from "@/utils/axios";
 import { useSession } from "next-auth/react";
+import { formatRupiah } from "@/lib/utils";
 
 interface ReportHeaderProps {
   reportData: {
@@ -45,10 +46,6 @@ type StockAdjustmentCSV = {
   reason: string;
   user: { email: string };
 };
-
-// Tambahkan helper formatRupiah di atas komponen
-const formatRupiah = (value: number) =>
-  "Rp " + new Intl.NumberFormat("id-ID").format(value);
 
 // TypeScript module augmentation for jsPDF to add lastAutoTable property
 declare module "jspdf" {

@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import type { Product } from "@/lib/types";
+import { formatRupiah } from "@/lib/utils";
 
 interface CartItemType {
   productId: string;
@@ -25,7 +26,7 @@ export const CartItem = ({
     <div className="flex-1">
       <p className="font-medium text-sm">{item.product.productName}</p>
       <p className="text-sm text-muted-foreground">
-        Rp {item.product.price.toLocaleString()}
+        {formatRupiah(item.product.price)}
       </p>
     </div>
     <div className="flex items-center gap-2">

@@ -6,7 +6,7 @@ import { LucideIcon } from "lucide-react";
 
 interface MetricCardProps {
   title: string;
-  value: string;
+  value: number | string;
   subtitle: string;
   icon: LucideIcon;
   color: string;

@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Product, RestockData } from "@/lib/types";
 import { Loader2 } from "lucide-react";
 import * as React from "react";
+import { formatRupiah } from "@/lib/utils";
 export const RestockForm = ({
   product,
   onSubmit,
@@ -36,7 +37,7 @@ export const RestockForm = ({
           Stok saat ini: {product.stock} unit
         </p>
         <p className="text-sm text-muted-foreground">
-          Harga beli saat ini: Rp {product.costPrice.toLocaleString()}
+          Harga beli saat ini: {formatRupiah(product.costPrice)}
         </p>
       </div>
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -48,7 +49,7 @@ export const RestockForm = ({
             <Input
               id="quantityAdded"
               type="number"
-              placeholder="Masukkan jumlah"
+              placeholder="e.g. 10"
               value={quantityAdded}
               onChange={(e) => setQuantityAdded(e.target.value)}
               required
@@ -61,7 +62,7 @@ export const RestockForm = ({
             <Input
               id="newCostPrice"
               type="number"
-              placeholder="Harga beli"
+              placeholder="e.g. 40000"
               value={newCostPrice}
               onChange={(e) => setNewCostPrice(e.target.value)}
               required

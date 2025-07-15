@@ -114,8 +114,10 @@ export default function PenyesuaianStokPage() {
           <div className="hidden md:block">
             <Card>
               <CardContent className="p-0">
+                {/* Anda sudah menggunakan pola loading yang baik di sini */}
                 {loading ? (
                   <div className="p-6 space-y-4">
+                    {/* Skeleton loading, tidak perlu diubah */}
                     {Array.from({ length: 5 }).map((_, i) => (
                       <div key={i} className="flex items-center space-x-4">
                         <Skeleton className="h-4 w-32" />
@@ -157,10 +159,13 @@ export default function PenyesuaianStokPage() {
                             <TableCell>
                               <div>
                                 <p className="font-medium">
-                                  {adjustment.product.productName}
+                                  {/* PERUBAHAN DI SINI */}
+                                  {adjustment.product?.productName ??
+                                    "Produk tidak ada"}
                                 </p>
                                 <p className="text-sm text-muted-foreground">
-                                  {adjustment.product.productCode}
+                                  {/* PERUBAHAN DI SINI */}
+                                  {adjustment.product?.productCode ?? "N/A"}
                                 </p>
                               </div>
                             </TableCell>
@@ -182,7 +187,8 @@ export default function PenyesuaianStokPage() {
                             </TableCell>
                             <TableCell>
                               <span className="text-sm">
-                                {adjustment.user.email}
+                                {/* PERUBAHAN DI SINI */}
+                                {adjustment.user?.email ?? "User tidak ada"}
                               </span>
                             </TableCell>
                           </TableRow>
@@ -197,7 +203,9 @@ export default function PenyesuaianStokPage() {
 
           {/* Mobile Card View */}
           <div className="md:hidden space-y-4">
+            {/* Anda sudah menggunakan pola loading yang baik di sini juga */}
             {loading ? (
+              // Skeleton loading, tidak perlu diubah
               Array.from({ length: 3 }).map((_, i) => (
                 <Card key={i}>
                   <CardContent className="p-4">
@@ -232,10 +240,13 @@ export default function PenyesuaianStokPage() {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="font-medium">
-                            {adjustment.product.productName}
+                            {/* PERUBAHAN DI SINI */}
+                            {adjustment.product?.productName ??
+                              "Produk tidak ada"}
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            {adjustment.product.productCode}
+                            {/* PERUBAHAN DI SINI */}
+                            {adjustment.product?.productCode ?? "N/A"}
                           </p>
                         </div>
                         <div className="text-right">
@@ -259,7 +270,10 @@ export default function PenyesuaianStokPage() {
                         </p>
                         <div className="flex items-center justify-between text-xs text-muted-foreground">
                           <span>{formatDate(adjustment.createdAt)}</span>
-                          <span>Oleh: {adjustment.user.email}</span>
+                          {/* PERUBAHAN DI SINI */}
+                          <span>
+                            Oleh: {adjustment.user?.email ?? "User tidak ada"}
+                          </span>
                         </div>
                       </div>
                     </div>

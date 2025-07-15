@@ -5,6 +5,7 @@ import { saleApi } from "@/lib/api/sale";
 import { toast } from "sonner";
 import type { Product } from "@/lib/types";
 import { useSession } from "next-auth/react";
+import { formatRupiah } from "@/lib/utils";
 
 interface CartItem {
   productId: string;
@@ -99,7 +100,7 @@ export function useCart() {
       const sale = await saleApi.create(cartData, session?.accessToken);
 
       toast(
-        `Transaksi dengan Total: Rp ${getTotalPrice().toLocaleString()} berhasil dilakukan`
+        `Transaksi dengan Total: ${formatRupiah(getTotalPrice())} berhasil dilakukan`
       );
 
       clearCart();

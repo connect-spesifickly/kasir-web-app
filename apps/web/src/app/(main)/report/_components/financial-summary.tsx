@@ -24,6 +24,7 @@ import {
   TrendingDown,
 } from "lucide-react";
 import { MetricCard } from "./metric-card";
+import { formatRupiah } from "@/lib/utils";
 
 interface FinancialSummaryProps {
   reportData: {
@@ -51,15 +52,6 @@ export function FinancialSummary({
   loading,
   dailyTransactions = [],
 }: FinancialSummaryProps) {
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
   const calculateProfitMargin = () => {
     if (reportData.totalOmzet === 0) return 0;
     return ((reportData.totalProfit / reportData.totalOmzet) * 100).toFixed(2);
@@ -202,7 +194,7 @@ export function FinancialSummary({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <MetricCard
             title="Total Omzet"
-            value={formatCurrency(reportData.totalOmzet)}
+            value={formatRupiah(reportData.totalOmzet)}
             subtitle="Revenue"
             icon={TrendingUp}
             color="text-green-600"
@@ -212,7 +204,7 @@ export function FinancialSummary({
 
           <MetricCard
             title="Total Laba"
-            value={formatCurrency(reportData.totalProfit)}
+            value={formatRupiah(reportData.totalProfit)}
             subtitle={`Margin: ${calculateProfitMargin()}%`}
             icon={DollarSign}
             color="text-blue-600"
@@ -223,7 +215,7 @@ export function FinancialSummary({
           <MetricCard
             title="Total Transaksi"
             value={reportData.jumlahTransaksi.toLocaleString()}
-            subtitle={`Avg: ${reportData.jumlahTransaksi > 0 ? formatCurrency(reportData.totalOmzet / reportData.jumlahTransaksi) : "Rp 0"}`}
+            subtitle={`Avg: ${reportData.jumlahTransaksi > 0 ? formatRupiah(reportData.totalOmzet / reportData.jumlahTransaksi) : formatRupiah(0)}`}
             icon={TrendingUp}
             color="text-purple-600"
             borderColor="border-l-purple-500"
@@ -232,7 +224,7 @@ export function FinancialSummary({
 
           <MetricCard
             title="Kerugian Stok"
-            value={formatCurrency(reportData.totalLossValue)}
+            value={formatRupiah(reportData.totalLossValue)}
             subtitle="Penyesuaian"
             icon={TrendingDown}
             color="text-red-600"
@@ -263,7 +255,7 @@ export function FinancialSummary({
                       />
                       <Tooltip
                         formatter={(value, name) => [
-                          formatCurrency(Number(value)),
+                          formatRupiah(Number(value)),
                           name === "revenue" ? "Omzet" : "Laba",
                         ]}
                       />
@@ -301,7 +293,7 @@ export function FinancialSummary({
                       />
                       <Tooltip
                         formatter={(value) => [
-                          formatCurrency(Number(value)),
+                          formatRupiah(Number(value)),
                           "Kerugian",
                         ]}
                       />

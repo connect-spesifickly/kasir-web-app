@@ -23,6 +23,7 @@ import { StockBadge } from "./stock-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Edit, EyeOff, Package, Trash2 } from "lucide-react";
+import { formatRupiah } from "@/lib/utils";
 export const ProductTable = ({
   products,
   loading,
@@ -59,7 +60,7 @@ export const ProductTable = ({
           <TableRow key={product.id}>
             <TableCell className="font-mono">{product.productCode}</TableCell>
             <TableCell className="font-medium">{product.productName}</TableCell>
-            <TableCell>Rp {product.price.toLocaleString()}</TableCell>
+            <TableCell>{formatRupiah(Number(product.price))}</TableCell>
             <TableCell>
               <StockBadge stock={product.stock} minStock={product.minStock} />
             </TableCell>

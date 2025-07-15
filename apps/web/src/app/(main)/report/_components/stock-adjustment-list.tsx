@@ -10,6 +10,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronDown, AlertTriangle } from "lucide-react";
 import { StockAdjustmentItem } from "./stock-adjustment-item";
+import { formatRupiah } from "@/lib/utils";
 
 interface StockAdjustmentListProps {
   stockAdjustments: StockAdjustment[];
@@ -22,15 +23,6 @@ export function StockAdjustmentList({
   totalLossValue,
   loading,
 }: StockAdjustmentListProps) {
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
   return (
     <Collapsible>
       <CollapsibleTrigger asChild>
@@ -101,7 +93,7 @@ export function StockAdjustmentList({
                       Total Kerugian dari Penyesuaian:
                     </span>
                     <span className="text-lg font-bold text-red-600">
-                      {formatCurrency(totalLossValue)}
+                      {formatRupiah(totalLossValue)}
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground mt-2">

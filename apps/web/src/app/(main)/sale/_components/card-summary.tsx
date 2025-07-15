@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import type { Product } from "@/lib/types";
+import { formatRupiah } from "@/lib/utils";
 
 interface CartItemType {
   productId: string;
@@ -32,7 +33,7 @@ export const CartSummary = ({
   <div className="space-y-2">
     <div className="flex justify-between text-lg font-bold">
       <span>Total:</span>
-      <span>Rp {totalPrice.toLocaleString()}</span>
+      <span>{formatRupiah(totalPrice)}</span>
     </div>
 
     <Dialog>
@@ -52,16 +53,14 @@ export const CartSummary = ({
                 <span>
                   {item.product.productName} x{item.quantity}
                 </span>
-                <span>
-                  Rp {(item.product.price * item.quantity).toLocaleString()}
-                </span>
+                <span>{formatRupiah(item.product.price * item.quantity)}</span>
               </div>
             ))}
           </div>
           <Separator />
           <div className="flex justify-between text-lg font-bold">
             <span>Total:</span>
-            <span>Rp {totalPrice.toLocaleString()}</span>
+            <span>{formatRupiah(totalPrice)}</span>
           </div>
           <Button
             onClick={onPayment}

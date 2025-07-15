@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import type { Product } from "@/lib/types";
 import { StockBadge } from "../../product/_components/stock-badge";
+import { formatRupiah } from "@/lib/utils";
 
 interface ProductCardProps {
   product: Product;
@@ -22,7 +23,7 @@ export const ProductCard = ({ product, onAddToCart }: ProductCardProps) => (
         </div>
         <h3 className="font-medium text-sm">{product.productName}</h3>
         <p className="text-lg font-bold text-primary">
-          Rp {product.price.toLocaleString()}
+          {formatRupiah(Number(product.price))}
         </p>
         <Button
           onClick={() => onAddToCart(product)}

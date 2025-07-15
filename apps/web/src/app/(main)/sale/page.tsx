@@ -11,7 +11,7 @@ import { PageHeader } from "./_components/sale-header";
 import { toast } from "sonner";
 import { api } from "@/utils/axios";
 import { useSession } from "next-auth/react";
-
+import { IoIosWarning } from "react-icons/io";
 // Tambahkan type untuk produk low stock
 interface ProductLowStock {
   id: string;
@@ -67,15 +67,33 @@ export default function KasirPage() {
         )
           ? (res.data as { data: ProductLowStock[] }).data
           : [];
-        console.log("products", products);
         if (products.length > 0) {
           toast.warning(
-            `Stok menipis: 
-            ${products
-              .map(
-                (p: ProductLowStock) => `${p.productName} (sisa: ${p.stock})`
-              )
-              .join(", ")}`
+            <div>
+              <div style={{ fontWeight: "bold", marginBottom: "8px" }}>
+                Stok menipis:
+              </div>
+              <ul style={{ margin: 0, paddingLeft: "20px" }}>
+                {products.map((p: ProductLowStock) => (
+                  <li key={p.productName}>
+                    {p.productName} (sisa: {p.stock})
+                  </li>
+                ))}
+              </ul>
+            </div>,
+            {
+              icon: (
+                <span style={{ color: "#dc3545" }}>
+                  {" "}
+                  <IoIosWarning size={20} className="" />
+                </span>
+              ),
+              style: {
+                background: "#ffc107",
+                color: "#212529",
+                border: "1px solid #ffc107",
+              },
+            }
           );
         }
       } catch {

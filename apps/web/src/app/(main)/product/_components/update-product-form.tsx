@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Product, UpdateProductData } from "@/lib/types";
 import { Loader2 } from "lucide-react";
+import { formatRupiah } from "@/lib/utils";
 
 export const UpdateProductForm = ({
   product,
@@ -88,7 +89,7 @@ export const UpdateProductForm = ({
         </div>
       </div>
       <div className="text-sm text-muted-foreground">
-        <p>Harga Beli saat ini: Rp {product.costPrice.toLocaleString()}</p>
+        <p>Harga Beli saat ini: {formatRupiah(product.costPrice)}</p>
         <p>Stok saat ini: {product.stock} unit</p>
       </div>
       <div className="flex gap-2">
