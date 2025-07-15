@@ -139,7 +139,7 @@ export default function MainLayout({
   return (
     <div className="flex-col  ">
       <Navbar className="border-b-[1px] border-slate-200 " />
-      <div className="flex h-full min-h-[90vh] min-w-[calc(100vw)]">
+      <div className="flex h-full min-h-[90vh] min-w-[calc(100vw)] ">
         <aside className="">
           <SidebarPage
             activePage={getActivePage()}

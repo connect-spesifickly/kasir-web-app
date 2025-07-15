@@ -46,6 +46,7 @@ class ProductService {
     if (data.productCode) updateData.productCode = data.productCode;
     if (data.productName) updateData.productName = data.productName;
     if (data.price) updateData.price = data.price;
+    if (data.minStock !== undefined) updateData.minStock = data.minStock;
     return prisma.product.update({ where: { id }, data: updateData });
   }
 
@@ -121,6 +122,17 @@ class ProductService {
     if (product.stock !== 0)
       throw new ResponseError(400, "Stok harus 0 sebelum menonaktifkan produk");
     return prisma.product.update({ where: { id }, data: { isActive: false } });
+  }
+
+  async getLowStockProducts() {
+    return await prisma.$queryRaw`
+      SELECT id, "productName", "productCode", stock, "minStock"
+      FROM "Product"
+      WHERE "isActive" = true 
+        AND "minStock" IS NOT NULL 
+        AND stock <= "minStock"
+      ORDER BY "productName" ASC
+    `;
   }
 }
 

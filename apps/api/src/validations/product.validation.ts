@@ -7,6 +7,7 @@ export const createProductSchema = () =>
     costPrice: yup.number().required("Cost price is required").min(0),
     price: yup.number().required("Price is required").min(0),
     stock: yup.number().required("Stock is required").min(0),
+    minStock: yup.number().min(1, "Stok minimum harus minimal 1").notRequired(),
   });
 
 export const updateProductSchema = () =>

@@ -100,6 +100,20 @@ class ProductController {
       next(error);
     }
   }
+
+  async getLowStock(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await productService.getLowStockProducts();
+      ApiResponse({
+        res,
+        statusCode: 200,
+        message: "Low stock products",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new ProductController();

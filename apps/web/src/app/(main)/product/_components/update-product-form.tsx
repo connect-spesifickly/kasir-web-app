@@ -64,6 +64,28 @@ export const UpdateProductForm = ({
           required
         />
       </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label className="pb-2" htmlFor="edit_minStock">
+            Stok Minimum
+            <span
+              className="ml-1 text-xs text-muted-foreground"
+              title="Jika stok turun di bawah angka ini, produk akan masuk daftar stok menipis."
+            >
+              [?]
+            </span>
+          </Label>
+          <Input
+            id="edit_minStock"
+            name="minStock"
+            type="number"
+            min={1}
+            defaultValue={product.minStock ?? 5}
+            placeholder="5"
+            required
+          />
+        </div>
+      </div>
       <div className="text-sm text-muted-foreground">
         <p>Harga Beli saat ini: Rp {product.costPrice.toLocaleString()}</p>
         <p>Stok saat ini: {product.stock} unit</p>

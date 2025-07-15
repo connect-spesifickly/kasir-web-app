@@ -130,7 +130,7 @@ export default function ProdukPage() {
           {/* Desktop Table View */}
           <div className="hidden md:block">
             <Card>
-              <CardContent className="p-0">
+              <CardContent className="">
                 <ProductTable
                   products={products}
                   loading={loading}

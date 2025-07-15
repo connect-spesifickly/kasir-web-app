@@ -8,14 +8,18 @@ import { useReportData } from "@/hooks/use-report";
 import { ReportHeader } from "./_components/report-header";
 
 export default function BusinessReportPage() {
-  const [dateFrom, setDateFrom] = useState(() => {
+  // State untuk filter input (sementara)
+  const [filterDateFrom, setFilterDateFrom] = useState(() => {
     const date = new Date();
-    date.setDate(date.getDate() - 7);
+    date.setDate(date.getDate() - 2); // 2 hari yang lalu
     return date.toISOString().split("T")[0];
   });
-  const [dateTo, setDateTo] = useState(
-    () => new Date().toISOString().split("T")[0]
+  const [filterDateTo, setFilterDateTo] = useState(
+    () => new Date().toISOString().split("T")[0] // hari ini
   );
+  // State untuk fetch data (hanya berubah saat Terapkan Filter)
+  const [dateFrom, setDateFrom] = useState(filterDateFrom);
+  const [dateTo, setDateTo] = useState(filterDateTo);
 
   const {
     reportData,
@@ -26,9 +30,17 @@ export default function BusinessReportPage() {
     dailyTransactions,
   } = useReportData(dateFrom, dateTo);
 
+  // Hanya fetch sekali di awal
   useEffect(() => {
     fetchReports();
   }, []);
+
+  // Handler Terapkan Filter
+  const handleApplyFilter = () => {
+    setDateFrom(filterDateFrom);
+    setDateTo(filterDateTo);
+    // fetchReports akan otomatis jalan karena dependency dateFrom/dateTo berubah
+  };
 
   return (
     <div className="w-full h-full relative">
@@ -43,11 +55,11 @@ export default function BusinessReportPage() {
       <div className="flex flex-col gap-4 p-2 md:p-6">
         <div className="space-y-6">
           <DateFilter
-            dateFrom={dateFrom}
-            dateTo={dateTo}
-            onDateFromChange={setDateFrom}
-            onDateToChange={setDateTo}
-            onApplyFilter={fetchReports}
+            dateFrom={filterDateFrom}
+            dateTo={filterDateTo}
+            onDateFromChange={setFilterDateFrom}
+            onDateToChange={setFilterDateTo}
+            onApplyFilter={handleApplyFilter}
             loading={loading}
             refreshing={refreshing}
           />

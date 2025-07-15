@@ -12,6 +12,7 @@ export const productRouter = () => {
   router.use(verifyOwner as any);
   router.post("/", validateCreateProduct, ProductController.create);
   router.get("/", ProductController.getAll);
+  router.get("/low-stock", ProductController.getLowStock);
   router.get("/:id", ProductController.getById);
   router.patch("/:id", validateUpdateProduct, ProductController.update);
   router.delete("/:id", ProductController.delete);

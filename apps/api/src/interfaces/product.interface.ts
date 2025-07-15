@@ -7,5 +7,6 @@ export interface Product {
   costPrice: Decimal;
   price: Decimal;
   stock: number;
+  minStock: number;
   isActive: boolean;
 }

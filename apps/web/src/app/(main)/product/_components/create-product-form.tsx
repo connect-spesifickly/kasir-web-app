@@ -89,6 +89,26 @@ export const CreateProductForm = ({
           />
         </div>
       </div>
+      <div>
+        <Label className="pb-2" htmlFor="minStock">
+          Stok Minimum
+          <span
+            className="ml-1 text-xs text-muted-foreground"
+            title="Jika stok turun di bawah angka ini, produk akan masuk daftar stok menipis."
+          >
+            [?]
+          </span>
+        </Label>
+        <Input
+          id="minStock"
+          name="minStock"
+          type="number"
+          min={1}
+          defaultValue={5}
+          placeholder="5"
+          required
+        />
+      </div>
       <Button type="submit" className="w-full" disabled={isLoading}>
         {isLoading ? (
           <>

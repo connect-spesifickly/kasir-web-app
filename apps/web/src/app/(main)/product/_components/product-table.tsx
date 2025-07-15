@@ -43,7 +43,7 @@ export const ProductTable = ({
   }
 
   return (
-    <Table className="lg:w-[96%] lg:mx-[2%] w-[99%] mx-[0.5%]">
+    <Table className="lg:w-[96%] lg:mx-[2%] w-[99%] mx-[0.5%] ">
       <TableHeader>
         <TableRow>
           <TableHead>Kode</TableHead>
@@ -54,7 +54,7 @@ export const ProductTable = ({
           <TableHead>Aksi</TableHead>
         </TableRow>
       </TableHeader>
-      <TableBody>
+      <TableBody className="">
         {products.map((product) => (
           <TableRow key={product.id}>
             <TableCell className="font-mono">{product.productCode}</TableCell>
