@@ -20,6 +20,7 @@ export const CreateProductForm = ({
       price: Number(formData.get("price")),
       costPrice: Number(formData.get("costPrice")),
       stock: Number(formData.get("stock")),
+      minStock: Number(formData.get("minStock")),
       isActive: true,
     };
     onSubmit(data);

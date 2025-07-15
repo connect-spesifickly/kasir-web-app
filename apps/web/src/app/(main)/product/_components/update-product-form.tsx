@@ -22,6 +22,7 @@ export const UpdateProductForm = ({
       productCode: formData.get("productCode") as string,
       productName: formData.get("productName") as string,
       price: Number(formData.get("price")),
+      minStock: Number(formData.get("minStock")),
     };
     onSubmit(data);
   };

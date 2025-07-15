@@ -126,13 +126,18 @@ class ProductService {
 
   async getLowStockProducts() {
     return await prisma.$queryRaw`
-      SELECT id, "productName", "productCode", stock, "minStock"
-      FROM "Product"
-      WHERE "isActive" = true 
-        AND "minStock" IS NOT NULL 
-        AND stock <= "minStock"
-      ORDER BY "productName" ASC
-    `;
+    SELECT 
+      id, 
+      "product_name" AS "productName", 
+      "product_code" AS "productCode", 
+      stock, 
+      "min_stock" AS "minStock"
+    FROM "products"
+    WHERE "is_active" = true 
+      AND "min_stock" IS NOT NULL 
+      AND stock <= "min_stock"
+    ORDER BY "product_name" ASC
+  `;
   }
 }
 

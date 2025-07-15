@@ -32,7 +32,7 @@ model Product {
   costPrice   Decimal @map("cost_price") @db.Decimal(10, 2)
   price       Decimal @db.Decimal(10, 2)
   stock       Int
-  minStock    Int?     @default(5) // stok minimum
+  minStock    Int?    @map("min_stock") @default(5) // stok minimum
   isActive    Boolean @default(true) @map("is_active")
 
   saleDetails      SaleDetail[]

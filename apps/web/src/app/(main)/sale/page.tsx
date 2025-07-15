@@ -8,11 +8,23 @@ import { MobileCartModal } from "./_components/mobile-cart-modal";
 import { useProducts } from "@/hooks/use-products";
 import { useCart } from "@/hooks/use-cart";
 import { PageHeader } from "./_components/sale-header";
+import { toast } from "sonner";
+import { api } from "@/utils/axios";
+import { useSession } from "next-auth/react";
+
+// Tambahkan type untuk produk low stock
+interface ProductLowStock {
+  id: string;
+  productName: string;
+  productCode: string;
+  stock: number;
+  minStock: number;
+}
 
 export default function KasirPage() {
   const [searchTerm, setSearchTerm] = React.useState("");
   const [isPaymentOpen, setIsPaymentOpen] = React.useState(false);
-
+  const { data: session, status } = useSession();
   const { products, loading, refetch } = useProducts(searchTerm);
   const {
     cart,
@@ -39,6 +51,40 @@ export default function KasirPage() {
 
   const totalItems = getTotalItems();
   const totalPrice = getTotalPrice();
+
+  React.useEffect(() => {
+    // Fetch low stock products saat dashboard dibuka
+    const fetchLowStock = async () => {
+      console.log("mulai fetch");
+      try {
+        const res = await api.get("/products/low-stock", {
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+          },
+        });
+        const products = Array.isArray(
+          (res.data as { data?: ProductLowStock[] })?.data
+        )
+          ? (res.data as { data: ProductLowStock[] }).data
+          : [];
+        console.log("products", products);
+        if (products.length > 0) {
+          toast.warning(
+            `Stok menipis: 
+            ${products
+              .map(
+                (p: ProductLowStock) => `${p.productName} (sisa: ${p.stock})`
+              )
+              .join(", ")}`
+          );
+        }
+      } catch {
+        console.error("Error fetching low stock products");
+      }
+    };
+    if (status == "loading") return undefined;
+    fetchLowStock();
+  }, [session, status]);
 
   return (
     <div className="w-full h-full relative">

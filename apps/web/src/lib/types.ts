@@ -26,6 +26,7 @@ export interface CreateProductData {
   price: number;
   costPrice: number;
   stock: number;
+  minStock: number;
   isActive: boolean;
 }
 
@@ -33,6 +34,7 @@ export interface UpdateProductData {
   productCode?: string;
   productName?: string;
   price?: number;
+  minStock?: number;
 }
 
 export interface RestockData {

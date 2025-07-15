@@ -2,7 +2,7 @@ import { Product } from "@/lib/types";
 import { CardSkeleton } from "./card-skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Edit, EyeOff, Package, Trash2 } from "lucide-react";
+import { Edit, EyeOff, Package, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -15,6 +15,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { StockBadge } from "./stock-badge";
 export const ProductCards = ({
   products,
   loading,
@@ -60,13 +61,7 @@ export const ProductCards = ({
               <span className="text-lg font-bold text-primary">
                 Rp {product.price.toLocaleString()}
               </span>
-              <Badge
-                variant={product.stock <= 10 ? "destructive" : "default"}
-                className="flex items-center gap-1"
-              >
-                {product.stock <= 10 && <AlertTriangle className="h-3 w-3" />}
-                Stok: {product.stock}
-              </Badge>
+              <StockBadge stock={product.stock} minStock={product.minStock} />
             </div>
             <div className="flex gap-2">
               <Button

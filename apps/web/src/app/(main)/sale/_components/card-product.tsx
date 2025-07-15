@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import type { Product } from "@/lib/types";
+import { StockBadge } from "../../product/_components/stock-badge";
 
 interface ProductCardProps {
   product: Product;
@@ -17,9 +18,7 @@ export const ProductCard = ({ product, onAddToCart }: ProductCardProps) => (
           <Badge variant="outline" className="text-xs">
             {product.productCode}
           </Badge>
-          <Badge variant={product.stock > 10 ? "default" : "destructive"}>
-            Stok: {product.stock}
-          </Badge>
+          <StockBadge stock={product.stock} minStock={product.minStock} />
         </div>
         <h3 className="font-medium text-sm">{product.productName}</h3>
         <p className="text-lg font-bold text-primary">

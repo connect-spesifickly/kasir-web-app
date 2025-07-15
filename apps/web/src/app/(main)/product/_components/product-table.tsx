@@ -61,7 +61,7 @@ export const ProductTable = ({
             <TableCell className="font-medium">{product.productName}</TableCell>
             <TableCell>Rp {product.price.toLocaleString()}</TableCell>
             <TableCell>
-              <StockBadge stock={product.stock} />
+              <StockBadge stock={product.stock} minStock={product.minStock} />
             </TableCell>
             <TableCell>
               <Badge variant={product.isActive ? "default" : "secondary"}>
