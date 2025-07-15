@@ -285,7 +285,7 @@ export default function PenyesuaianStokPage() {
 
           {/* Floating Action Button - Mobile */}
           <Button
-            className="fixed bottom-20 right-4 h-14 w-14 rounded-full shadow-lg md:hidden"
+            className="fixed bottom-24 right-4 h-14 w-14 rounded-full shadow-lg md:hidden"
             onClick={() => setIsAddModalOpen(true)}
           >
             <Plus className="h-6 w-6" />

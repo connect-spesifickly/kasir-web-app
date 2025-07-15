@@ -7,6 +7,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  TableFooter,
 } from "@/components/ui/table";
 import {
   AlertDialog,
@@ -31,6 +32,10 @@ export const ProductTable = ({
   onRestock,
   onDelete,
   onDeactivate,
+  currentPage,
+  totalPages,
+  onNextPage,
+  onPrevPage,
 }: {
   products: Product[];
   loading: boolean;
@@ -38,6 +43,10 @@ export const ProductTable = ({
   onRestock: (product: Product) => void;
   onDelete: (product: Product) => void;
   onDeactivate: (product: Product) => void;
+  currentPage: number;
+  totalPages: number;
+  onNextPage: () => void;
+  onPrevPage: () => void;
 }) => {
   if (loading) {
     return <TableSkeleton />;
@@ -58,13 +67,19 @@ export const ProductTable = ({
       <TableBody className="">
         {products.map((product) => (
           <TableRow key={product.id}>
-            <TableCell className="font-mono">{product.productCode}</TableCell>
-            <TableCell className="font-medium">{product.productName}</TableCell>
-            <TableCell>{formatRupiah(Number(product.price))}</TableCell>
-            <TableCell>
+            <TableCell className="font-mono w-[17%]">
+              {product.productCode}
+            </TableCell>
+            <TableCell className="font-medium w-[28%]">
+              {product.productName}
+            </TableCell>
+            <TableCell className="w-[15%]">
+              {formatRupiah(Number(product.price))}
+            </TableCell>
+            <TableCell className="w-[10%]">
               <StockBadge stock={product.stock} minStock={product.minStock} />
             </TableCell>
-            <TableCell>
+            <TableCell className="w-[10%]">
               <Badge variant={product.isActive ? "default" : "secondary"}>
                 {product.isActive ? "Aktif" : "Nonaktif"}
               </Badge>
@@ -126,6 +141,35 @@ export const ProductTable = ({
           </TableRow>
         ))}
       </TableBody>
+      <TableFooter>
+        <TableRow>
+          <TableCell colSpan={6}>
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-muted-foreground">
+                Page {currentPage} of {totalPages || 1}
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onPrevPage}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onNextPage}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          </TableCell>
+        </TableRow>
+      </TableFooter>
     </Table>
   );
 };

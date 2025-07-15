@@ -6,10 +6,17 @@ import { productApi } from "@/lib/api/product";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 
-export function useProducts(search?: string) {
+interface UseProductsParams {
+  search?: string;
+  take?: number;
+  skip?: number;
+}
+
+export function useProducts(params?: UseProductsParams) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [total, setTotal] = useState(0);
   const { data: session, status } = useSession();
   const isAuthenticated = status === "authenticated";
   const fetchProducts = useCallback(async () => {
@@ -17,11 +24,16 @@ export function useProducts(search?: string) {
       setLoading(true);
       setError(null);
       const response = await productApi.getAll(
-        { search },
+        {
+          search: params?.search,
+          take: params?.take,
+          skip: params?.skip,
+        },
         session?.accessToken
       );
       const data = response.data.data;
       setProducts(Array.isArray(data) ? data : []);
+      setTotal(response.data.total || 0);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to fetch products";
@@ -30,7 +42,7 @@ export function useProducts(search?: string) {
     } finally {
       setLoading(false);
     }
-  }, [search, session?.accessToken]);
+  }, [params?.search, params?.take, params?.skip, session?.accessToken]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -127,6 +139,7 @@ export function useProducts(search?: string) {
     products,
     loading,
     error,
+    total,
     refetch: fetchProducts,
     createProduct,
     updateProduct,

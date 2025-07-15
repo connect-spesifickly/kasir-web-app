@@ -24,6 +24,10 @@ export const ProductCards = ({
   onRestock,
   onDelete,
   onDeactivate,
+  currentPage,
+  totalPages,
+  onNextPage,
+  onPrevPage,
 }: {
   products: Product[];
   loading: boolean;
@@ -31,6 +35,10 @@ export const ProductCards = ({
   onRestock: (product: Product) => void;
   onDelete: (product: Product) => void;
   onDeactivate: (product: Product) => void;
+  currentPage: number;
+  totalPages: number;
+  onNextPage: () => void;
+  onPrevPage: () => void;
 }) => {
   if (loading) {
     return (
@@ -43,83 +51,114 @@ export const ProductCards = ({
   }
 
   return (
-    <div className="space-y-4">
-      {products.map((product) => (
-        <Card key={product.id}>
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-base">{product.productName}</CardTitle>
-              <div className="flex gap-2">
-                <Badge variant="outline">{product.productCode}</Badge>
-                <Badge variant={product.isActive ? "default" : "secondary"}>
-                  {product.isActive ? "Aktif" : "Nonaktif"}
-                </Badge>
+    <>
+      <div className="space-y-4">
+        {products.map((product) => (
+          <Card key={product.id}>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base">
+                  {product.productName}
+                </CardTitle>
+                <div className="flex gap-2">
+                  <Badge variant="outline">{product.productCode}</Badge>
+                  <Badge variant={product.isActive ? "default" : "secondary"}>
+                    {product.isActive ? "Aktif" : "Nonaktif"}
+                  </Badge>
+                </div>
               </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-lg font-bold text-primary">
-                {formatRupiah(Number(product.price))}
-              </span>
-              <StockBadge stock={product.stock} minStock={product.minStock} />
-            </div>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                className="flex-1 flex-col !p-2 gap-0 "
-                onClick={() => onEdit(product)}
-              >
-                <Edit className="h-3 w-3 " />
-                <div className="text-[11px]">Edit</div>
-              </Button>
-              <Button
-                variant="outline"
-                className="flex-1 flex-col !p-2 gap-0 "
-                onClick={() => onRestock(product)}
-              >
-                <Package className="h-3 w-3 " />
-                <div className="text-[11px]">Restock</div>
-              </Button>
-              {product.isActive ? (
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-lg font-bold text-primary">
+                  {formatRupiah(Number(product.price))}
+                </span>
+                <StockBadge stock={product.stock} minStock={product.minStock} />
+              </div>
+              <div className="flex gap-2">
                 <Button
                   variant="outline"
                   className="flex-1 flex-col !p-2 gap-0 "
-                  onClick={() => onDeactivate(product)}
+                  onClick={() => onEdit(product)}
                 >
-                  <EyeOff className="h-3 w-3 " />
-                  <div className="text-[11px]"> Nonaktif</div>
+                  <Edit className="h-3 w-3 " />
+                  <div className="text-[11px]">Edit</div>
                 </Button>
-              ) : (
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button size="sm" variant="destructive" className="flex-1">
-                      <Trash2 className="h-3 w-3 mr-2" />
-                      Hapus
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Hapus Produk</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Apakah Anda yakin ingin menghapus produk `
-                        {product.productName}`? Tindakan ini tidak dapat
-                        dibatalkan.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Batal</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => onDelete(product)}>
+                <Button
+                  variant="outline"
+                  className="flex-1 flex-col !p-2 gap-0 "
+                  onClick={() => onRestock(product)}
+                >
+                  <Package className="h-3 w-3 " />
+                  <div className="text-[11px]">Restock</div>
+                </Button>
+                {product.isActive ? (
+                  <Button
+                    variant="outline"
+                    className="flex-1 flex-col !p-2 gap-0 "
+                    onClick={() => onDeactivate(product)}
+                  >
+                    <EyeOff className="h-3 w-3 " />
+                    <div className="text-[11px]"> Nonaktif</div>
+                  </Button>
+                ) : (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        className="flex-1"
+                      >
+                        <Trash2 className="h-3 w-3 mr-2" />
                         Hapus
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Hapus Produk</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Apakah Anda yakin ingin menghapus produk `
+                          {product.productName}`? Tindakan ini tidak dapat
+                          dibatalkan.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Batal</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => onDelete(product)}>
+                          Hapus
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      {products.length > 0 && (
+        <div className="flex justify-between items-center mt-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onPrevPage}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            Page {currentPage} of {totalPages || 1}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onNextPage}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </Button>
+        </div>
+      )}
+    </>
   );
 };

@@ -113,7 +113,7 @@ class SaleService {
     const sales = await prisma.sale.findMany({
       where: filter,
       skip: Number(skip) || 0,
-      take: Number(take) || 10,
+      take: Number(take) || 6,
       include: {
         _count: {
           select: { saleDetails: true },

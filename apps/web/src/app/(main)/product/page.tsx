@@ -35,6 +35,10 @@ export default function ProdukPage() {
   const [isUpdating, setIsUpdating] = React.useState(false);
   const [isRestocking, setIsRestocking] = React.useState(false);
 
+  // State pagination
+  const [page, setPage] = React.useState(1);
+  const [pageSize] = React.useState(6);
+
   const {
     products,
     loading,
@@ -43,7 +47,16 @@ export default function ProdukPage() {
     deleteProduct,
     deactivateProduct,
     restockProduct: restockProductApi,
-  } = useProducts(searchTerm);
+    total,
+  } = useProducts({
+    search: searchTerm,
+    take: pageSize,
+    skip: (page - 1) * pageSize,
+  });
+
+  const totalPages = Math.ceil(total / pageSize);
+  const handleNextPage = () => setPage((p) => Math.min(p + 1, totalPages));
+  const handlePrevPage = () => setPage((p) => Math.max(p - 1, 1));
 
   // Handler functions
   const handleCreateProduct = async (data: CreateProductData) => {
@@ -138,6 +151,10 @@ export default function ProdukPage() {
                   onRestock={handleRestockClick}
                   onDelete={handleDeleteProduct}
                   onDeactivate={handleDeactivateProduct}
+                  currentPage={page}
+                  totalPages={totalPages}
+                  onNextPage={handleNextPage}
+                  onPrevPage={handlePrevPage}
                 />
               </CardContent>
             </Card>
@@ -152,6 +169,10 @@ export default function ProdukPage() {
               onRestock={handleRestockClick}
               onDelete={handleDeleteProduct}
               onDeactivate={handleDeactivateProduct}
+              currentPage={page}
+              totalPages={totalPages}
+              onNextPage={handleNextPage}
+              onPrevPage={handlePrevPage}
             />
           </div>
 
@@ -210,7 +231,7 @@ export default function ProdukPage() {
 
           {/* Floating Action Button - Mobile */}
           <Button
-            className="fixed bottom-20 right-4 h-14 w-14 rounded-full shadow-lg md:hidden"
+            className="fixed bottom-24 right-4 h-14 w-14 rounded-full shadow-lg md:hidden"
             onClick={() => setIsCreateModalOpen(true)}
           >
             <Plus className="h-6 w-6" />

@@ -25,7 +25,7 @@ export default function KasirPage() {
   const [searchTerm, setSearchTerm] = React.useState("");
   const [isPaymentOpen, setIsPaymentOpen] = React.useState(false);
   const { data: session, status } = useSession();
-  const { products, loading, refetch } = useProducts(searchTerm);
+  const { products, loading, refetch } = useProducts({ search: searchTerm });
   const {
     cart,
     addToCart,
