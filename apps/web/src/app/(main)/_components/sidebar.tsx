@@ -113,7 +113,7 @@ export function SidebarPage({ activePage, onPageChange }: SidebarProps) {
     return null;
   }
   return (
-    <div className="sticky left-0 top-16 -z-40">
+    <div className="sticky left-0 top-16 z-40">
       <div className="relative z-30 hidden h-full ml-1 mr-1 bg-transparent w-60 lg:block">
         {/* SIdebar content */}
         <div className="px-4 py-4">

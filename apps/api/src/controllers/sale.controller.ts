@@ -39,6 +39,24 @@ class SaleController {
       next(error);
     }
   }
+
+  async salesDetail(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { startDate, endDate } = req.query;
+      const result = await saleService.salesDetailReport({
+        startDate: String(startDate),
+        endDate: String(endDate),
+      });
+      ApiResponse({
+        res,
+        statusCode: 200,
+        message: "Sales detail report",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new SaleController();

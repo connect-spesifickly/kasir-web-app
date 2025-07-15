@@ -148,7 +148,7 @@ export default function MainLayout({
         </aside>
         <BottomNavigation items={bottomNavItems} />
         <main className="w-full h-full min-h-[90vh]">
-          <div className="flex px-7 pt-[0px] lg:border-l-2 min-h-[91vh] pb-12 md:pb-0">
+          <div className="flex px-7 pt-[0px] lg:border-l-2 min-h-[91vh] pb-12 lg:pb-0">
             {children}
           </div>
         </main>

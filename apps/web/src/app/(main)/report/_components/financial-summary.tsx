@@ -66,28 +66,30 @@ export function FinancialSummary({
   };
 
   const getChartData = () => {
-    // Jika ada data transaksi sebenarnya, gunakan hanya data yang ada
-    if (dailyTransactions.length > 0) {
-      return dailyTransactions
-        .filter(
-          (transaction) =>
-            transaction.revenue > 0 ||
-            transaction.profit > 0 ||
-            transaction.loss > 0
-        )
-        .map((transaction) => ({
-          date: new Date(transaction.date).toLocaleDateString("id-ID", {
-            day: "2-digit",
-            month: "short",
-          }),
-          revenue: transaction.revenue,
-          profit: transaction.profit,
-          loss: transaction.loss,
-        }));
+    // Buat array tanggal dari dateFrom ke dateTo
+    const start = new Date(dateFrom);
+    const end = new Date(dateTo);
+    const days = [];
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      days.push(new Date(d));
     }
 
-    // Fallback: jika tidak ada data transaksi, return empty array
-    return [];
+    // Map tanggal ke data transaksi, default 0 jika tidak ada
+    return days.map((date) => {
+      const dateStr = date.toISOString().split("T")[0];
+      const found = dailyTransactions.find(
+        (t) => t.date.slice(0, 10) === dateStr
+      );
+      return {
+        date: date.toLocaleDateString("id-ID", {
+          day: "2-digit",
+          month: "short",
+        }),
+        revenue: found ? found.revenue : 0,
+        profit: found ? found.profit : 0,
+        loss: found ? found.loss : 0,
+      };
+    });
   };
 
   // Fungsi untuk menampilkan chart mingguan jika range > 7 hari

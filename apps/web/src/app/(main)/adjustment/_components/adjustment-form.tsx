@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -13,6 +12,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SearchableDropdown } from "@/components/ui/searchable-dropdown";
 import { ADJUSTMENT_REASONS } from "@/types/stock-adjustment";
 import type { Product } from "@/lib/types";
 import type { StockAdjustmentCreateData } from "@/types/stock-adjustment";
@@ -80,29 +80,25 @@ export function AdjustmentForm({
         <Label className="pb-2" htmlFor="product">
           Pilih Produk
         </Label>
-        <Select value={selectedProduct} onValueChange={setSelectedProduct}>
-          <SelectTrigger>
-            <SelectValue placeholder="Pilih produk..." />
-          </SelectTrigger>
-          <SelectContent>
-            {productsLoading ? (
-              <div className="p-2">
-                <Skeleton className="h-4 w-full" />
-              </div>
-            ) : (
-              products.map((product) => (
-                <SelectItem key={product.id} value={product.id}>
-                  <div className="flex items-center justify-between w-full">
-                    <span>{product.productName}</span>
-                    <Badge variant="outline" className="ml-2">
-                      Stok: {product.stock}
-                    </Badge>
-                  </div>
-                </SelectItem>
-              ))
-            )}
-          </SelectContent>
-        </Select>
+        {productsLoading ? (
+          <div className="p-2">
+            <Skeleton className="h-4 w-full" />
+          </div>
+        ) : (
+          <SearchableDropdown
+            options={products.map((product) => ({
+              value: product.id,
+              label: product.productName,
+              description: `Kode: ${product.productCode}`,
+              badge: `Stok: ${product.stock}`,
+            }))}
+            value={selectedProduct}
+            onValueChange={setSelectedProduct}
+            placeholder="Pilih produk..."
+            searchPlaceholder="Cari nama produk..."
+            disabled={productsLoading}
+          />
+        )}
       </div>
 
       <div>

@@ -142,6 +142,57 @@ class SaleService {
     if (!sale) throw new ResponseError(404, "Sale not found");
     return sale;
   }
+
+  async salesDetailReport({
+    startDate,
+    endDate,
+  }: {
+    startDate: string;
+    endDate: string;
+  }) {
+    const startOfDay = new Date(startDate);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(endDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // Ambil semua sale beserta detail dan produk
+    const sales = await prisma.sale.findMany({
+      where: {
+        transactionTime: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+      },
+      include: {
+        saleDetails: {
+          include: {
+            product: true,
+          },
+        },
+      },
+      orderBy: { transactionTime: "asc" },
+    });
+
+    // Flatten ke bentuk per item
+    const details = sales.flatMap((sale) =>
+      sale.saleDetails.map((detail) => ({
+        transactionDate: sale.transactionTime,
+        invoiceNumber: sale.id,
+        productCode: detail.product?.productCode || "",
+        productName: detail.product?.productName || "",
+        quantity: detail.quantity,
+        priceAtSale: detail.priceAtSale,
+        costAtSale: detail.costAtSale,
+        subtotal: Number(detail.priceAtSale) * detail.quantity,
+        totalProfit:
+          (Number(detail.priceAtSale) - Number(detail.costAtSale)) *
+          detail.quantity,
+      }))
+    );
+
+    return details;
+  }
 }
 
 export default new SaleService();

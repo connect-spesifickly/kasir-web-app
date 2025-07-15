@@ -91,6 +91,7 @@ class StockAdjustmentService {
           select: {
             productName: true,
             productCode: true,
+            costPrice: true, // tambahkan agar frontend bisa akses harga modal
           },
         },
         user: {

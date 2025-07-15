@@ -17,6 +17,7 @@ export const saleRouter = () => {
   );
   router.post("/", validateCreateSale, SaleController.create);
   router.get("/", SaleController.getAll);
+  router.get("/sales-detail", SaleController.salesDetail);
   router.get("/:id", SaleController.getById);
   return router;
 };
