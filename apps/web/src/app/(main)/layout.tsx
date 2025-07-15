@@ -1,16 +1,31 @@
 "use client";
 
 import { PageType } from "@/interfaces/page-type";
-import { usePathname, useRouter } from "next/navigation";
+import { redirect, usePathname, useRouter } from "next/navigation";
 import SidebarPage from "./_components/sidebar";
 import BottomNavigation from "./_components/bottom-navigation";
 import { Navbar } from "@/components/ui/navbar/main-navbar";
+import { useSession } from "next-auth/react";
+import React from "react";
 
 export default function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { data: session, status } = useSession();
+  React.useEffect(() => {
+    const waitForSession = async () => {
+      if (status === "unauthenticated") {
+        redirect("/login");
+      }
+      if (status === "authenticated") {
+        redirect("/sale");
+      }
+    };
+    if (status === "loading") return;
+    waitForSession();
+  }, [session, status]);
   const router = useRouter();
   const pathname = usePathname();
 

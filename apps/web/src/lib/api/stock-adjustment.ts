@@ -22,6 +22,7 @@ export const stockAdjustmentApi = {
         typeof response.data === "object" &&
         "data" in response.data
       ) {
+        console.log("ini data adjustment guys", response.data);
         return (
           response.data as {
             data: { adjustments: StockAdjustment[]; total: number };

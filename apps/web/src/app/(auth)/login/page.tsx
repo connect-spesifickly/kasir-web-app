@@ -109,10 +109,7 @@ export default function Login() {
           )}
         </Formik>
         <p className="font-normal text-[14px] text-sm text-slate-600">
-          <Link
-            href="/Owner/forgot-password"
-            className="text-blue-600 font-semibold"
-          >
+          <Link href="/forgot-password" className="text-blue-600 font-semibold">
             Reset Password
           </Link>
         </p>

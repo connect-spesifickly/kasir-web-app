@@ -23,7 +23,7 @@ interface NavigationItemProps {
 export default function BottomNavigation({ items }: BottomNavigationProps) {
   return (
     <div>
-      <nav className="border-border h-[50px] fixed bottom-0 left-0 z-[100] flex w-full items-center justify-between border-t bg-white shadow lg:hidden">
+      <nav className="border-border h-[50px] fixed bottom-0 left-0 z-40 flex w-full items-center justify-between border-t bg-white shadow lg:hidden">
         {items &&
           items.length > 0 &&
           items.map((item, index) => (

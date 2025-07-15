@@ -77,7 +77,7 @@ export function StockAdjustmentList({
                       createdAt: adjustment.createdAt,
                       product: {
                         productName: adjustment.product.productName,
-                        costPrice: adjustment.product.costPrice,
+                        costPrice: 0, // costPrice tidak tersedia di API
                       },
                       user: {
                         email: adjustment.user.email,
@@ -107,10 +107,15 @@ export function StockAdjustmentList({
                   <p className="text-sm text-muted-foreground mt-2">
                     Berdasarkan{" "}
                     {
-                      stockAdjustments.filter((adj) => adj.quantityChange < 0)
-                        .length
+                      stockAdjustments.filter(
+                        (adj) =>
+                          adj.quantityChange < 0 &&
+                          adj.reason !== "Recount Stok" &&
+                          adj.reason !== "Retur Supplier"
+                      ).length
                     }{" "}
-                    penyesuaian negatif
+                    penyesuaian negatif (tidak termasuk Recount Stok dan Retur
+                    Supplier)
                   </p>
                 </div>
               )}

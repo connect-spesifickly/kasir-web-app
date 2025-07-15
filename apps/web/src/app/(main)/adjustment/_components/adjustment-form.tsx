@@ -141,7 +141,9 @@ export function AdjustmentForm({
 
       {selectedReason === "other" && (
         <div>
-          <Label htmlFor="customReason">Alasan Lainnya</Label>
+          <Label className="pb-2" htmlFor="customReason">
+            Alasan Lainnya
+          </Label>
           <Textarea
             id="customReason"
             placeholder="Jelaskan alasan penyesuaian..."

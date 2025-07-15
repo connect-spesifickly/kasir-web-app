@@ -44,13 +44,19 @@ export function useStockAdjustments(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === "authenticated";
   // Memoized fetch function
   const fetchAdjustments = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      console.log("ini params stock-adjustment", params);
+      console.log(
+        "ini params stock-adjustment",
+        params,
+        "ini session",
+        session?.accessToken
+      );
       const response = await stockAdjustmentApi.getAll(
         {
           search: params?.search,
@@ -80,12 +86,15 @@ export function useStockAdjustments(
     params?.endDate,
     params?.take,
     params?.skip,
+    isAuthenticated,
   ]);
 
   // Effect for fetching data
   useEffect(() => {
-    fetchAdjustments();
-  }, [fetchAdjustments]);
+    if (isAuthenticated) {
+      fetchAdjustments();
+    }
+  }, [fetchAdjustments, isAuthenticated]);
 
   // Create adjustment function
   const createAdjustment = useCallback(
@@ -115,7 +124,7 @@ export function useStockAdjustments(
         throw err;
       }
     },
-    []
+    [isAuthenticated]
   );
 
   // Reset function

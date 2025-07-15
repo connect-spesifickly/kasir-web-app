@@ -88,7 +88,8 @@ class ReportService {
       "products" as p ON sa."product_id" = p.id
     WHERE
       sa."created_at" BETWEEN ${startOfDay} AND ${endOfDay}
-      AND sa."quantity_change" < 0;
+      AND sa."quantity_change" < 0
+      AND sa."reason" NOT IN ('Recount Stok', 'Retur Supplier');
   `;
 
     let totalLossValue = result[0]?.total_loss_value || 0;
@@ -138,6 +139,7 @@ class ReportService {
         JOIN "products" p ON sa."product_id" = p.id
         WHERE sa."created_at" BETWEEN ${startDate}::date AND ${endDate}::date + INTERVAL '1 day' - INTERVAL '1 second'
           AND sa."quantity_change" < 0
+          AND sa."reason" NOT IN ('Recount Stok', 'Retur Supplier')
         GROUP BY DATE(sa."created_at")
       )
       SELECT

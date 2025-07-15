@@ -13,33 +13,61 @@ class StockAdjustmentService {
     quantityChange: number;
     reason: string;
   }) {
-    return prisma.$transaction(async (tx: { product: { findUnique: (arg0: { where: { id: string; }; }) => any; update: (arg0: { where: { id: string; }; data: { stock: { increment: number; }; }; }) => any; }; stockAdjustment: { create: (arg0: { data: { productId: string; userId: string; quantityChange: number; lastStock: any; reason: string; }; }) => any; }; }) => {
-      // 1. Ambil stok terakhir
-      const product = await tx.product.findUnique({ where: { id: productId } });
-      if (!product) throw new ResponseError(404, "Product not found");
-      const lastStock = product.stock;
-      // 2. Buat log StockAdjustment
-      const adjustment = await tx.stockAdjustment.create({
-        data: {
-          productId,
-          userId,
-          quantityChange,
-          lastStock,
-          reason,
-        },
-      });
-      // 3. Update stok produk
-      await tx.product.update({
-        where: { id: productId },
-        data: { stock: { increment: quantityChange } },
-      });
-      return adjustment;
-    });
+    return prisma.$transaction(
+      async (tx: {
+        product: {
+          findUnique: (arg0: { where: { id: string } }) => any;
+          update: (arg0: {
+            where: { id: string };
+            data: { stock: { increment: number } };
+          }) => any;
+        };
+        stockAdjustment: {
+          create: (arg0: {
+            data: {
+              productId: string;
+              userId: string;
+              quantityChange: number;
+              lastStock: any;
+              reason: string;
+            };
+          }) => any;
+        };
+      }) => {
+        // 1. Ambil stok terakhir
+        const product = await tx.product.findUnique({
+          where: { id: productId },
+        });
+        if (!product) throw new ResponseError(404, "Product not found");
+        const lastStock = product.stock;
+        // 2. Buat log StockAdjustment
+        const adjustment = await tx.stockAdjustment.create({
+          data: {
+            productId,
+            userId,
+            quantityChange,
+            lastStock,
+            reason,
+          },
+        });
+        // 3. Update stok produk
+        await tx.product.update({
+          where: { id: productId },
+          data: { stock: { increment: quantityChange } },
+        });
+        return adjustment;
+      }
+    );
   }
 
   async getAll(query: any) {
     const { search, skip, take, startDate, endDate } = query;
     const filter: any = {};
+    const startOfDay = new Date(startDate);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(endDate);
+    endOfDay.setHours(23, 59, 59, 999);
 
     if (search) {
       // Filter ini sudah efisien
@@ -50,7 +78,7 @@ class StockAdjustmentService {
       ];
     }
     if (startDate && endDate) {
-      filter.createdAt = { gte: new Date(startDate), lte: new Date(endDate) };
+      filter.createdAt = { gte: startOfDay, lte: endOfDay };
     }
 
     // Ambil daftar data yang sudah dioptimalkan

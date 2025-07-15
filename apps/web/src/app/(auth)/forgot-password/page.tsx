@@ -80,13 +80,13 @@ export default function ForgotPasswordRequest() {
                 type="submit"
                 className="w-full text-slate-50"
               >
-                Request
+                Reset Password Request
               </Button>
             </Form>
           )}
         </Formik>
         <p className="font-normal text-[14px] text-sm text-slate-600">
-          <Link href="/Owner/login" className="text-blue-600 font-semibold">
+          <Link href="/login" className="text-blue-600 font-semibold">
             Login
           </Link>
         </p>

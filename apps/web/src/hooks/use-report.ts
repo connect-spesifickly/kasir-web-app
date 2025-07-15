@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { reportApi } from "@/lib/api/report";
 import { stockAdjustmentApi } from "@/lib/api/stock-adjustment";
@@ -35,7 +35,8 @@ export function useReportData(dateFrom: string, dateTo: string) {
   >([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === "authenticated";
   const fetchReports = async () => {
     try {
       setRefreshing(true);
@@ -94,6 +95,13 @@ export function useReportData(dateFrom: string, dateTo: string) {
       setRefreshing(false);
     }
   };
+
+  // Only fetch data when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchReports();
+    }
+  }, [isAuthenticated]);
 
   return {
     reportData,
