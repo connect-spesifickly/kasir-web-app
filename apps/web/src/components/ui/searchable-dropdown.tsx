@@ -133,7 +133,7 @@ export function SearchableDropdown({
             />
           </div>
         </div>
-        <div className="max-h-[200px] overflow-y-auto">
+        <div className="max-h-[160px] overflow-y-auto">
           {filteredOptions.length === 0 ? (
             <div className="p-2 text-sm text-muted-foreground text-center">
               Tidak ada hasil ditemukan.

@@ -10,6 +10,8 @@ interface UseProductsParams {
   search?: string;
   take?: number;
   skip?: number;
+  orderBy?: string;
+  orderDirection?: "asc" | "desc";
 }
 
 export function useProducts(params?: UseProductsParams) {
@@ -28,6 +30,8 @@ export function useProducts(params?: UseProductsParams) {
           search: params?.search,
           take: params?.take,
           skip: params?.skip,
+          orderBy: params?.orderBy,
+          orderDirection: params?.orderDirection,
         },
         session?.accessToken
       );
@@ -42,7 +46,14 @@ export function useProducts(params?: UseProductsParams) {
     } finally {
       setLoading(false);
     }
-  }, [params?.search, params?.take, params?.skip, session?.accessToken]);
+  }, [
+    params?.search,
+    params?.take,
+    params?.skip,
+    params?.orderBy,
+    params?.orderDirection,
+    session?.accessToken,
+  ]);
 
   useEffect(() => {
     if (isAuthenticated) {

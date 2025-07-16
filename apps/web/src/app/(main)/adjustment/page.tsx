@@ -19,7 +19,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, Package } from "lucide-react";
+import {
+  Plus,
+  Package,
+  ChevronUp,
+  ChevronDown,
+  ChevronsUpDown,
+} from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { useProducts } from "@/hooks/use-products";
@@ -46,12 +52,38 @@ export default function PenyesuaianStokPage() {
     new Date().toISOString().slice(0, 10)
   );
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  // Pagination & sorting state
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(4);
+  const [sortBy, setSortBy] = useState<
+    "createdAt" | "productName" | "quantityChange"
+  >("createdAt");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
-  const { adjustments, loading, createAdjustment } = useStockAdjustments({
-    search: searchTerm,
-    startDate: dateFrom,
-    endDate: dateTo,
-  });
+  const { adjustments, loading, createAdjustment, total } = useStockAdjustments(
+    {
+      search: searchTerm,
+      startDate: dateFrom,
+      endDate: dateTo,
+      take: pageSize,
+      skip: (page - 1) * pageSize,
+      orderBy: sortBy,
+      orderDirection: sortDirection,
+    }
+  );
+  const totalPages = Math.ceil(total / pageSize);
+  const handleNextPage = () => setPage((p) => Math.min(p + 1, totalPages));
+  const handlePrevPage = () => setPage((p) => Math.max(p - 1, 1));
+  // Sorting handlers
+  const handleSort = (col: "createdAt" | "productName" | "quantityChange") => {
+    if (sortBy === col) {
+      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortBy(col);
+      setSortDirection(col === "createdAt" ? "desc" : "asc");
+    }
+    setPage(1);
+  };
 
   const { products, loading: productsLoading } = useProducts();
 
@@ -70,16 +102,28 @@ export default function PenyesuaianStokPage() {
     <div className="flex flex-col  w-full">
       <div className="w-full h-full relative">
         <div className="sticky top-16  z-40 bg-background border-b ">
-          <div className="flex h-16 shrink-0 items-center gap-2 md:px-1 px-2  w-full justify-between">
+          <div className="flex h-16 shrink-0 items-center gap-2 md:px-1 px-2 w-full justify-between">
             <h1 className="text-2xl md:text-3xl font-bold md:px-5 font-[stencil]">
               Penyesuaian Stok
             </h1>
-            <div className="md:flex md:flex-row md:items-center justify-between gap-4 md:mr-5 hidden">
+            {/* Desktop: tombol besar, Mobile: icon plus */}
+            <div className="flex items-center">
               <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+                {/* Desktop Button */}
                 <DialogTrigger asChild>
-                  <Button className="md:w-auto">
+                  <Button className="hidden md:flex md:w-auto mr-[21px]">
                     <Plus className="h-4 w-4 mr-2" />
                     Buat Penyesuaian
+                  </Button>
+                </DialogTrigger>
+                {/* Mobile Button */}
+                <DialogTrigger asChild>
+                  <Button
+                    className="md:hidden rounded-lg px-5 py-2 font-bold shadow-md"
+                    size="lg"
+                    variant="default"
+                  >
+                    <Plus className="h-7 w-7" />
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-md">
@@ -113,7 +157,7 @@ export default function PenyesuaianStokPage() {
           {/* Desktop Table View */}
           <div className="hidden md:block">
             <Card>
-              <CardContent className="p-0">
+              <CardContent className="">
                 {/* Anda sudah menggunakan pola loading yang baik di sini */}
                 {loading ? (
                   <div className="p-6 space-y-4">
@@ -132,9 +176,57 @@ export default function PenyesuaianStokPage() {
                   <Table className="lg:w-[96%] lg:mx-[2%] w-[99%] mx-[0.5%]">
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Tanggal</TableHead>
-                        <TableHead>Produk</TableHead>
-                        <TableHead>Perubahan</TableHead>
+                        <TableHead
+                          className="cursor-pointer select-none"
+                          onClick={() => handleSort("createdAt")}
+                        >
+                          <div className="flex items-center">
+                            Tanggal
+                            {sortBy === "createdAt" ? (
+                              sortDirection === "asc" ? (
+                                <ChevronUp className="w-4 h-4 ml-1" />
+                              ) : (
+                                <ChevronDown className="w-4 h-4 ml-1" />
+                              )
+                            ) : (
+                              <ChevronsUpDown className="w-4 h-4 ml-1 text-muted-foreground" />
+                            )}
+                          </div>
+                        </TableHead>
+                        <TableHead
+                          className="cursor-pointer select-none"
+                          onClick={() => handleSort("productName")}
+                        >
+                          <div className="flex items-center">
+                            Produk
+                            {sortBy === "productName" ? (
+                              sortDirection === "asc" ? (
+                                <ChevronUp className="w-4 h-4 ml-1" />
+                              ) : (
+                                <ChevronDown className="w-4 h-4 ml-1" />
+                              )
+                            ) : (
+                              <ChevronsUpDown className="w-4 h-4 ml-1 text-muted-foreground" />
+                            )}
+                          </div>
+                        </TableHead>
+                        <TableHead
+                          className="cursor-pointer select-none"
+                          onClick={() => handleSort("quantityChange")}
+                        >
+                          <div className="flex items-center">
+                            Perubahan
+                            {sortBy === "quantityChange" ? (
+                              sortDirection === "asc" ? (
+                                <ChevronUp className="w-4 h-4 ml-1" />
+                              ) : (
+                                <ChevronDown className="w-4 h-4 ml-1" />
+                              )
+                            ) : (
+                              <ChevronsUpDown className="w-4 h-4 ml-1 text-muted-foreground" />
+                            )}
+                          </div>
+                        </TableHead>
                         <TableHead>Stok Sebelum</TableHead>
                         <TableHead>Alasan</TableHead>
                         <TableHead>Oleh</TableHead>
@@ -159,12 +251,10 @@ export default function PenyesuaianStokPage() {
                             <TableCell>
                               <div>
                                 <p className="font-medium">
-                                  {/* PERUBAHAN DI SINI */}
                                   {adjustment.product?.productName ??
                                     "Produk tidak ada"}
                                 </p>
                                 <p className="text-sm text-muted-foreground">
-                                  {/* PERUBAHAN DI SINI */}
                                   {adjustment.product?.productCode ?? "N/A"}
                                 </p>
                               </div>
@@ -187,7 +277,6 @@ export default function PenyesuaianStokPage() {
                             </TableCell>
                             <TableCell>
                               <span className="text-sm">
-                                {/* PERUBAHAN DI SINI */}
                                 {adjustment.user?.email ?? "User tidak ada"}
                               </span>
                             </TableCell>
@@ -195,6 +284,35 @@ export default function PenyesuaianStokPage() {
                         ))
                       )}
                     </TableBody>
+                    <tfoot>
+                      <tr>
+                        <td colSpan={6}>
+                          <div className="flex items-center justify-between mt-2">
+                            <div className="text-sm text-muted-foreground">
+                              Page {page} of {totalPages || 1}
+                            </div>
+                            <div className="flex gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handlePrevPage}
+                                disabled={page === 1}
+                              >
+                                Previous
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleNextPage}
+                                disabled={page === totalPages}
+                              >
+                                Next
+                              </Button>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </tfoot>
                   </Table>
                 )}
               </CardContent>
@@ -202,7 +320,7 @@ export default function PenyesuaianStokPage() {
           </div>
 
           {/* Mobile Card View */}
-          <div className="md:hidden space-y-4">
+          <div className="md:hidden space-y-4 ">
             {/* Anda sudah menggunakan pola loading yang baik di sini juga */}
             {loading ? (
               // Skeleton loading, tidak perlu diubah
@@ -233,63 +351,80 @@ export default function PenyesuaianStokPage() {
                 </CardContent>
               </Card>
             ) : (
-              adjustments.map((adjustment: StockAdjustment) => (
-                <Card key={adjustment.id}>
-                  <CardContent className="p-4">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium">
-                            {/* PERUBAHAN DI SINI */}
-                            {adjustment.product?.productName ??
-                              "Produk tidak ada"}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {/* PERUBAHAN DI SINI */}
-                            {adjustment.product?.productCode ?? "N/A"}
-                          </p>
+              <>
+                {adjustments.map((adjustment: StockAdjustment) => (
+                  <Card key={adjustment.id}>
+                    <CardContent className="p-4">
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium">
+                              {adjustment.product?.productName ??
+                                "Produk tidak ada"}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {adjustment.product?.productCode ?? "N/A"}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <div className="flex items-center gap-2">
+                              {getAdjustmentIcon(adjustment.quantityChange)}
+                              {getAdjustmentBadge(adjustment.quantityChange)}
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <div className="flex items-center gap-2">
-                            {getAdjustmentIcon(adjustment.quantityChange)}
-                            {getAdjustmentBadge(adjustment.quantityChange)}
+
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">
+                            Stok sebelum:
+                          </span>
+                          <Badge variant="outline">
+                            {adjustment.lastStock}
+                          </Badge>
+                        </div>
+
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium">
+                            Alasan: {adjustment.reason}
+                          </p>
+                          <div className="flex items-center justify-between text-xs text-muted-foreground">
+                            <span>{formatDate(adjustment.createdAt)}</span>
+                            <span>
+                              Oleh: {adjustment.user?.email ?? "User tidak ada"}
+                            </span>
                           </div>
                         </div>
                       </div>
-
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">
-                          Stok sebelum:
-                        </span>
-                        <Badge variant="outline">{adjustment.lastStock}</Badge>
-                      </div>
-
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium">
-                          Alasan: {adjustment.reason}
-                        </p>
-                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <span>{formatDate(adjustment.createdAt)}</span>
-                          {/* PERUBAHAN DI SINI */}
-                          <span>
-                            Oleh: {adjustment.user?.email ?? "User tidak ada"}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
+                    </CardContent>
+                  </Card>
+                ))}
+                {/* Pagination Mobile ala Product */}
+                {adjustments.length > 0 && (
+                  <div className="flex justify-between items-center mt-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handlePrevPage}
+                      disabled={page === 1}
+                    >
+                      Previous
+                    </Button>
+                    <span className="text-sm text-muted-foreground">
+                      Page {page} of {totalPages || 1}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleNextPage}
+                      disabled={page === totalPages}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
           </div>
-
-          {/* Floating Action Button - Mobile */}
-          <Button
-            className="fixed bottom-24 right-4 h-14 w-14 rounded-full shadow-lg md:hidden"
-            onClick={() => setIsAddModalOpen(true)}
-          >
-            <Plus className="h-6 w-6" />
-          </Button>
         </div>
       </div>
     </div>

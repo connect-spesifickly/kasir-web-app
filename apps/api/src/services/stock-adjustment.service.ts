@@ -61,7 +61,8 @@ class StockAdjustmentService {
   }
 
   async getAll(query: any) {
-    const { search, skip, take, startDate, endDate } = query;
+    const { search, skip, take, startDate, endDate, orderBy, orderDirection } =
+      query;
     const filter: any = {};
     const startOfDay = new Date(startDate);
     startOfDay.setHours(0, 0, 0, 0);
@@ -79,6 +80,18 @@ class StockAdjustmentService {
     }
     if (startDate && endDate) {
       filter.createdAt = { gte: startOfDay, lte: endOfDay };
+    }
+
+    // Sorting
+    let order: any = { createdAt: "desc" };
+    if (orderBy === "createdAt") {
+      order = { createdAt: orderDirection === "asc" ? "asc" : "desc" };
+    } else if (orderBy === "productName") {
+      order = {
+        product: { productName: orderDirection === "asc" ? "asc" : "desc" },
+      };
+    } else if (orderBy === "quantityChange") {
+      order = { quantityChange: orderDirection === "asc" ? "asc" : "desc" };
     }
 
     // Ambil daftar data yang sudah dioptimalkan
@@ -100,9 +113,7 @@ class StockAdjustmentService {
           },
         },
       },
-      orderBy: {
-        createdAt: "desc",
-      },
+      orderBy: order,
     });
     // Ambil total data untuk pagination di frontend
     const total = await prisma.stockAdjustment.count({ where: filter });

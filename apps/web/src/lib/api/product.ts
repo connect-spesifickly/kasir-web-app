@@ -7,7 +7,13 @@ import type {
 
 export const productApi = {
   getAll: async (
-    params?: { search?: string; take?: number; skip?: number },
+    params?: {
+      search?: string;
+      take?: number;
+      skip?: number;
+      orderBy?: string;
+      orderDirection?: "asc" | "desc";
+    },
     token?: string
   ) => {
     const response = await api.get<{

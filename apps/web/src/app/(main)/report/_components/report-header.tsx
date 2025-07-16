@@ -7,6 +7,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { StockAdjustment } from "@/types/stock-adjustment";
@@ -494,6 +496,11 @@ export function ReportHeader({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            {/* Info label for context */}
+            <DropdownMenuLabel className="font-normal text-muted-foreground">
+              Rincian penjualan & penyesuaian
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleExportCSV}>
               <FileText className="h-4 w-4 mr-2" />
               Export CSV

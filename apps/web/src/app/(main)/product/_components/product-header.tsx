@@ -17,6 +17,16 @@ export const PageHeader = ({
           Tambah Produk
         </Button>
       </div>
+      <div className="md:hidden flex items-center">
+        <Button
+          onClick={onOpenCreateModal}
+          size="lg"
+          variant="default"
+          className="rounded-lg px-5 py-2 font-bold shadow-md"
+        >
+          <Plus className="h-7 w-7" />
+        </Button>
+      </div>
     </div>
   </div>
 );

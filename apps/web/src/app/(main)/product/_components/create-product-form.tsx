@@ -2,7 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CreateProductData } from "@/lib/types";
-import { Loader2 } from "lucide-react";
+import { Loader2, Info } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export const CreateProductForm = ({
   onSubmit,
@@ -28,22 +34,39 @@ export const CreateProductForm = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Info Produk */}
+      <div className="space-y-2">
+        <Label htmlFor="productCode">Kode Produk</Label>
+        <Input
+          id="productCode"
+          name="productCode"
+          placeholder="KOP001"
+          required
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="productName">Nama Produk</Label>
+        <Input
+          id="productName"
+          name="productName"
+          placeholder="Kopi Arabica 250g"
+          required
+        />
+      </div>
+      {/* Harga Beli & Harga Jual */}
       <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label className="pb-2" htmlFor="productCode">
-            Kode Produk
-          </Label>
+        <div className="space-y-2">
+          <Label htmlFor="costPrice">Harga Beli</Label>
           <Input
-            id="productCode"
-            name="productCode"
-            placeholder="KOP001"
+            id="costPrice"
+            name="costPrice"
+            type="number"
+            placeholder="35000"
             required
           />
         </div>
-        <div>
-          <Label className="pb-2" htmlFor="price">
-            Harga Jual
-          </Label>
+        <div className="space-y-2">
+          <Label htmlFor="price">Harga Jual</Label>
           <Input
             id="price"
             name="price"
@@ -53,34 +76,10 @@ export const CreateProductForm = ({
           />
         </div>
       </div>
-      <div>
-        <Label className="pb-2" htmlFor="productName">
-          Nama Produk
-        </Label>
-        <Input
-          id="productName"
-          name="productName"
-          placeholder="Kopi Arabica 250g"
-          required
-        />
-      </div>
+      {/* Stok Awal & Stok Minimum */}
       <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label className="pb-2" htmlFor="costPrice">
-            Harga Beli
-          </Label>
-          <Input
-            id="costPrice"
-            name="costPrice"
-            type="number"
-            placeholder="35000"
-            required
-          />
-        </div>
-        <div>
-          <Label className="pb-2" htmlFor="stock">
-            Stok Awal
-          </Label>
+        <div className="space-y-2">
+          <Label htmlFor="stock">Stok Awal</Label>
           <Input
             id="stock"
             name="stock"
@@ -89,26 +88,33 @@ export const CreateProductForm = ({
             required
           />
         </div>
-      </div>
-      <div>
-        <Label className="pb-2" htmlFor="minStock">
-          Stok Minimum
-          <span
-            className="ml-1 text-xs text-muted-foreground"
-            title="Jika stok turun di bawah angka ini, produk akan masuk daftar stok menipis."
-          >
-            [?]
-          </span>
-        </Label>
-        <Input
-          id="minStock"
-          name="minStock"
-          type="number"
-          min={1}
-          defaultValue={5}
-          placeholder="5"
-          required
-        />
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Label htmlFor="minStock">Stok Minimum</Label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>
+                    Batas stok terendah sebelum produk dianggap perlu
+                    di-restock.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          <Input
+            id="minStock"
+            name="minStock"
+            type="number"
+            min={1}
+            defaultValue={5}
+            placeholder="5"
+            required
+          />
+        </div>
       </div>
       <Button type="submit" className="w-full" disabled={isLoading}>
         {isLoading ? (

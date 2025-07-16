@@ -21,9 +21,9 @@ import {
 import { CreateProductForm } from "./_components/create-product-form";
 import { UpdateProductForm } from "./_components/update-product-form";
 import { RestockForm } from "./_components/re-stock-form";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+
 import { PageHeader } from "./_components/product-header";
+import { ChevronDown } from "lucide-react";
 export default function ProdukPage() {
   const [searchTerm, setSearchTerm] = React.useState("");
   const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
@@ -38,6 +38,11 @@ export default function ProdukPage() {
   // State pagination
   const [page, setPage] = React.useState(1);
   const [pageSize] = React.useState(6);
+  // Sorting state: default stock asc
+  const [sortBy, setSortBy] = React.useState<"productName" | "stock">("stock");
+  const [sortDirection, setSortDirection] = React.useState<"asc" | "desc">(
+    "asc"
+  );
 
   const {
     products,
@@ -52,6 +57,8 @@ export default function ProdukPage() {
     search: searchTerm,
     take: pageSize,
     skip: (page - 1) * pageSize,
+    orderBy: sortBy,
+    orderDirection: sortDirection,
   });
 
   const totalPages = Math.ceil(total / pageSize);
@@ -127,6 +134,13 @@ export default function ProdukPage() {
     setRestockProduct(product);
   };
 
+  // Handler untuk klik header kolom stok (hanya table/desktop)
+  const handleSortStock = () => {
+    setSortBy("stock");
+    setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+    setPage(1); // reset ke halaman 1 saat sorting berubah
+  };
+
   return (
     <div className="w-full h-full relative">
       <div className="sticky top-16  z-40 bg-background border-b ">
@@ -139,6 +153,46 @@ export default function ProdukPage() {
               searchTerm={searchTerm}
               onSearchChange={setSearchTerm}
             />
+          </div>
+          {/* Sorting UI hanya di mobile, sekarang di bawah search */}
+          <div className="md:hidden">
+            <div className="bg-white rounded-xl shadow-sm p-3 flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground font-semibold">
+                  Urutkan:
+                </span>
+                <div className="flex-1 flex gap-2">
+                  <div className="relative w-1/2">
+                    <select
+                      id="sortBy"
+                      value={sortBy}
+                      onChange={(e) =>
+                        setSortBy(e.target.value as "productName" | "stock")
+                      }
+                      className="w-full border rounded-lg px-3 py-2 text-sm appearance-none pr-8 focus:outline-none focus:ring-2 focus:ring-primary"
+                    >
+                      <option value="productName">Nama Produk</option>
+                      <option value="stock">Jumlah Stok</option>
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none text-muted-foreground" />
+                  </div>
+                  <div className="relative w-1/2">
+                    <select
+                      id="sortDirection"
+                      value={sortDirection}
+                      onChange={(e) =>
+                        setSortDirection(e.target.value as "asc" | "desc")
+                      }
+                      className="w-full border rounded-lg px-3 py-2 text-sm appearance-none pr-8 focus:outline-none focus:ring-2 focus:ring-primary"
+                    >
+                      <option value="asc">Naik</option>
+                      <option value="desc">Turun</option>
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none text-muted-foreground" />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           {/* Desktop Table View */}
           <div className="hidden md:block">
@@ -155,6 +209,10 @@ export default function ProdukPage() {
                   totalPages={totalPages}
                   onNextPage={handleNextPage}
                   onPrevPage={handlePrevPage}
+                  onSortStock={handleSortStock}
+                  sortDirectionStock={
+                    sortBy === "stock" ? sortDirection : "asc"
+                  }
                 />
               </CardContent>
             </Card>
@@ -228,14 +286,6 @@ export default function ProdukPage() {
               )}
             </DialogContent>
           </Dialog>
-
-          {/* Floating Action Button - Mobile */}
-          <Button
-            className="fixed bottom-24 right-4 h-14 w-14 rounded-full shadow-lg md:hidden"
-            onClick={() => setIsCreateModalOpen(true)}
-          >
-            <Plus className="h-6 w-6" />
-          </Button>
         </div>
       </div>
     </div>

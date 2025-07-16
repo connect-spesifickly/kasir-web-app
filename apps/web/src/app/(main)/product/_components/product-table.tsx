@@ -23,7 +23,14 @@ import {
 import { StockBadge } from "./stock-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Edit, EyeOff, Package, Trash2 } from "lucide-react";
+import {
+  Edit,
+  EyeOff,
+  Package,
+  Trash2,
+  ChevronUp,
+  ChevronDown,
+} from "lucide-react";
 import { formatRupiah } from "@/lib/utils";
 export const ProductTable = ({
   products,
@@ -36,6 +43,8 @@ export const ProductTable = ({
   totalPages,
   onNextPage,
   onPrevPage,
+  onSortStock,
+  sortDirectionStock,
 }: {
   products: Product[];
   loading: boolean;
@@ -47,6 +56,8 @@ export const ProductTable = ({
   totalPages: number;
   onNextPage: () => void;
   onPrevPage: () => void;
+  onSortStock: () => void;
+  sortDirectionStock: "asc" | "desc";
 }) => {
   if (loading) {
     return <TableSkeleton />;
@@ -59,7 +70,19 @@ export const ProductTable = ({
           <TableHead>Kode</TableHead>
           <TableHead>Nama Produk</TableHead>
           <TableHead>Harga Jual</TableHead>
-          <TableHead>Stok</TableHead>
+          <TableHead
+            className="cursor-pointer select-none"
+            onClick={onSortStock}
+          >
+            <div className="flex items-center gap-1">
+              Stok
+              {sortDirectionStock === "asc" ? (
+                <ChevronUp className="w-4 h-4 inline" />
+              ) : (
+                <ChevronDown className="w-4 h-4 inline" />
+              )}
+            </div>
+          </TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Aksi</TableHead>
         </TableRow>

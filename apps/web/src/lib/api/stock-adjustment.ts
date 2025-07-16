@@ -9,6 +9,8 @@ export const stockAdjustmentApi = {
       endDate?: string;
       take?: number;
       skip?: number;
+      orderBy?: string;
+      orderDirection?: "asc" | "desc";
     },
     token?: string
   ): Promise<{ adjustments: StockAdjustment[]; total: number }> => {

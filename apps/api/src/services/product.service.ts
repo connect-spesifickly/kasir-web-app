@@ -9,7 +9,7 @@ class ProductService {
   }
 
   async getAll(query: any) {
-    const { search, skip, take } = query;
+    const { search, skip, take, orderBy, orderDirection } = query;
     const where: Prisma.ProductWhereInput = {
       isActive: true, // Filter utama untuk hanya produk aktif
     };
@@ -22,13 +22,21 @@ class ProductService {
       ];
     }
 
+    // Tentukan urutan pengurutan
+    let order: any = { productName: "asc" };
+    if (orderBy === "stock") {
+      order = { stock: orderDirection === "desc" ? "desc" : "asc" };
+    } else if (orderBy === "productName") {
+      order = { productName: orderDirection === "desc" ? "desc" : "asc" };
+    }
+
     // Lakukan dua query secara paralel untuk efisiensi maksimal
     const [products, total] = await Promise.all([
       prisma.product.findMany({
         where,
         skip: Number(skip) || 0,
         take: Number(take) || 10,
-        orderBy: { productName: "asc" },
+        orderBy: order,
       }),
       prisma.product.count({ where }),
     ]);
