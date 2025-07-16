@@ -76,31 +76,34 @@ export default function KasirPage() {
           ? (res.data as { data: ProductLowStock[] }).data
           : [];
         if (products.length > 0) {
+          // Style ini paling menyatu dengan desain Kasir Anda
           toast.warning(
             <div>
               <div style={{ fontWeight: "bold", marginBottom: "8px" }}>
                 Stok menipis:
               </div>
-              <ul style={{ margin: 0, paddingLeft: "20px" }}>
-                {products.map((p: ProductLowStock) => (
-                  <li key={p.productName}>
+              <ul style={{ margin: 0, paddingLeft: "20px", fontSize: "0.9em" }}>
+                {products.map((p) => (
+                  <li key={p.productName} style={{ marginBottom: "4px" }}>
                     {p.productName} (sisa: {p.stock})
                   </li>
                 ))}
               </ul>
             </div>,
             {
-              icon: (
-                <span style={{ color: "#dc3545" }}>
-                  {" "}
-                  <IoIosWarning size={20} className="" />
-                </span>
-              ),
+              // Gunakan warna merah yang sama dengan badge stok kritis Anda
+              icon: <IoIosWarning size={24} color="#dc3545" />,
               style: {
-                background: "#ffc107",
-                color: "#212529",
-                border: "1px solid #ffc107",
+                background: "#FFFFFF", // Cocok dengan background kartu produk
+                color: "#1A202C", // Warna teks standar Anda
+                // Aksen merah, konsisten dengan sinyal 'danger' di UI
+                borderLeft: "5px solid #dc3545",
+                borderRadius: "8px",
+                boxShadow:
+                  "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+                maxWidth: "400px",
               },
+              duration: 6000,
             }
           );
         }

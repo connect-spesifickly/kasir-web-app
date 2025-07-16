@@ -19,8 +19,15 @@ import {
   ChevronUp,
   ChevronDown,
   ChevronsUpDown,
+  MoreVertical,
 } from "lucide-react";
 import { formatRupiah } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 export const ProductTable = ({
   products,
@@ -69,24 +76,6 @@ export const ProductTable = ({
         <TableRow>
           <TableHead
             className="cursor-pointer select-none"
-            onClick={onSortDate}
-          >
-            <div className="flex items-center">
-              Tanggal
-              {sortBy === "createdAt" ? (
-                sortDirectionDate === "asc" ? (
-                  <ChevronUp className="w-4 h-4 ml-1" />
-                ) : (
-                  <ChevronDown className="w-4 h-4 ml-1" />
-                )
-              ) : (
-                <ChevronsUpDown className="w-4 h-4 ml-1 text-muted-foreground" />
-              )}
-            </div>
-          </TableHead>
-          <TableHead>Kode</TableHead>
-          <TableHead
-            className="cursor-pointer select-none"
             onClick={onSortName}
           >
             <div className="flex items-center">
@@ -102,6 +91,7 @@ export const ProductTable = ({
               )}
             </div>
           </TableHead>
+          <TableHead>Kode</TableHead>
           <TableHead>Kategori</TableHead>
           <TableHead>Harga Jual</TableHead>
           <TableHead
@@ -122,6 +112,23 @@ export const ProductTable = ({
             </div>
           </TableHead>
           <TableHead>Status</TableHead>
+          <TableHead
+            className="cursor-pointer select-none"
+            onClick={onSortDate}
+          >
+            <div className="flex items-center">
+              Tanggal
+              {sortBy === "createdAt" ? (
+                sortDirectionDate === "asc" ? (
+                  <ChevronUp className="w-4 h-4 ml-1" />
+                ) : (
+                  <ChevronDown className="w-4 h-4 ml-1" />
+                )
+              ) : (
+                <ChevronsUpDown className="w-4 h-4 ml-1 text-muted-foreground" />
+              )}
+            </div>
+          </TableHead>
           <TableHead>Aksi</TableHead>
         </TableRow>
       </TableHeader>
@@ -131,22 +138,13 @@ export const ProductTable = ({
             key={product.id}
             className={product.isActive ? "" : "bg-gray-100"}
           >
-            <TableCell className="w-[15%]">
-              {product.createdAt
-                ? new Date(product.createdAt).toLocaleDateString("id-ID", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  })
-                : "-"}
-            </TableCell>
-            <TableCell className="font-mono w-[17%]">
-              {product.productCode}
-            </TableCell>
             <TableCell
               className={`font-medium w-[28%] ${product.isActive ? "" : "line-through text-gray-500"}`}
             >
               {product.productName}
+            </TableCell>
+            <TableCell className="font-mono w-[17%]">
+              {product.productCode}
             </TableCell>
             <TableCell className="w-[15%]">
               {product.categoryName || product.category?.name || "-"}
@@ -164,46 +162,46 @@ export const ProductTable = ({
                 {product.isActive ? "Aktif" : "Nonaktif"}
               </span>
             </TableCell>
+            <TableCell className="w-[15%]">
+              {product.createdAt
+                ? new Date(product.createdAt).toLocaleDateString("id-ID", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })
+                : "-"}
+            </TableCell>
             <TableCell>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  className="flex flex-col !px-2 gap-0 "
-                  onClick={() => onEdit(product)}
-                  disabled={!product.isActive}
-                >
-                  <Edit className="h-3 w-3 " />
-                  <div className="text-[11px]">Perbarui</div>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex flex-col !p-2 gap-0 "
-                  onClick={() => onRestock(product)}
-                  disabled={!product.isActive}
-                >
-                  <Package className="h-3 w-3 " />
-                  <div className="text-[11px]">Restock</div>
-                </Button>
-                {product.isActive ? (
-                  <Button
-                    variant="outline"
-                    className="flex flex-col !p-2 gap-0 "
-                    onClick={() => onDeactivate(product)}
-                  >
-                    <EyeOff className="h-3 w-3 " />
-                    <div className="text-[11px]"> Nonaktif</div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+                    <MoreVertical className="h-5 w-5" />
                   </Button>
-                ) : (
-                  <Button
-                    variant="default"
-                    className="flex flex-col !p-2 gap-0 bg-green-100 text-green-800 hover:bg-green-200 border-green-200"
-                    onClick={() => onActivate(product)}
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={() => onEdit(product)}
+                    disabled={!product.isActive}
                   >
-                    <Eye className="h-3 w-3 " />
-                    <div className="text-[11px]"> Aktifkan</div>
-                  </Button>
-                )}
-              </div>
+                    <Edit className="h-4 w-4 mr-2" /> Perbarui
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => onRestock(product)}
+                    disabled={!product.isActive}
+                  >
+                    <Package className="h-4 w-4 mr-2" /> Restock
+                  </DropdownMenuItem>
+                  {product.isActive ? (
+                    <DropdownMenuItem onClick={() => onDeactivate(product)}>
+                      <EyeOff className="h-4 w-4 mr-2" /> Nonaktif
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem onClick={() => onActivate(product)}>
+                      <Eye className="h-4 w-4 mr-2" /> Aktifkan
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </TableCell>
           </TableRow>
         ))}

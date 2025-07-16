@@ -197,8 +197,8 @@ export function FinancialSummary({
             value={formatRupiah(reportData.totalOmzet)}
             subtitle="Revenue"
             icon={TrendingUp}
-            color="text-green-600"
-            borderColor="border-l-green-500"
+            color=" text-blue-600"
+            borderColor="border-l-blue-500"
             loading={loading}
           />
 
@@ -207,8 +207,8 @@ export function FinancialSummary({
             value={formatRupiah(reportData.totalProfit)}
             subtitle={`Margin: ${calculateProfitMargin()}%`}
             icon={DollarSign}
-            color="text-blue-600"
-            borderColor="border-l-blue-500"
+            color="text-green-600"
+            borderColor="border-l-green-500"
             loading={loading}
           />
 
