@@ -143,20 +143,34 @@ export default function ProdukPage() {
 
   // Handler untuk klik header kolom stok (hanya table/desktop)
   const handleSortStock = () => {
-    setSortBy("stock");
-    setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
-    setPage(1); // reset ke halaman 1 saat sorting berubah
-  };
-  // Handler untuk klik header kolom tanggal
-  const handleSortDate = () => {
-    setSortBy("createdAt");
-    setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+    if (sortBy === "stock") {
+      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortBy("stock");
+      setSortDirection("asc"); // default direction untuk stock
+    }
     setPage(1);
   };
+
+  // Handler untuk klik header kolom tanggal
+  const handleSortDate = () => {
+    if (sortBy === "createdAt") {
+      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortBy("createdAt");
+      setSortDirection("desc"); // default direction untuk tanggal
+    }
+    setPage(1);
+  };
+
   // Handler untuk klik header kolom nama produk
   const handleSortName = () => {
-    setSortBy("productName");
-    setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+    if (sortBy === "productName") {
+      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortBy("productName");
+      setSortDirection("asc"); // default direction untuk nama
+    }
     setPage(1);
   };
 
@@ -181,7 +195,7 @@ export default function ProdukPage() {
                     id="categoryFilter"
                     value={categoryId}
                     onChange={(e) => setCategoryId(e.target.value)}
-                    className="w-full border rounded-lg px-3 py-2 text-sm appearance-none pr-8 focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full border rounded-lg px-3 py-2 text-sm appearance-none pr-8 focus:outline-none focus:ring-1 focus:ring-primary border-gray-200"
                   >
                     <option value="all">Semua Kategori</option>
                     {categories.map((cat) => (
@@ -197,7 +211,7 @@ export default function ProdukPage() {
                     id="statusFilter"
                     value={isActive}
                     onChange={(e) => setIsActive(e.target.value)}
-                    className="w-full border rounded-lg px-3 py-2 text-sm appearance-none pr-8 focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full border rounded-lg px-3 py-2 text-sm appearance-none pr-8 focus:outline-none focus:ring-1 focus:ring-primary border-gray-200"
                   >
                     <option value="all">Semua Status</option>
                     <option value="true">Aktif</option>
@@ -209,7 +223,7 @@ export default function ProdukPage() {
           </div>
           {/* Filter & Sorting UI klasik untuk mobile */}
           <div className="md:hidden">
-            <div className="bg-white rounded-xl shadow-sm p-3 flex flex-col gap-2">
+            <div className="bg-white rounded-xl shadow-sm p-3 flex flex-col gap-2 border border-gray-200">
               <div className="flex items-center gap-2">
                 <span className="text-xs text-muted-foreground font-semibold">
                   Urutkan:
@@ -227,7 +241,7 @@ export default function ProdukPage() {
                             | "createdAt"
                         )
                       }
-                      className="w-full border rounded-lg px-3 py-2 text-sm appearance-none pr-8 focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="w-full border rounded-lg px-3 py-2 text-sm appearance-none pr-8 focus:outline-none focus:ring-1 focus:ring-primary border-gray-200"
                     >
                       <option value="createdAt">Tanggal</option>
                       <option value="productName">Nama Produk</option>
@@ -241,7 +255,7 @@ export default function ProdukPage() {
                       onChange={(e) =>
                         setSortDirection(e.target.value as "asc" | "desc")
                       }
-                      className="w-full border rounded-lg px-3 py-2 text-sm appearance-none pr-8 focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="w-full border rounded-lg px-3 py-2 text-sm appearance-none pr-8 focus:outline-none focus:ring-1 focus:ring-primary border-gray-200"
                     >
                       <option value="asc">Naik</option>
                       <option value="desc">Turun</option>
@@ -278,6 +292,7 @@ export default function ProdukPage() {
                   sortDirectionName={
                     sortBy === "productName" ? sortDirection : "asc"
                   }
+                  sortBy={sortBy}
                 />
               </CardContent>
             </Card>

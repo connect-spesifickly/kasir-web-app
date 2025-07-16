@@ -125,26 +125,6 @@ export default function KasirPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Product Selection */}
             <div className="md:col-span-2 space-y-4">
-              {/* Dropdown kategori */}
-              <div className="mb-2 flex gap-2 items-center">
-                <label htmlFor="category" className="text-sm font-medium">
-                  Kategori:
-                </label>
-                <select
-                  id="category"
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="border rounded px-2 py-1 text-sm"
-                  disabled={loadingCategories}
-                >
-                  <option value="">Semua Kategori</option>
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
               <div className="relative flex items-center gap-2">
                 <Search className="absolute left-3 top-[10px] h-4 w-4 text-muted-foreground" />
                 <Input
@@ -153,6 +133,23 @@ export default function KasirPage() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
                 />
+                {/* Dropdown kategori */}
+                <div className="relative w-full md:w-auto min-w-[160px] flex-1">
+                  <select
+                    id="categoryFilter"
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="w-full border rounded-lg px-3 py-2 text-sm appearance-none pr-8 focus:outline-none focus:ring-1 focus:ring-primary border-gray-200"
+                    disabled={loadingCategories}
+                  >
+                    <option value="">Semua Kategori</option>
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               <ProductGrid

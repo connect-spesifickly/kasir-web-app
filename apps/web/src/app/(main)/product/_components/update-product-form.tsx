@@ -51,9 +51,9 @@ export const UpdateProductForm = ({
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Kategori Produk */}
       <div className="space-y-2">
-        <label htmlFor="categoryId" className="font-medium">
+        <Label htmlFor="categoryId" className="font-medium">
           Kategori
-        </label>
+        </Label>
         <Select
           value={selectedCategory}
           onValueChange={setSelectedCategory}

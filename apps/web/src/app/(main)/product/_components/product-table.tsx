@@ -18,8 +18,10 @@ import {
   Package,
   ChevronUp,
   ChevronDown,
+  ChevronsUpDown,
 } from "lucide-react";
 import { formatRupiah } from "@/lib/utils";
+
 export const ProductTable = ({
   products,
   loading,
@@ -37,6 +39,7 @@ export const ProductTable = ({
   onSortName,
   sortDirectionDate,
   sortDirectionName,
+  sortBy = "stock", // Tambahkan prop ini
 }: {
   products: Product[];
   loading: boolean;
@@ -54,6 +57,7 @@ export const ProductTable = ({
   onSortName: () => void;
   sortDirectionDate: "asc" | "desc";
   sortDirectionName: "asc" | "desc";
+  sortBy?: string; // Tambahkan type ini
 }) => {
   if (loading) {
     return <TableSkeleton />;
@@ -67,12 +71,16 @@ export const ProductTable = ({
             className="cursor-pointer select-none"
             onClick={onSortDate}
           >
-            <div className="flex items-center gap-1">
+            <div className="flex items-center">
               Tanggal
-              {sortDirectionDate === "asc" ? (
-                <ChevronUp className="w-4 h-4 inline" />
+              {sortBy === "createdAt" ? (
+                sortDirectionDate === "asc" ? (
+                  <ChevronUp className="w-4 h-4 ml-1" />
+                ) : (
+                  <ChevronDown className="w-4 h-4 ml-1" />
+                )
               ) : (
-                <ChevronDown className="w-4 h-4 inline" />
+                <ChevronsUpDown className="w-4 h-4 ml-1 text-muted-foreground" />
               )}
             </div>
           </TableHead>
@@ -81,12 +89,16 @@ export const ProductTable = ({
             className="cursor-pointer select-none"
             onClick={onSortName}
           >
-            <div className="flex items-center gap-1">
+            <div className="flex items-center">
               Nama Produk
-              {sortDirectionName === "asc" ? (
-                <ChevronUp className="w-4 h-4 inline" />
+              {sortBy === "productName" ? (
+                sortDirectionName === "asc" ? (
+                  <ChevronUp className="w-4 h-4 ml-1" />
+                ) : (
+                  <ChevronDown className="w-4 h-4 ml-1" />
+                )
               ) : (
-                <ChevronDown className="w-4 h-4 inline" />
+                <ChevronsUpDown className="w-4 h-4 ml-1 text-muted-foreground" />
               )}
             </div>
           </TableHead>
@@ -96,12 +108,16 @@ export const ProductTable = ({
             className="cursor-pointer select-none"
             onClick={onSortStock}
           >
-            <div className="flex items-center gap-1">
+            <div className="flex items-center">
               Stok
-              {sortDirectionStock === "asc" ? (
-                <ChevronUp className="w-4 h-4 inline" />
+              {sortBy === "stock" ? (
+                sortDirectionStock === "asc" ? (
+                  <ChevronUp className="w-4 h-4 ml-1" />
+                ) : (
+                  <ChevronDown className="w-4 h-4 ml-1" />
+                )
               ) : (
-                <ChevronDown className="w-4 h-4 inline" />
+                <ChevronsUpDown className="w-4 h-4 ml-1 text-muted-foreground" />
               )}
             </div>
           </TableHead>
