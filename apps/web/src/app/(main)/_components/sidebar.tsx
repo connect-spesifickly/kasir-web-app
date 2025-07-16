@@ -1,12 +1,13 @@
 import { PageType } from "@/interfaces/page-type";
 import * as React from "react";
 import { useState, useEffect } from "react";
+import Link from "next/link";
+import { mutate } from "swr";
 
 interface SidebarProps {
   activePage: PageType;
-  onPageChange: (page: PageType) => void;
 }
-export function SidebarPage({ activePage, onPageChange }: SidebarProps) {
+export function SidebarPage({ activePage }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   useEffect(() => {
     const handleResize = () => {
@@ -121,8 +122,24 @@ export function SidebarPage({ activePage, onPageChange }: SidebarProps) {
             <ul className="space-y-2 text-[14px]">
               {sidebarItems.map((item) => (
                 <li key={item.id}>
-                  <button
-                    onClick={() => onPageChange(item.id)}
+                  <Link
+                    href={`/${item.id}`}
+                    prefetch={true}
+                    onMouseEnter={() => {
+                      // Prefetch SWR data sesuai halaman
+                      if (item.id === "product") {
+                        mutate(["products"]);
+                        mutate(["categories"]);
+                      } else if (item.id === "sale") {
+                        mutate(["products"]);
+                        mutate(["categories"]);
+                      } else if (item.id === "report") {
+                        const today = new Date().toISOString().split("T")[0];
+                        mutate(["report", today, today]);
+                      } else if (item.id === "adjustment") {
+                        mutate(["stock-adjustments"]);
+                      }
+                    }}
                     className={`flex w-full items-center rounded-md px-4 py-3 ${
                       activePage === item.id
                         ? "bg-blue-600 text-white hover:bg-blue-500"
@@ -131,7 +148,7 @@ export function SidebarPage({ activePage, onPageChange }: SidebarProps) {
                   >
                     <span className="mr-3">{getIcon(item.icon)}</span>
                     <span className="text-[15px]">{item.label}</span>
-                  </button>
+                  </Link>
                 </li>
               ))}
             </ul>

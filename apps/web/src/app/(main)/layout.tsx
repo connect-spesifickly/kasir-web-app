@@ -1,7 +1,7 @@
 "use client";
 
 import { PageType } from "@/interfaces/page-type";
-import { redirect, usePathname, useRouter } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 import SidebarPage from "./_components/sidebar";
 import BottomNavigation from "./_components/bottom-navigation";
 import { Navbar } from "@/components/ui/navbar/main-navbar";
@@ -26,7 +26,6 @@ export default function MainLayout({
     if (status === "loading") return;
     waitForSession();
   }, [session, status]);
-  const router = useRouter();
   const pathname = usePathname();
 
   const getActivePage = (): PageType => {
@@ -129,22 +128,12 @@ export default function MainLayout({
       href: "/adjustment",
     },
   ];
-
-  const handlePageChange = (page: PageType) => {
-    if (page === "sale") router.push("/sale");
-    else if (page === "product") router.push("/product");
-    else if (page === "report") router.push("/report");
-    else if (page === "adjustment") router.push("/adjustment");
-  };
   return (
     <div className="flex-col  ">
       <Navbar className="border-b-[1px] border-slate-200 " />
       <div className="flex h-full min-h-[90vh] min-w-[calc(100vw)] ">
         <aside className="">
-          <SidebarPage
-            activePage={getActivePage()}
-            onPageChange={handlePageChange}
-          />
+          <SidebarPage activePage={getActivePage()} />
         </aside>
         <BottomNavigation items={bottomNavItems} />
         <main className="w-full h-full min-h-[90vh]">

@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
 import type { Product } from "@/lib/types";
 import { productApi } from "@/lib/api/product";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
+import useSWR from "swr";
 
 interface UseProductsParams {
   search?: string;
@@ -17,65 +17,44 @@ interface UseProductsParams {
   categoryId?: string;
 }
 
+const fetchProductsApi = async (params: UseProductsParams, token?: string) => {
+  const response = await productApi.getAll(
+    {
+      search: params?.search,
+      take: params?.take,
+      skip: params?.skip,
+      orderBy: params?.orderBy,
+      orderDirection: params?.orderDirection,
+      isActive: params?.isActive,
+      stockGreaterThan: params?.stockGreaterThan,
+      categoryId: params?.categoryId,
+    },
+    token
+  );
+  return {
+    products: Array.isArray(response.data.data) ? response.data.data : [],
+    total: response.data.total || 0,
+  };
+};
+
 export function useProducts(params?: UseProductsParams) {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [total, setTotal] = useState(0);
   const { data: session, status } = useSession();
   const isAuthenticated = status === "authenticated";
-  const fetchProducts = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await productApi.getAll(
-        {
-          search: params?.search,
-          take: params?.take,
-          skip: params?.skip,
-          orderBy: params?.orderBy,
-          orderDirection: params?.orderDirection,
-          isActive: params?.isActive,
-          stockGreaterThan: params?.stockGreaterThan,
-          categoryId: params?.categoryId,
-        },
-        session?.accessToken
-      );
-      const data = response.data.data;
-      setProducts(Array.isArray(data) ? data : []);
-      setTotal(response.data.total || 0);
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to fetch products";
-      setError(errorMessage);
-      toast("Produk gagal diambil");
-    } finally {
-      setLoading(false);
-    }
-  }, [
-    params?.search,
-    params?.take,
-    params?.skip,
-    params?.orderBy,
-    params?.orderDirection,
-    params?.isActive,
-    params?.categoryId,
-    params?.stockGreaterThan,
-    session?.accessToken,
-  ]);
+  const token = session?.accessToken;
+  const swrKey = isAuthenticated ? ["products", params, token] : null;
+  const { data, error, isLoading, mutate } = useSWR(
+    swrKey,
+    () => fetchProductsApi(params || {}, token),
+    { revalidateOnFocus: false }
+  );
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchProducts();
-    }
-  }, [fetchProducts, isAuthenticated]);
-
+  // Mutasi untuk create/update/restock tetap manual agar cache up-to-date
   const createProduct = async (
-    data: Omit<Product, "id" | "createdAt" | "updatedAt">
+    dataInput: Omit<Product, "id" | "createdAt" | "updatedAt">
   ) => {
     try {
-      const newProduct = await productApi.create(data, session?.accessToken);
-      setProducts((prev) => [...prev, newProduct]);
+      const newProduct = await productApi.create(dataInput, token);
+      mutate();
       toast("Produk berhasil ditambahkan");
       return newProduct;
     } catch (err) {
@@ -86,17 +65,11 @@ export function useProducts(params?: UseProductsParams) {
 
   const updateProduct = async (
     id: string,
-    data: Partial<Omit<Product, "id" | "createdAt" | "updatedAt">>
+    dataInput: Partial<Omit<Product, "id" | "createdAt" | "updatedAt">>
   ) => {
     try {
-      const updatedProduct = await productApi.update(
-        id,
-        data,
-        session?.accessToken
-      );
-      setProducts((prev) =>
-        prev.map((p) => (p.id === id ? updatedProduct : p))
-      );
+      const updatedProduct = await productApi.update(id, dataInput, token);
+      mutate();
       toast("Produk berhasil diupdate");
       return updatedProduct;
     } catch (err) {
@@ -113,15 +86,10 @@ export function useProducts(params?: UseProductsParams) {
     try {
       const updatedProduct = await productApi.restock(
         id,
-        {
-          quantityAdded,
-          newCostPrice,
-        },
-        session?.accessToken
+        { quantityAdded, newCostPrice },
+        token
       );
-      setProducts((prev) =>
-        prev.map((p) => (p.id === id ? updatedProduct : p))
-      );
+      mutate();
       toast("Stok berhasil ditambahkan");
       return updatedProduct;
     } catch (err) {
@@ -132,11 +100,8 @@ export function useProducts(params?: UseProductsParams) {
 
   const deactivateProduct = async (id: string) => {
     try {
-      console.log(id, "ini access tokennya", session?.accessToken);
-      await productApi.deactivate(id, session?.accessToken);
-      setProducts((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, isActive: false } : p))
-      );
+      await productApi.deactivate(id, token);
+      mutate();
       toast("Produk berhasil dinonaktifkan");
     } catch (err) {
       toast("Gagal menonaktifkan produk, stok product masih ada");
@@ -146,10 +111,8 @@ export function useProducts(params?: UseProductsParams) {
 
   const activateProduct = async (id: string) => {
     try {
-      await productApi.activate(id, session?.accessToken);
-      setProducts((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, isActive: true } : p))
-      );
+      await productApi.activate(id, token);
+      mutate();
       toast("Produk berhasil diaktifkan");
     } catch (err) {
       toast("Gagal mengaktifkan produk");
@@ -158,11 +121,11 @@ export function useProducts(params?: UseProductsParams) {
   };
 
   return {
-    products,
-    loading,
+    products: data?.products || [],
+    loading: isLoading,
     error,
-    total,
-    refetch: fetchProducts,
+    total: data?.total || 0,
+    refetch: mutate,
     createProduct,
     updateProduct,
     restockProduct,
@@ -172,27 +135,19 @@ export function useProducts(params?: UseProductsParams) {
 }
 
 // Hook untuk fetch kategori produk
+const fetchCategoriesApi = async (token?: string) => {
+  const data = await productApi.getCategories(token);
+  return Array.isArray(data) ? data : [];
+};
+
 export function useCategories() {
-  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
-    []
-  );
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { data: session, status } = useSession();
-  useEffect(() => {
-    if (status !== "authenticated") return;
-    (async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await productApi.getCategories(session?.accessToken);
-        setCategories(Array.isArray(data) ? data : []);
-      } catch {
-        setError("Gagal mengambil kategori");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [session, status]);
-  return { categories, loading, error };
+  const token = session?.accessToken;
+  const swrKey = status === "authenticated" ? ["categories", token] : null;
+  const { data, error, isLoading } = useSWR(
+    swrKey,
+    () => fetchCategoriesApi(token),
+    { revalidateOnFocus: false }
+  );
+  return { categories: data || [], loading: isLoading, error };
 }
