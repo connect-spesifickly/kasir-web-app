@@ -4,8 +4,18 @@ import { Prisma } from "@prisma/client";
 import { Product } from "../interfaces/product.interface";
 
 class ProductService {
-  async create(data: Product) {
-    return prisma.product.create({ data });
+  async create(data: any) {
+    let categoryId = data.categoryId;
+    if (!categoryId && data.categoryName) {
+      // Buat kategori baru
+      const category = await prisma.category.create({
+        data: { name: data.categoryName },
+      });
+      categoryId = category.id;
+    }
+    // Hapus categoryName agar tidak error di prisma
+    const { categoryName, ...productData } = data;
+    return prisma.product.create({ data: { ...productData, categoryId } });
   }
 
   async getAll(query: any) {
@@ -17,6 +27,7 @@ class ProductService {
       orderDirection,
       isActive,
       stockGreaterThan,
+      categoryId,
     } = query;
     const where: Prisma.ProductWhereInput = {};
 
@@ -25,6 +36,9 @@ class ProductService {
     }
     if (typeof stockGreaterThan !== "undefined") {
       where.stock = { gt: Number(stockGreaterThan) };
+    }
+    if (categoryId) {
+      where.categoryId = categoryId;
     }
     if (search) {
       where.OR = [
@@ -46,11 +60,19 @@ class ProductService {
         skip: Number(skip) || 0,
         take: Number(take) || 10,
         orderBy: [{ isActive: "desc" }, order],
+        include: {
+          category: true,
+        },
       }),
       prisma.product.count({ where }),
     ]);
 
-    return { data: products, total };
+    // Map agar response ada categoryName
+    const mappedProducts = products.map((p: any) => ({
+      ...p,
+      categoryName: p.category?.name || null,
+    }));
+    return { data: mappedProducts, total };
   }
   async getById(id: string) {
     const product = await prisma.product.findUnique({ where: { id } });
@@ -64,6 +86,17 @@ class ProductService {
     if (data.productName) updateData.productName = data.productName;
     if (data.price) updateData.price = data.price;
     if (data.minStock !== undefined) updateData.minStock = data.minStock;
+
+    let categoryId = data.categoryId;
+    if (!categoryId && data.categoryName) {
+      // Buat kategori baru
+      const category = await prisma.category.create({
+        data: { name: data.categoryName },
+      });
+      categoryId = category.id;
+    }
+    if (categoryId) updateData.category = { connect: { id: categoryId } };
+
     return prisma.product.update({ where: { id }, data: updateData });
   }
 
@@ -146,6 +179,15 @@ class ProductService {
       AND stock <= "min_stock"
     ORDER BY "product_name" ASC
   `;
+  }
+
+  async getCategories() {
+    return prisma.category.findMany({ orderBy: { name: "asc" } });
+  }
+
+  async createCategory(name: string) {
+    if (!name) throw new ResponseError(400, "Nama category harus diisi");
+    return prisma.category.create({ data: { name } });
   }
 }
 

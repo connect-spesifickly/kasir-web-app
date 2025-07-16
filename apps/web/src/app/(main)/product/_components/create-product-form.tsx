@@ -9,6 +9,16 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useCategories } from "@/hooks/use-products";
+import { useState } from "react";
+import React from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const CreateProductForm = ({
   onSubmit,
@@ -17,6 +27,10 @@ export const CreateProductForm = ({
   onSubmit: (data: CreateProductData) => void;
   isLoading: boolean;
 }) => {
+  const { categories, loading: loadingCategories } = useCategories();
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [newCategory, setNewCategory] = useState("");
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -28,12 +42,54 @@ export const CreateProductForm = ({
       stock: Number(formData.get("stock")),
       minStock: Number(formData.get("minStock")),
       isActive: true,
+      categoryId:
+        selectedCategory && selectedCategory !== "new"
+          ? selectedCategory
+          : undefined,
+      categoryName: selectedCategory === "new" ? newCategory : undefined,
     };
     onSubmit(data);
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Kategori Produk */}
+      <div className="space-y-2">
+        <label htmlFor="categoryId" className="font-medium">
+          Kategori
+        </label>
+        <Select
+          value={selectedCategory}
+          onValueChange={setSelectedCategory}
+          disabled={loadingCategories}
+          name="categoryId"
+          required
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Pilih Kategori" />
+          </SelectTrigger>
+          <SelectContent>
+            {categories.map((cat) => (
+              <SelectItem key={cat.id} value={cat.id}>
+                {cat.name}
+              </SelectItem>
+            ))}
+            <SelectItem value="new">Tambah Kategori Baru</SelectItem>
+          </SelectContent>
+        </Select>
+        {selectedCategory === "new" && (
+          <div className="mt-2">
+            <Input
+              type="text"
+              placeholder="Nama kategori baru"
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+              required
+              autoFocus
+            />
+          </div>
+        )}
+      </div>
       {/* Info Produk */}
       <div className="space-y-2">
         <Label htmlFor="productCode">Kode Produk</Label>

@@ -25,6 +25,14 @@ model User {
   @@map("users")
 }
 
+model Category {
+  id   String  @id @default(uuid())
+  name String  @unique
+  products Product[]
+
+  @@map("categories")
+}
+
 model Product {
   id          String  @id @default(uuid())
   productCode String  @unique @map("product_code")
@@ -34,6 +42,10 @@ model Product {
   stock       Int
   minStock    Int?    @map("min_stock") @default(5) // stok minimum
   isActive    Boolean @default(true) @map("is_active")
+createdAt DateTime? @default(now()) @map("created_at")
+
+  categoryId String? @map("category_id")
+  category   Category? @relation(fields: [categoryId], references: [id])
 
   saleDetails      SaleDetail[]
   stockAdjustments StockAdjustment[]

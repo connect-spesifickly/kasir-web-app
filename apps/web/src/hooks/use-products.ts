@@ -14,6 +14,7 @@ interface UseProductsParams {
   orderDirection?: "asc" | "desc";
   isActive?: boolean;
   stockGreaterThan?: number;
+  categoryId?: string;
 }
 
 export function useProducts(params?: UseProductsParams) {
@@ -36,6 +37,7 @@ export function useProducts(params?: UseProductsParams) {
           orderDirection: params?.orderDirection,
           isActive: params?.isActive,
           stockGreaterThan: params?.stockGreaterThan,
+          categoryId: params?.categoryId,
         },
         session?.accessToken
       );
@@ -56,6 +58,9 @@ export function useProducts(params?: UseProductsParams) {
     params?.skip,
     params?.orderBy,
     params?.orderDirection,
+    params?.isActive,
+    params?.categoryId,
+    params?.stockGreaterThan,
     session?.accessToken,
   ]);
 
@@ -164,4 +169,30 @@ export function useProducts(params?: UseProductsParams) {
     deactivateProduct,
     activateProduct,
   };
+}
+
+// Hook untuk fetch kategori produk
+export function useCategories() {
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
+    []
+  );
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { data: session, status } = useSession();
+  useEffect(() => {
+    if (status !== "authenticated") return;
+    (async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await productApi.getCategories(session?.accessToken);
+        setCategories(Array.isArray(data) ? data : []);
+      } catch {
+        setError("Gagal mengambil kategori");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [session, status]);
+  return { categories, loading, error };
 }

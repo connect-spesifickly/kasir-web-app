@@ -15,6 +15,7 @@ export const productApi = {
       orderDirection?: "asc" | "desc";
       isActive?: boolean;
       stockGreaterThan?: number;
+      categoryId?: string;
     },
     token?: string
   ) => {
@@ -79,6 +80,38 @@ export const productApi = {
       }
     );
     return response.data.data;
+  },
+  getCategories: async (token?: string) => {
+    const response = await api.get(`/products/categories`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data =
+      response.data &&
+      typeof response.data === "object" &&
+      "data" in response.data
+        ? (response.data as { data: unknown }).data
+        : [];
+    return Array.isArray(data) ? data : [];
+  },
+  createCategory: async (name: string, token?: string) => {
+    const response = await api.post(
+      `/products/categories`,
+      { name },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const data =
+      response.data &&
+      typeof response.data === "object" &&
+      "data" in response.data
+        ? (response.data as { data: unknown }).data
+        : null;
+    return data;
   },
   activate: async (id: string, token?: string) => {
     const response = await api.patch<ProductResponse>(

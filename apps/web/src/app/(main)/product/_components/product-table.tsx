@@ -33,6 +33,10 @@ export const ProductTable = ({
   onPrevPage,
   onSortStock,
   sortDirectionStock,
+  onSortDate,
+  onSortName,
+  sortDirectionDate,
+  sortDirectionName,
 }: {
   products: Product[];
   loading: boolean;
@@ -46,6 +50,10 @@ export const ProductTable = ({
   onPrevPage: () => void;
   onSortStock: () => void;
   sortDirectionStock: "asc" | "desc";
+  onSortDate: () => void;
+  onSortName: () => void;
+  sortDirectionDate: "asc" | "desc";
+  sortDirectionName: "asc" | "desc";
 }) => {
   if (loading) {
     return <TableSkeleton />;
@@ -55,8 +63,34 @@ export const ProductTable = ({
     <Table className="lg:w-[96%] lg:mx-[2%] w-[99%] mx-[0.5%] ">
       <TableHeader>
         <TableRow>
+          <TableHead
+            className="cursor-pointer select-none"
+            onClick={onSortDate}
+          >
+            <div className="flex items-center gap-1">
+              Tanggal
+              {sortDirectionDate === "asc" ? (
+                <ChevronUp className="w-4 h-4 inline" />
+              ) : (
+                <ChevronDown className="w-4 h-4 inline" />
+              )}
+            </div>
+          </TableHead>
           <TableHead>Kode</TableHead>
-          <TableHead>Nama Produk</TableHead>
+          <TableHead
+            className="cursor-pointer select-none"
+            onClick={onSortName}
+          >
+            <div className="flex items-center gap-1">
+              Nama Produk
+              {sortDirectionName === "asc" ? (
+                <ChevronUp className="w-4 h-4 inline" />
+              ) : (
+                <ChevronDown className="w-4 h-4 inline" />
+              )}
+            </div>
+          </TableHead>
+          <TableHead>Kategori</TableHead>
           <TableHead>Harga Jual</TableHead>
           <TableHead
             className="cursor-pointer select-none"
@@ -81,6 +115,15 @@ export const ProductTable = ({
             key={product.id}
             className={product.isActive ? "" : "bg-gray-100"}
           >
+            <TableCell className="w-[15%]">
+              {product.createdAt
+                ? new Date(product.createdAt).toLocaleDateString("id-ID", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })
+                : "-"}
+            </TableCell>
             <TableCell className="font-mono w-[17%]">
               {product.productCode}
             </TableCell>
@@ -88,6 +131,9 @@ export const ProductTable = ({
               className={`font-medium w-[28%] ${product.isActive ? "" : "line-through text-gray-500"}`}
             >
               {product.productName}
+            </TableCell>
+            <TableCell className="w-[15%]">
+              {product.categoryName || product.category?.name || "-"}
             </TableCell>
             <TableCell className="w-[15%]">
               {formatRupiah(Number(product.price))}
@@ -148,7 +194,7 @@ export const ProductTable = ({
       </TableBody>
       <TableFooter>
         <TableRow>
-          <TableCell colSpan={6}>
+          <TableCell colSpan={8}>
             <div className="flex items-center justify-between">
               <div className="text-sm text-muted-foreground">
                 Page {currentPage} of {totalPages || 1}

@@ -9,4 +9,6 @@ export interface Product {
   stock: number;
   minStock: number;
   isActive: boolean;
+  categoryId: string | null;
+  categoryName?: string;
 }

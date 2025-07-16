@@ -9,6 +9,9 @@ export interface Product {
   isActive: boolean;
   createdAt?: string;
   updatedAt?: string;
+  categoryId?: string;
+  categoryName?: string;
+  category?: { name: string };
 }
 
 export interface ProductListResponse {
@@ -28,6 +31,8 @@ export interface CreateProductData {
   stock: number;
   minStock: number;
   isActive: boolean;
+  categoryId?: string;
+  categoryName?: string;
 }
 
 export interface UpdateProductData {
@@ -35,6 +40,8 @@ export interface UpdateProductData {
   productName?: string;
   price?: number;
   minStock?: number;
+  categoryId?: string;
+  categoryName?: string;
 }
 
 export interface RestockData {

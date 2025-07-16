@@ -10,6 +10,8 @@ import { verifyOwner } from "../middlewares/auth.middleware";
 export const productRouter = () => {
   const router = Router();
   router.use(verifyOwner as any);
+  router.get("/categories", ProductController.getCategories);
+  router.post("/categories", ProductController.createCategory);
   router.post("/", validateCreateProduct, ProductController.create);
   router.get("/", ProductController.getAll);
   router.get("/low-stock", ProductController.getLowStock);

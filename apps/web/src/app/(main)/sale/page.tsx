@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { api } from "@/utils/axios";
 import { useSession } from "next-auth/react";
 import { IoIosWarning } from "react-icons/io";
+import { useCategories } from "@/hooks/use-products";
 // Tambahkan type untuk produk low stock
 interface ProductLowStock {
   id: string;
@@ -24,12 +25,15 @@ interface ProductLowStock {
 export default function KasirPage() {
   const [searchTerm, setSearchTerm] = React.useState("");
   const [isPaymentOpen, setIsPaymentOpen] = React.useState(false);
+  const [selectedCategory, setSelectedCategory] = React.useState<string>("");
   const { data: session, status } = useSession();
   const { products, loading, refetch } = useProducts({
     search: searchTerm,
     isActive: true,
     stockGreaterThan: 0,
+    categoryId: selectedCategory || undefined,
   });
+  const { categories, loading: loadingCategories } = useCategories();
   const {
     cart,
     addToCart,
@@ -121,6 +125,26 @@ export default function KasirPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Product Selection */}
             <div className="md:col-span-2 space-y-4">
+              {/* Dropdown kategori */}
+              <div className="mb-2 flex gap-2 items-center">
+                <label htmlFor="category" className="text-sm font-medium">
+                  Kategori:
+                </label>
+                <select
+                  id="category"
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="border rounded px-2 py-1 text-sm"
+                  disabled={loadingCategories}
+                >
+                  <option value="">Semua Kategori</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div className="relative flex items-center gap-2">
                 <Search className="absolute left-3 top-[10px] h-4 w-4 text-muted-foreground" />
                 <Input

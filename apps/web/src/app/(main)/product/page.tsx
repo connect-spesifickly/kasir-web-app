@@ -1,5 +1,6 @@
 "use client";
 import { useProducts } from "@/hooks/use-products";
+import { useCategories } from "@/hooks/use-products";
 import {
   CreateProductData,
   Product,
@@ -23,7 +24,6 @@ import { UpdateProductForm } from "./_components/update-product-form";
 import { RestockForm } from "./_components/re-stock-form";
 
 import { PageHeader } from "./_components/product-header";
-import { ChevronDown } from "lucide-react";
 export default function ProdukPage() {
   const [searchTerm, setSearchTerm] = React.useState("");
   const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
@@ -39,10 +39,15 @@ export default function ProdukPage() {
   const [page, setPage] = React.useState(1);
   const [pageSize] = React.useState(6);
   // Sorting state: default stock asc
-  const [sortBy, setSortBy] = React.useState<"productName" | "stock">("stock");
+  const [sortBy, setSortBy] = React.useState<
+    "productName" | "stock" | "createdAt"
+  >("stock");
   const [sortDirection, setSortDirection] = React.useState<"asc" | "desc">(
     "asc"
   );
+  const [categoryId, setCategoryId] = React.useState<string>("all");
+  const [isActive, setIsActive] = React.useState<string>("all");
+  const { categories } = useCategories();
 
   const {
     products,
@@ -59,6 +64,8 @@ export default function ProdukPage() {
     skip: (page - 1) * pageSize,
     orderBy: sortBy,
     orderDirection: sortDirection,
+    categoryId: categoryId === "all" ? undefined : categoryId,
+    isActive: isActive === "all" ? undefined : isActive === "true",
   });
 
   const totalPages = Math.ceil(total / pageSize);
@@ -140,6 +147,18 @@ export default function ProdukPage() {
     setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
     setPage(1); // reset ke halaman 1 saat sorting berubah
   };
+  // Handler untuk klik header kolom tanggal
+  const handleSortDate = () => {
+    setSortBy("createdAt");
+    setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+    setPage(1);
+  };
+  // Handler untuk klik header kolom nama produk
+  const handleSortName = () => {
+    setSortBy("productName");
+    setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+    setPage(1);
+  };
 
   return (
     <div className="w-full h-full relative">
@@ -148,13 +167,47 @@ export default function ProdukPage() {
       </div>
       <div className="flex flex-col w-full">
         <div className="flex flex-1 flex-col gap-4 p-2 md:p-6">
-          <div className="flex items-center justify-between gap-6">
-            <SearchInput
-              searchTerm={searchTerm}
-              onSearchChange={setSearchTerm}
-            />
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
+            <div className="flex flex-col md:flex-row md:items-center w-full gap-2">
+              <SearchInput
+                searchTerm={searchTerm}
+                onSearchChange={setSearchTerm}
+              />
+              {/* Baris filter kategori & status */}
+              <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto mt-2 md:mt-0">
+                {/* Filter Kategori */}
+                <div className="relative w-full md:w-auto min-w-[160px] flex-1">
+                  <select
+                    id="categoryFilter"
+                    value={categoryId}
+                    onChange={(e) => setCategoryId(e.target.value)}
+                    className="w-full border rounded-lg px-3 py-2 text-sm appearance-none pr-8 focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <option value="all">Semua Kategori</option>
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {/* Filter Status Aktif/Nonaktif */}
+                <div className="relative w-full md:w-auto min-w-[140px] flex-1">
+                  <select
+                    id="statusFilter"
+                    value={isActive}
+                    onChange={(e) => setIsActive(e.target.value)}
+                    className="w-full border rounded-lg px-3 py-2 text-sm appearance-none pr-8 focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <option value="all">Semua Status</option>
+                    <option value="true">Aktif</option>
+                    <option value="false">Nonaktif</option>
+                  </select>
+                </div>
+              </div>
+            </div>
           </div>
-          {/* Sorting UI hanya di mobile, sekarang di bawah search */}
+          {/* Filter & Sorting UI klasik untuk mobile */}
           <div className="md:hidden">
             <div className="bg-white rounded-xl shadow-sm p-3 flex flex-col gap-2">
               <div className="flex items-center gap-2">
@@ -167,14 +220,19 @@ export default function ProdukPage() {
                       id="sortBy"
                       value={sortBy}
                       onChange={(e) =>
-                        setSortBy(e.target.value as "productName" | "stock")
+                        setSortBy(
+                          e.target.value as
+                            | "productName"
+                            | "stock"
+                            | "createdAt"
+                        )
                       }
                       className="w-full border rounded-lg px-3 py-2 text-sm appearance-none pr-8 focus:outline-none focus:ring-2 focus:ring-primary"
                     >
+                      <option value="createdAt">Tanggal</option>
                       <option value="productName">Nama Produk</option>
                       <option value="stock">Jumlah Stok</option>
                     </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none text-muted-foreground" />
                   </div>
                   <div className="relative w-1/2">
                     <select
@@ -188,7 +246,6 @@ export default function ProdukPage() {
                       <option value="asc">Naik</option>
                       <option value="desc">Turun</option>
                     </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none text-muted-foreground" />
                   </div>
                 </div>
               </div>
@@ -212,6 +269,14 @@ export default function ProdukPage() {
                   onSortStock={handleSortStock}
                   sortDirectionStock={
                     sortBy === "stock" ? sortDirection : "asc"
+                  }
+                  onSortDate={handleSortDate}
+                  onSortName={handleSortName}
+                  sortDirectionDate={
+                    sortBy === "createdAt" ? sortDirection : "asc"
+                  }
+                  sortDirectionName={
+                    sortBy === "productName" ? sortDirection : "asc"
                   }
                 />
               </CardContent>

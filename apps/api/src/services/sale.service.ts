@@ -14,16 +14,14 @@ class SaleService {
     });
     // Untuk akses cepat nanti, ubah array menjadi Map (Object)
     const productMap = new Map<string, Product>(
-      productsInCart
-        .filter((p): p is Product => p.id !== undefined)
-        .map((p) => [
-          p.id as string,
-          {
-            ...p,
-            // Ensure minStock is undefined if null, to match Product interface
-            minStock: p.minStock === null ? undefined : p.minStock,
-          } as Product,
-        ])
+      productsInCart.map((p) => [
+        p.id as string,
+        {
+          ...p,
+          // Ensure minStock is undefined if null, to match Product interface
+          minStock: p.minStock === null ? undefined : p.minStock,
+        } as Product,
+      ])
     );
     return prisma.$transaction(async (tx: any) => {
       // 3. Validasi Stok (Loop pertama dan satu-satunya untuk validasi)
