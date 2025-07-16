@@ -13,6 +13,8 @@ export const productApi = {
       skip?: number;
       orderBy?: string;
       orderDirection?: "asc" | "desc";
+      isActive?: boolean;
+      stockGreaterThan?: number;
     },
     token?: string
   ) => {
@@ -50,14 +52,6 @@ export const productApi = {
     });
     return response.data.data;
   },
-  delete: async (id: string, token?: string) => {
-    const response = await api.delete<ProductResponse>(`/products/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return response.data.data;
-  },
   restock: async (
     id: string,
     data: { quantityAdded: number; newCostPrice: number },
@@ -77,6 +71,18 @@ export const productApi = {
   deactivate: async (id: string, token?: string) => {
     const response = await api.patch<ProductResponse>(
       `/products/${id}/deactivate`,
+      undefined,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data.data;
+  },
+  activate: async (id: string, token?: string) => {
+    const response = await api.patch<ProductResponse>(
+      `/products/${id}/activate`,
       undefined,
       {
         headers: {

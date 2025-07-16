@@ -9,20 +9,30 @@ class ProductService {
   }
 
   async getAll(query: any) {
-    const { search, skip, take, orderBy, orderDirection } = query;
-    const where: Prisma.ProductWhereInput = {
-      isActive: true, // Filter utama untuk hanya produk aktif
-    };
+    const {
+      search,
+      skip,
+      take,
+      orderBy,
+      orderDirection,
+      isActive,
+      stockGreaterThan,
+    } = query;
+    const where: Prisma.ProductWhereInput = {};
 
+    if (typeof isActive !== "undefined") {
+      where.isActive = isActive === "true" || isActive === true;
+    }
+    if (typeof stockGreaterThan !== "undefined") {
+      where.stock = { gt: Number(stockGreaterThan) };
+    }
     if (search) {
-      // Tambahkan kondisi pencarian jika ada
       where.OR = [
         { productName: { contains: search, mode: "insensitive" } },
         { productCode: { contains: search, mode: "insensitive" } },
       ];
     }
 
-    // Tentukan urutan pengurutan
     let order: any = { productName: "asc" };
     if (orderBy === "stock") {
       order = { stock: orderDirection === "desc" ? "desc" : "asc" };
@@ -30,13 +40,12 @@ class ProductService {
       order = { productName: orderDirection === "desc" ? "desc" : "asc" };
     }
 
-    // Lakukan dua query secara paralel untuk efisiensi maksimal
     const [products, total] = await Promise.all([
       prisma.product.findMany({
         where,
         skip: Number(skip) || 0,
         take: Number(take) || 10,
-        orderBy: order,
+        orderBy: [{ isActive: "desc" }, order],
       }),
       prisma.product.count({ where }),
     ]);
@@ -58,19 +67,10 @@ class ProductService {
     return prisma.product.update({ where: { id }, data: updateData });
   }
 
-  async delete(id: string) {
-    // Soft delete: check if product is in sale_details
-    const saleDetail = await prisma.saleDetail.findFirst({
-      where: { productId: id },
-    });
-    if (saleDetail) {
-      // Soft delete: set isActive to false (if field exists)
-      throw new ResponseError(
-        400,
-        "Produk ini tidak bisa dihapus permanen karena memiliki riwayat penjualan. Harap gunakan fitur 'Nonaktifkan"
-      );
-    }
-    return prisma.product.delete({ where: { id } });
+  async activate(id: string) {
+    const product = await prisma.product.findUnique({ where: { id } });
+    if (!product) throw new ResponseError(404, "Product not found");
+    return prisma.product.update({ where: { id }, data: { isActive: true } });
   }
 
   async restock(

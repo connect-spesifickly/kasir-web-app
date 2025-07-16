@@ -59,20 +59,6 @@ class ProductController {
     }
   }
 
-  async delete(req: Request, res: Response, next: NextFunction) {
-    try {
-      const result = await productService.delete(req.params.id);
-      ApiResponse({
-        res,
-        statusCode: 200,
-        message: "Product deleted",
-        data: result,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
   async restock(req: Request, res: Response, next: NextFunction) {
     try {
       const result = await productService.restock(req.params.id, req.body);
@@ -94,6 +80,20 @@ class ProductController {
         res,
         statusCode: 200,
         message: "Product deactivated",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async activate(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await productService.activate(req.params.id);
+      ApiResponse({
+        res,
+        statusCode: 200,
+        message: "Product activated",
         data: result,
       });
     } catch (error) {

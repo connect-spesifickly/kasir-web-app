@@ -25,7 +25,11 @@ export default function KasirPage() {
   const [searchTerm, setSearchTerm] = React.useState("");
   const [isPaymentOpen, setIsPaymentOpen] = React.useState(false);
   const { data: session, status } = useSession();
-  const { products, loading, refetch } = useProducts({ search: searchTerm });
+  const { products, loading, refetch } = useProducts({
+    search: searchTerm,
+    isActive: true,
+    stockGreaterThan: 0,
+  });
   const {
     cart,
     addToCart,
@@ -118,7 +122,7 @@ export default function KasirPage() {
             {/* Product Selection */}
             <div className="md:col-span-2 space-y-4">
               <div className="relative flex items-center gap-2">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-[10px] h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Cari nama produk atau kode..."
                   value={searchTerm}

@@ -9,25 +9,13 @@ import {
   TableRow,
   TableFooter,
 } from "@/components/ui/table";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { StockBadge } from "./stock-badge";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Edit,
   EyeOff,
+  Eye,
   Package,
-  Trash2,
   ChevronUp,
   ChevronDown,
 } from "lucide-react";
@@ -37,8 +25,8 @@ export const ProductTable = ({
   loading,
   onEdit,
   onRestock,
-  onDelete,
   onDeactivate,
+  onActivate,
   currentPage,
   totalPages,
   onNextPage,
@@ -50,8 +38,8 @@ export const ProductTable = ({
   loading: boolean;
   onEdit: (product: Product) => void;
   onRestock: (product: Product) => void;
-  onDelete: (product: Product) => void;
   onDeactivate: (product: Product) => void;
+  onActivate: (product: Product) => void;
   currentPage: number;
   totalPages: number;
   onNextPage: () => void;
@@ -89,11 +77,16 @@ export const ProductTable = ({
       </TableHeader>
       <TableBody className="">
         {products.map((product) => (
-          <TableRow key={product.id}>
+          <TableRow
+            key={product.id}
+            className={product.isActive ? "" : "bg-gray-100"}
+          >
             <TableCell className="font-mono w-[17%]">
               {product.productCode}
             </TableCell>
-            <TableCell className="font-medium w-[28%]">
+            <TableCell
+              className={`font-medium w-[28%] ${product.isActive ? "" : "line-through text-gray-500"}`}
+            >
               {product.productName}
             </TableCell>
             <TableCell className="w-[15%]">
@@ -103,9 +96,11 @@ export const ProductTable = ({
               <StockBadge stock={product.stock} minStock={product.minStock} />
             </TableCell>
             <TableCell className="w-[10%]">
-              <Badge variant={product.isActive ? "default" : "secondary"}>
+              <span
+                className={`px-2 py-1 rounded text-xs font-semibold ${product.isActive ? "bg-green-100 text-green-800" : "bg-gray-200 text-gray-600"}`}
+              >
                 {product.isActive ? "Aktif" : "Nonaktif"}
-              </Badge>
+              </span>
             </TableCell>
             <TableCell>
               <div className="flex items-center gap-2">
@@ -113,6 +108,7 @@ export const ProductTable = ({
                   variant="outline"
                   className="flex flex-col !px-2 gap-0 "
                   onClick={() => onEdit(product)}
+                  disabled={!product.isActive}
                 >
                   <Edit className="h-3 w-3 " />
                   <div className="text-[11px]">Perbarui</div>
@@ -121,6 +117,7 @@ export const ProductTable = ({
                   variant="outline"
                   className="flex flex-col !p-2 gap-0 "
                   onClick={() => onRestock(product)}
+                  disabled={!product.isActive}
                 >
                   <Package className="h-3 w-3 " />
                   <div className="text-[11px]">Restock</div>
@@ -135,29 +132,14 @@ export const ProductTable = ({
                     <div className="text-[11px]"> Nonaktif</div>
                   </Button>
                 ) : (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button size="sm" variant="destructive">
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Hapus Produk</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Apakah Anda yakin ingin menghapus produk `
-                          {product.productName}`? Tindakan ini tidak dapat
-                          dibatalkan.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Batal</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => onDelete(product)}>
-                          Hapus
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                  <Button
+                    variant="default"
+                    className="flex flex-col !p-2 gap-0 bg-green-100 text-green-800 hover:bg-green-200 border-green-200"
+                    onClick={() => onActivate(product)}
+                  >
+                    <Eye className="h-3 w-3 " />
+                    <div className="text-[11px]"> Aktifkan</div>
+                  </Button>
                 )}
               </div>
             </TableCell>

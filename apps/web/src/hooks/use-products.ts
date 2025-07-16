@@ -12,6 +12,8 @@ interface UseProductsParams {
   skip?: number;
   orderBy?: string;
   orderDirection?: "asc" | "desc";
+  isActive?: boolean;
+  stockGreaterThan?: number;
 }
 
 export function useProducts(params?: UseProductsParams) {
@@ -32,6 +34,8 @@ export function useProducts(params?: UseProductsParams) {
           skip: params?.skip,
           orderBy: params?.orderBy,
           orderDirection: params?.orderDirection,
+          isActive: params?.isActive,
+          stockGreaterThan: params?.stockGreaterThan,
         },
         session?.accessToken
       );
@@ -96,17 +100,6 @@ export function useProducts(params?: UseProductsParams) {
     }
   };
 
-  const deleteProduct = async (id: string) => {
-    try {
-      await productApi.delete(id, session?.accessToken);
-      setProducts((prev) => prev.filter((p) => p.id !== id));
-      toast("Produk berhasil dihapus");
-    } catch (err) {
-      toast("Product yang telah ada riwayat transaksi tidak bisa dihapus");
-      throw err;
-    }
-  };
-
   const restockProduct = async (
     id: string,
     quantityAdded: number,
@@ -146,6 +139,19 @@ export function useProducts(params?: UseProductsParams) {
     }
   };
 
+  const activateProduct = async (id: string) => {
+    try {
+      await productApi.activate(id, session?.accessToken);
+      setProducts((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, isActive: true } : p))
+      );
+      toast("Produk berhasil diaktifkan");
+    } catch (err) {
+      toast("Gagal mengaktifkan produk");
+      throw err;
+    }
+  };
+
   return {
     products,
     loading,
@@ -154,8 +160,8 @@ export function useProducts(params?: UseProductsParams) {
     refetch: fetchProducts,
     createProduct,
     updateProduct,
-    deleteProduct,
     restockProduct,
     deactivateProduct,
+    activateProduct,
   };
 }

@@ -15,7 +15,7 @@ export const productRouter = () => {
   router.get("/low-stock", ProductController.getLowStock);
   router.get("/:id", ProductController.getById);
   router.patch("/:id", validateUpdateProduct, ProductController.update);
-  router.delete("/:id", ProductController.delete);
+  router.patch("/:id/activate", ProductController.activate);
   router.patch("/:id/deactivate", ProductController.deactivate);
   router.post(
     "/:id/restock",

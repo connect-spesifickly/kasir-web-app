@@ -49,8 +49,8 @@ export default function ProdukPage() {
     loading,
     createProduct,
     updateProduct,
-    deleteProduct,
     deactivateProduct,
+    activateProduct,
     restockProduct: restockProductApi,
     total,
   } = useProducts({
@@ -110,19 +110,19 @@ export default function ProdukPage() {
     }
   };
 
-  const handleDeleteProduct = async (product: Product) => {
-    try {
-      await deleteProduct(product.id);
-    } catch (error) {
-      console.error("Error deleting product:", error);
-    }
-  };
-
   const handleDeactivateProduct = async (product: Product) => {
     try {
       await deactivateProduct(product.id);
     } catch (error) {
       console.error("Error deactivating product:", error);
+    }
+  };
+
+  const handleActivateProduct = async (product: Product) => {
+    try {
+      await activateProduct(product.id);
+    } catch (error) {
+      console.error("Error activating product:", error);
     }
   };
 
@@ -203,8 +203,8 @@ export default function ProdukPage() {
                   loading={loading}
                   onEdit={handleEditProduct}
                   onRestock={handleRestockClick}
-                  onDelete={handleDeleteProduct}
                   onDeactivate={handleDeactivateProduct}
+                  onActivate={handleActivateProduct}
                   currentPage={page}
                   totalPages={totalPages}
                   onNextPage={handleNextPage}
@@ -225,8 +225,8 @@ export default function ProdukPage() {
               loading={loading}
               onEdit={handleEditProduct}
               onRestock={handleRestockClick}
-              onDelete={handleDeleteProduct}
               onDeactivate={handleDeactivateProduct}
+              onActivate={handleActivateProduct}
               currentPage={page}
               totalPages={totalPages}
               onNextPage={handleNextPage}

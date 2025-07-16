@@ -2,19 +2,8 @@ import { Product } from "@/lib/types";
 import { CardSkeleton } from "./card-skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Edit, EyeOff, Package, Trash2 } from "lucide-react";
+import { Edit, EyeOff, Eye, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { StockBadge } from "./stock-badge";
 import { formatRupiah } from "@/lib/utils";
 export const ProductCards = ({
@@ -22,8 +11,8 @@ export const ProductCards = ({
   loading,
   onEdit,
   onRestock,
-  onDelete,
   onDeactivate,
+  onActivate,
   currentPage,
   totalPages,
   onNextPage,
@@ -33,8 +22,8 @@ export const ProductCards = ({
   loading: boolean;
   onEdit: (product: Product) => void;
   onRestock: (product: Product) => void;
-  onDelete: (product: Product) => void;
   onDeactivate: (product: Product) => void;
+  onActivate: (product: Product) => void;
   currentPage: number;
   totalPages: number;
   onNextPage: () => void;
@@ -54,17 +43,24 @@ export const ProductCards = ({
     <>
       <div className="space-y-4">
         {products.map((product) => (
-          <Card key={product.id}>
+          <Card
+            key={product.id}
+            className={product.isActive ? "" : "bg-gray-100"}
+          >
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-base">
+                <CardTitle
+                  className={`text-base ${product.isActive ? "" : "line-through text-gray-500"}`}
+                >
                   {product.productName}
                 </CardTitle>
                 <div className="flex gap-2">
                   <Badge variant="outline">{product.productCode}</Badge>
-                  <Badge variant={product.isActive ? "default" : "secondary"}>
+                  <span
+                    className={`px-2 py-1 rounded text-xs font-semibold ${product.isActive ? "bg-green-100 text-green-800" : "bg-gray-200 text-gray-600"}`}
+                  >
                     {product.isActive ? "Aktif" : "Nonaktif"}
-                  </Badge>
+                  </span>
                 </div>
               </div>
             </CardHeader>
@@ -80,6 +76,7 @@ export const ProductCards = ({
                   variant="outline"
                   className="flex-1 flex-col !p-2 gap-0 "
                   onClick={() => onEdit(product)}
+                  disabled={!product.isActive}
                 >
                   <Edit className="h-3 w-3 " />
                   <div className="text-[11px]">Edit</div>
@@ -88,6 +85,7 @@ export const ProductCards = ({
                   variant="outline"
                   className="flex-1 flex-col !p-2 gap-0 "
                   onClick={() => onRestock(product)}
+                  disabled={!product.isActive}
                 >
                   <Package className="h-3 w-3 " />
                   <div className="text-[11px]">Restock</div>
@@ -102,34 +100,14 @@ export const ProductCards = ({
                     <div className="text-[11px]"> Nonaktif</div>
                   </Button>
                 ) : (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        className="flex-1"
-                      >
-                        <Trash2 className="h-3 w-3 mr-2" />
-                        Hapus
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Hapus Produk</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Apakah Anda yakin ingin menghapus produk `
-                          {product.productName}`? Tindakan ini tidak dapat
-                          dibatalkan.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Batal</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => onDelete(product)}>
-                          Hapus
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                  <Button
+                    variant="default"
+                    className="flex-1 flex-col !p-2 gap-0 bg-green-100 text-green-800 hover:bg-green-200 border-green-200"
+                    onClick={() => onActivate(product)}
+                  >
+                    <Eye className="h-3 w-3 " />
+                    <div className="text-[11px]"> Aktifkan</div>
+                  </Button>
                 )}
               </div>
             </CardContent>
