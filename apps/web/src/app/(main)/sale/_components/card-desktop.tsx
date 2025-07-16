@@ -31,7 +31,7 @@ export const DesktopCart = ({
   isProcessing,
 }: DesktopCartProps) => (
   <div className="hidden md:block">
-    <Card className="sticky top-4">
+    <Card className="sticky top-36">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <ShoppingCart className="h-5 w-5" />
