@@ -1,3 +1,5 @@
+// File: components/ProductTable.tsx
+
 import { Product } from "@/lib/types";
 import { TableSkeleton } from "./table-skeleton";
 import {
@@ -44,9 +46,8 @@ export const ProductTable = ({
   sortDirectionStock,
   onSortDate,
   onSortName,
-  sortDirectionDate,
   sortDirectionName,
-  sortBy = "stock", // Tambahkan prop ini
+  sortBy = "stock",
 }: {
   products: Product[];
   loading: boolean;
@@ -62,24 +63,23 @@ export const ProductTable = ({
   sortDirectionStock: "asc" | "desc";
   onSortDate: () => void;
   onSortName: () => void;
-  sortDirectionDate: "asc" | "desc";
   sortDirectionName: "asc" | "desc";
-  sortBy?: string; // Tambahkan type ini
+  sortBy?: string;
 }) => {
   if (loading) {
     return <TableSkeleton />;
   }
 
   return (
-    <Table className="lg:w-[96%] lg:mx-[2%] w-[99%] mx-[0.5%] ">
+    <Table>
       <TableHeader>
-        <TableRow>
+        <TableRow className="bg-gray-50/60 hover:bg-gray-50">
           <TableHead
-            className="cursor-pointer select-none"
+            className="w-[28%] cursor-pointer select-none text-left"
             onClick={onSortName}
           >
             <div className="flex items-center">
-              Nama Produk
+              Produk
               {sortBy === "productName" ? (
                 sortDirectionName === "asc" ? (
                   <ChevronUp className="w-4 h-4 ml-1" />
@@ -91,14 +91,11 @@ export const ProductTable = ({
               )}
             </div>
           </TableHead>
-          <TableHead>Kode</TableHead>
-          <TableHead>Kategori</TableHead>
-          <TableHead>Harga Jual</TableHead>
           <TableHead
-            className="cursor-pointer select-none"
+            className="w-[10%] cursor-pointer select-none text-right"
             onClick={onSortStock}
           >
-            <div className="flex items-center">
+            <div className="flex items-center justify-end w-full">
               Stok
               {sortBy === "stock" ? (
                 sortDirectionStock === "asc" ? (
@@ -111,15 +108,17 @@ export const ProductTable = ({
               )}
             </div>
           </TableHead>
-          <TableHead>Status</TableHead>
+          <TableHead className="w-[15%] text-right px-6">Harga Jual</TableHead>
+          <TableHead className="w-[15%] text-left px-6">Kategori</TableHead>
+          <TableHead className="w-[10%] text-center">Status</TableHead>
           <TableHead
-            className="cursor-pointer select-none"
+            className="w-[15%] cursor-pointer select-none text-right"
             onClick={onSortDate}
           >
-            <div className="flex items-center">
-              Tanggal
+            <div className="flex items-center justify-end">
+              Tgl Dibuat
               {sortBy === "createdAt" ? (
-                sortDirectionDate === "asc" ? (
+                sortDirectionStock === "asc" ? ( // Anda bisa ganti ini dengan state sort date sendiri
                   <ChevronUp className="w-4 h-4 ml-1" />
                 ) : (
                   <ChevronDown className="w-4 h-4 ml-1" />
@@ -129,40 +128,57 @@ export const ProductTable = ({
               )}
             </div>
           </TableHead>
-          <TableHead>Aksi</TableHead>
+          <TableHead className="text-center w-[5%]">Aksi</TableHead>
         </TableRow>
       </TableHeader>
-      <TableBody className="">
+      <TableBody>
         {products.map((product) => (
           <TableRow
             key={product.id}
-            className={product.isActive ? "" : "bg-gray-100"}
+            className={`border-b hover:bg-gray-50/70 ${product.isActive ? "" : "bg-gray-50/50"}`}
           >
-            <TableCell
-              className={`font-medium w-[28%] ${product.isActive ? "" : "line-through text-gray-500"}`}
-            >
-              {product.productName}
+            {/* PRODUK */}
+            <TableCell className="align-top">
+              <div
+                className={`font-medium text-gray-800 ${product.isActive ? "" : "text-gray-400 line-through"}`}
+              >
+                {product.productName}
+              </div>
+              <div className="text-xs text-muted-foreground">
+                {product.productCode}
+              </div>
             </TableCell>
-            <TableCell className="font-mono w-[17%]">
-              {product.productCode}
+
+            {/* STOK */}
+            <TableCell className="align-middle">
+              <div className="flex justify-end">
+                <StockBadge stock={product.stock} minStock={product.minStock} />
+              </div>
             </TableCell>
-            <TableCell className="w-[15%]">
-              {product.categoryName || product.category?.name || "-"}
-            </TableCell>
-            <TableCell className="w-[15%]">
+
+            {/* HARGA JUAL */}
+            <TableCell className="px-6 text-right align-middle tabular-nums text-gray-800">
               {formatRupiah(Number(product.price))}
             </TableCell>
-            <TableCell className="w-[10%]">
-              <StockBadge stock={product.stock} minStock={product.minStock} />
+
+            {/* KATEGORI */}
+            <TableCell className="px-6 align-middle">
+              {product.categoryName || product.category?.name || (
+                <span className="text-muted-foreground">-</span>
+              )}
             </TableCell>
-            <TableCell className="w-[10%]">
+
+            {/* STATUS */}
+            <TableCell className="text-center align-middle">
               <span
-                className={`px-2 py-1 rounded text-xs font-semibold ${product.isActive ? "bg-green-100 text-green-800" : "bg-gray-200 text-gray-600"}`}
+                className={`px-2.5 py-1 rounded-full text-xs font-medium ${product.isActive ? "bg-green-100 text-green-800" : "bg-gray-200 text-gray-700"}`}
               >
                 {product.isActive ? "Aktif" : "Nonaktif"}
               </span>
             </TableCell>
-            <TableCell className="w-[15%]">
+
+            {/* TANGGAL */}
+            <TableCell className="text-right align-middle tabular-nums text-sm text-muted-foreground">
               {product.createdAt
                 ? new Date(product.createdAt).toLocaleDateString("id-ID", {
                     day: "2-digit",
@@ -171,7 +187,9 @@ export const ProductTable = ({
                   })
                 : "-"}
             </TableCell>
-            <TableCell>
+
+            {/* AKSI */}
+            <TableCell className="text-center align-middle">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
@@ -193,7 +211,7 @@ export const ProductTable = ({
                   </DropdownMenuItem>
                   {product.isActive ? (
                     <DropdownMenuItem onClick={() => onDeactivate(product)}>
-                      <EyeOff className="h-4 w-4 mr-2" /> Nonaktif
+                      <EyeOff className="h-4 w-4 mr-2" /> Nonaktifkan
                     </DropdownMenuItem>
                   ) : (
                     <DropdownMenuItem onClick={() => onActivate(product)}>
@@ -207,8 +225,8 @@ export const ProductTable = ({
         ))}
       </TableBody>
       <TableFooter>
-        <TableRow>
-          <TableCell colSpan={8}>
+        <TableRow className="bg-gray-50/60 ">
+          <TableCell colSpan={7}>
             <div className="flex items-center justify-between">
               <div className="text-sm text-muted-foreground">
                 Page {currentPage} of {totalPages || 1}

@@ -14,7 +14,7 @@ export const StockBadge = ({
         ? "destructive"
         : "default"
     }
-    className="flex items-center gap-1 w-fit"
+    className="inline-flex items-center gap-1 w-fit min-w-[2.5rem] justify-center"
   >
     {typeof minStock === "number" && stock <= minStock && (
       <AlertTriangle className="h-3 w-3" />

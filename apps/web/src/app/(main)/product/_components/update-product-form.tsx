@@ -139,7 +139,7 @@ export const UpdateProductForm = ({
             type="number"
             min={1}
             defaultValue={product.minStock ?? 5}
-            placeholder="5"
+            placeholder="e.g. 5"
             required
           />
         </div>

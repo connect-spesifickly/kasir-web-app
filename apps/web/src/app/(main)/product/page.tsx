@@ -286,9 +286,6 @@ export default function ProdukPage() {
                   }
                   onSortDate={handleSortDate}
                   onSortName={handleSortName}
-                  sortDirectionDate={
-                    sortBy === "createdAt" ? sortDirection : "asc"
-                  }
                   sortDirectionName={
                     sortBy === "productName" ? sortDirection : "asc"
                   }

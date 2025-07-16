@@ -175,9 +175,9 @@ export default function PenyesuaianStokPage() {
                 ) : (
                   <Table className="lg:w-[96%] lg:mx-[2%] w-[99%] mx-[0.5%]">
                     <TableHeader>
-                      <TableRow>
+                      <TableRow className="bg-gray-50/60 hover:bg-gray-50/60">
                         <TableHead
-                          className="cursor-pointer select-none"
+                          className="w-[15%] cursor-pointer select-none"
                           onClick={() => handleSort("createdAt")}
                         >
                           <div className="flex items-center">
@@ -194,27 +194,20 @@ export default function PenyesuaianStokPage() {
                           </div>
                         </TableHead>
                         <TableHead
-                          className="cursor-pointer select-none"
+                          className="w-[25%] cursor-pointer select-none"
                           onClick={() => handleSort("productName")}
                         >
-                          <div className="flex items-center">
-                            Produk
-                            {sortBy === "productName" ? (
-                              sortDirection === "asc" ? (
-                                <ChevronUp className="w-4 h-4 ml-1" />
-                              ) : (
-                                <ChevronDown className="w-4 h-4 ml-1" />
-                              )
-                            ) : (
-                              <ChevronsUpDown className="w-4 h-4 ml-1 text-muted-foreground" />
-                            )}
-                          </div>
+                          {/* Tidak ada perubahan di sini */}
+                          Produk
                         </TableHead>
+                        {/* PERBAIKAN 1: Perataan dan visualisasi kolom "Perubahan" */}
                         <TableHead
-                          className="cursor-pointer select-none"
+                          className="w-[15%] cursor-pointer select-none text-right" // <-- Rata kanan
                           onClick={() => handleSort("quantityChange")}
                         >
-                          <div className="flex items-center">
+                          <div className="flex items-center justify-end">
+                            {" "}
+                            {/* <-- Rata kanan */}
                             Perubahan
                             {sortBy === "quantityChange" ? (
                               sortDirection === "asc" ? (
@@ -227,9 +220,13 @@ export default function PenyesuaianStokPage() {
                             )}
                           </div>
                         </TableHead>
-                        <TableHead>Stok Sebelum</TableHead>
-                        <TableHead>Alasan</TableHead>
-                        <TableHead>Oleh</TableHead>
+                        {/* PERBAIKAN 2: Perataan kolom "Stok Sebelum" */}
+                        <TableHead className="px-6 w-[15%] text-right">
+                          Stok Sebelum
+                        </TableHead>{" "}
+                        {/* <-- Rata kanan */}
+                        <TableHead className="w-[20%] px-8">Alasan</TableHead>
+                        <TableHead className="w-[10%]">Oleh</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -244,8 +241,13 @@ export default function PenyesuaianStokPage() {
                         </TableRow>
                       ) : (
                         adjustments.map((adjustment: StockAdjustment) => (
-                          <TableRow key={adjustment.id}>
-                            <TableCell>
+                          <TableRow
+                            key={adjustment.id}
+                            className="hover:bg-gray-50/70"
+                          >
+                            <TableCell className="tabular-nums text-muted-foreground">
+                              {" "}
+                              {/* Tambah tabular-nums agar rapi */}
                               {formatDate(adjustment.createdAt)}
                             </TableCell>
                             <TableCell>
@@ -254,29 +256,46 @@ export default function PenyesuaianStokPage() {
                                   {adjustment.product?.productName ??
                                     "Produk tidak ada"}
                                 </p>
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-xs text-muted-foreground">
+                                  {" "}
+                                  {/* PERBAIKAN Minor: Dibuat lebih kecil */}
                                   {adjustment.product?.productCode ?? "N/A"}
                                 </p>
                               </div>
                             </TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-2">
+
+                            {/* PERBAIKAN 3: Tampilan sel "Perubahan" yang lebih profesional */}
+                            <TableCell className="text-right">
+                              <span
+                                className={`inline-flex items-center gap-1 font-semibold ${
+                                  adjustment.quantityChange > 0
+                                    ? "text-green-600"
+                                    : "text-red-600"
+                                }`}
+                              >
                                 {getAdjustmentIcon(adjustment.quantityChange)}
-                                {getAdjustmentBadge(adjustment.quantityChange)}
-                              </div>
+                                {adjustment.quantityChange > 0
+                                  ? `+${adjustment.quantityChange}`
+                                  : adjustment.quantityChange}
+                              </span>
                             </TableCell>
-                            <TableCell>
-                              <Badge variant="outline">
-                                {adjustment.lastStock}
-                              </Badge>
+
+                            {/* PERBAIKAN 4: Tampilan sel "Stok Sebelum" */}
+                            <TableCell className="px-6 text-right tabular-nums">
+                              {" "}
+                              {/* <-- Rata kanan & tabular-nums */}
+                              {adjustment.lastStock}
                             </TableCell>
+
                             <TableCell>
-                              <span className="text-sm">
+                              <span className="px-6 text-sm">
                                 {adjustment.reason}
                               </span>
                             </TableCell>
                             <TableCell>
-                              <span className="text-sm">
+                              <span className="text-sm text-muted-foreground">
+                                {" "}
+                                {/* Dibuat lebih pudar */}
                                 {adjustment.user?.email ?? "User tidak ada"}
                               </span>
                             </TableCell>
@@ -284,9 +303,9 @@ export default function PenyesuaianStokPage() {
                         ))
                       )}
                     </TableBody>
-                    <tfoot>
+                    <tfoot className="bg-gray-50/60 ">
                       <tr>
-                        <td colSpan={6}>
+                        <td colSpan={6} className="px-2">
                           <div className="flex items-center justify-between mt-2">
                             <div className="text-sm text-muted-foreground">
                               Page {page} of {totalPages || 1}
