@@ -38,7 +38,7 @@ const fetchReportApi = async (
       {
         startDate: dateFrom,
         endDate: dateTo,
-        take: 10,
+        take: 100,
       },
       token
     );
