@@ -127,7 +127,7 @@ export function useProductsInfinite(params?: UseProductsParams) {
       toast("Produk berhasil ditambahkan");
       return newProduct;
     } catch (err) {
-      toast("Failed to create product");
+      toast("Failed to create product, mungkin product sudah ada");
       throw err;
     }
   };
@@ -241,7 +241,7 @@ export function useProducts(params?: UseProductsParams) {
       toast("Produk berhasil ditambahkan");
       return newProduct;
     } catch (err) {
-      toast("Failed to create product");
+      toast("Failed to create product, mungkin product sudah ada");
       throw err;
     }
   };
