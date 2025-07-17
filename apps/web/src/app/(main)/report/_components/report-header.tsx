@@ -26,6 +26,7 @@ interface ReportHeaderProps {
   dateFrom: string;
   dateTo: string;
   stockAdjustments: StockAdjustment[];
+  loading: boolean;
 }
 
 type SalesDetail = {
@@ -60,6 +61,7 @@ export function ReportHeader({
   reportData,
   dateFrom,
   dateTo,
+  loading,
 }: ReportHeaderProps) {
   const { data: session } = useSession();
   const accessToken = session?.accessToken;
@@ -489,7 +491,7 @@ export function ReportHeader({
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild className="md:mr-4">
-            <Button variant="outline">
+            <Button variant="outline" disabled={loading}>
               <Download className="h-4 w-4 md:mr-2" />
               <div className="hidden sm:block"> Export Laporan</div>
               <ChevronDown className="h-4 w-4 ml-2" />
@@ -501,15 +503,15 @@ export function ReportHeader({
               Rincian penjualan & penyesuaian
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleExportCSV}>
+            <DropdownMenuItem onClick={handleExportCSV} disabled={loading}>
               <FileText className="h-4 w-4 mr-2" />
               Export CSV
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleExportExcel}>
+            <DropdownMenuItem onClick={handleExportExcel} disabled={loading}>
               <FileSpreadsheet className="h-4 w-4 mr-2" />
               Export Excel
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleExportPDF}>
+            <DropdownMenuItem onClick={handleExportPDF} disabled={loading}>
               <FileText className="h-4 w-4 mr-2" />
               Export PDF
             </DropdownMenuItem>

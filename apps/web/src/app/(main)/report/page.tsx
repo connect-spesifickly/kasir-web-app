@@ -50,6 +50,7 @@ export default function BusinessReportPage() {
           dateFrom={dateFrom}
           dateTo={dateTo}
           stockAdjustments={stockAdjustments}
+          loading={loading}
         />
       </div>
       <div className="flex flex-col gap-4 p-2 md:p-6">
