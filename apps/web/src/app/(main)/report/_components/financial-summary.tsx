@@ -245,7 +245,7 @@ export function FinancialSummary({
               <div className="h-[300px]">
                 {finalChartData.length > 0 ? (
                   <ResponsiveContainer
-                    className="ml-[-30px]"
+                    className="ml-[-30px] "
                     width="100%"
                     height="100%"
                   >
