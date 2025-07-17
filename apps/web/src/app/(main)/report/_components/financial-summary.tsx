@@ -244,7 +244,11 @@ export function FinancialSummary({
             <CardContent>
               <div className="h-[300px]">
                 {finalChartData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer
+                    className="ml-[-30px]"
+                    width="100%"
+                    height="100%"
+                  >
                     <BarChart data={finalChartData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="date" />
@@ -282,7 +286,11 @@ export function FinancialSummary({
             <CardContent>
               <div className="h-[300px]">
                 {finalChartData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer
+                    className="ml-[-30px]"
+                    width="100%"
+                    height="100%"
+                  >
                     <LineChart data={finalChartData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="date" />
