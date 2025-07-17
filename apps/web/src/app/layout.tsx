@@ -28,7 +28,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/vercel.svg" type="image/svg+xml" />
+        <link rel="icon" href="/icon-192.png" type="image/png" />
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body
