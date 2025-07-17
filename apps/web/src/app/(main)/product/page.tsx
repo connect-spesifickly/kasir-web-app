@@ -24,6 +24,7 @@ import { UpdateProductForm } from "./_components/update-product-form";
 import { RestockForm } from "./_components/re-stock-form";
 
 import { PageHeader } from "./_components/product-header";
+import { mutate as globalMutate } from "swr";
 export default function ProdukPage() {
   const [searchTerm, setSearchTerm] = React.useState("");
   const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
@@ -81,6 +82,8 @@ export default function ProdukPage() {
     setIsCreating(true);
     try {
       await createProduct(data);
+      // Paksa refresh cache produk di seluruh halaman (termasuk penyesuaian stok)
+      globalMutate((key) => Array.isArray(key) && key[0] === "products");
       setIsCreateModalOpen(false);
     } catch (error) {
       console.error("Error creating product:", error);

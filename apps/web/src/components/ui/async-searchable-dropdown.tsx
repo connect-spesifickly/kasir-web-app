@@ -11,16 +11,18 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { api } from "@/utils/axios";
+import type { Product } from "@/lib/types";
+import { useRef } from "react";
 
-export interface SearchableDropdownOption {
+export interface AsyncSearchableDropdownOption {
   value: string;
   label: string;
   description?: string;
   badge?: string;
 }
 
-interface SearchableDropdownProps {
-  options: SearchableDropdownOption[];
+interface AsyncSearchableDropdownProps {
   value?: string;
   onValueChange: (value: string) => void;
   placeholder?: string;
@@ -29,34 +31,91 @@ interface SearchableDropdownProps {
   className?: string;
 }
 
-export function SearchableDropdown({
-  options,
+export function AsyncSearchableDropdown({
   value,
   onValueChange,
-  placeholder = "Pilih opsi...",
-  searchPlaceholder = "Cari...",
+  placeholder = "Pilih produk...",
+  searchPlaceholder = "Cari nama produk...",
   disabled = false,
   className,
-}: SearchableDropdownProps) {
+}: AsyncSearchableDropdownProps) {
   const [open, setOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState("");
+  const [options, setOptions] = React.useState<AsyncSearchableDropdownOption[]>(
+    []
+  );
+  const [loading, setLoading] = React.useState(false);
+  const [selectedOption, setSelectedOption] = React.useState<
+    AsyncSearchableDropdownOption | undefined
+  >(undefined);
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
+  const [error, setError] = React.useState<string | null>(null);
 
-  const selectedOption = options.find((option) => option.value === value);
+  // Fetch produk dari backend setiap kali searchTerm berubah
+  React.useEffect(() => {
+    if (!open) return;
+    setLoading(true);
+    setError(null);
+    if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+    debounceTimeout.current = setTimeout(() => {
+      Promise.resolve(
+        api.get("/products", {
+          params: { search: searchTerm, take: 12 },
+        })
+      )
+        .then((res) => {
+          console.log("[AsyncDropdown] API response:", res.data);
+          const data = Array.isArray(
+            (res.data as { data: { data: Product[] } }).data?.data
+          )
+            ? (res.data as { data: { data: Product[] } }).data.data
+            : [];
+          setOptions(
+            data.map((product: Product) => ({
+              value: product.id,
+              label: product.productName,
+              description: `Kode: ${product.productCode}`,
+              badge: `Stok: ${product.stock}`,
+            }))
+          );
+        })
+        .catch(() => {
+          setError("Gagal mengambil produk. Coba lagi.");
+          setOptions([]);
+        })
+        .finally(() => setLoading(false));
+    }, 300);
+    // Cleanup
+    return () => {
+      if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+    };
+  }, [searchTerm, open]);
 
-  // Normalisasi string untuk pencarian fleksibel
-  function normalize(str: string) {
-    return str.toLowerCase().replace(/\s+/g, " ").trim();
-  }
-
-  const normalizedSearch = normalize(searchTerm);
-  const filteredOptions = options.filter((option) => {
-    const label = normalize(option.label);
-    const description = option.description ? normalize(option.description) : "";
-    return (
-      label.includes(normalizedSearch) || description.includes(normalizedSearch)
-    );
-  });
+  // Fetch detail produk jika value berubah (untuk label selected)
+  React.useEffect(() => {
+    if (!value) {
+      setSelectedOption(undefined);
+      return;
+    }
+    const found = options.find((opt) => opt.value === value);
+    if (found) {
+      setSelectedOption(found);
+      return;
+    }
+    setLoading(true);
+    Promise.resolve(api.get(`/products/${value}`))
+      .then((res) => {
+        const p = (res.data as { data: Product }).data;
+        setSelectedOption({
+          value: p.id,
+          label: p.productName,
+          description: `Kode: ${p.productCode}`,
+          badge: `Stok: ${p.stock}`,
+        });
+      })
+      .finally(() => setLoading(false));
+  }, [value]);
 
   const handleSelect = (optionValue: string) => {
     onValueChange(optionValue);
@@ -67,7 +126,6 @@ export function SearchableDropdown({
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
     if (newOpen) {
-      // Focus on input when dropdown opens
       setTimeout(() => {
         inputRef.current?.focus();
       }, 0);
@@ -118,22 +176,20 @@ export function SearchableDropdown({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
+              disabled={loading}
               onKeyDown={(e) => {
                 if (e.key === "Escape") {
                   setOpen(false);
                   setSearchTerm("");
                 }
-                // Prevent default behavior for arrow keys to keep focus on input
                 if (e.key === "ArrowDown" || e.key === "ArrowUp") {
                   e.preventDefault();
                 }
               }}
               onFocus={(e) => {
-                // Keep focus on input when dropdown opens
                 e.target.focus();
               }}
               onBlur={() => {
-                // Keep focus on input when typing
                 setTimeout(() => {
                   if (open) {
                     inputRef.current?.focus();
@@ -144,18 +200,23 @@ export function SearchableDropdown({
           </div>
         </div>
         <div className="max-h-[160px] overflow-y-auto">
-          {filteredOptions.length === 0 ? (
+          {loading ? (
+            <div className="p-2 text-sm text-muted-foreground text-center">
+              Memuat...
+            </div>
+          ) : error ? (
+            <div className="p-2 text-sm text-red-500 text-center">{error}</div>
+          ) : options.length === 0 ? (
             <div className="p-2 text-sm text-muted-foreground text-center">
               Tidak ada hasil ditemukan.
             </div>
           ) : (
-            filteredOptions.map((option) => (
+            options.map((option) => (
               <div
                 key={option.value}
                 className="flex items-center justify-between p-2 cursor-pointer hover:bg-accent hover:text-accent-foreground"
                 onClick={() => handleSelect(option.value)}
                 onMouseDown={(e) => {
-                  // Prevent focus from moving to the menu item
                   e.preventDefault();
                 }}
               >

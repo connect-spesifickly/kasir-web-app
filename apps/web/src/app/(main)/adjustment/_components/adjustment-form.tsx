@@ -11,12 +11,11 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { SearchableDropdown } from "@/components/ui/searchable-dropdown";
 import { ADJUSTMENT_REASONS } from "@/types/stock-adjustment";
-import type { Product } from "@/lib/types";
 import type { StockAdjustmentCreateData } from "@/types/stock-adjustment";
 import { useSession } from "next-auth/react";
+import type { Product } from "@/lib/types";
 
 interface AdjustmentFormProps {
   products: Product[];
@@ -82,7 +81,9 @@ export function AdjustmentForm({
         </Label>
         {productsLoading ? (
           <div className="p-2">
-            <Skeleton className="h-4 w-full" />
+            <span className="text-muted-foreground text-sm">
+              Memuat produk...
+            </span>
           </div>
         ) : (
           <SearchableDropdown

@@ -85,7 +85,7 @@ export default function PenyesuaianStokPage() {
     setPage(1);
   };
 
-  const { products, loading: productsLoading } = useProducts();
+  const { products, loading: productsLoading } = useProducts({ take: 10000 });
 
   const handleCreateAdjustment = async (data: StockAdjustmentCreateData) => {
     await createAdjustment(data);
