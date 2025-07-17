@@ -30,6 +30,7 @@ export default async function RootLayout({
       <head>
         <link rel="icon" href="/icon-192.png" type="image/png" />
         <link rel="manifest" href="/manifest.json" />
+        <meta property="og:image" content="/og-image.png" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
