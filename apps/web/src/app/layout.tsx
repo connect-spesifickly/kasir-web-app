@@ -29,6 +29,7 @@ export default async function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" href="/vercel.svg" type="image/svg+xml" />
+        <link rel="manifest" href="/manifest.json" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
