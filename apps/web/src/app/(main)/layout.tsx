@@ -13,19 +13,13 @@ export default function MainLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   React.useEffect(() => {
-    const waitForSession = async () => {
-      if (status === "unauthenticated") {
-        redirect("/login");
-      }
-      if (status === "authenticated") {
-        redirect("/sale");
-      }
-    };
-    if (status === "loading") return;
-    waitForSession();
-  }, [session, status]);
+    if (status === "unauthenticated") {
+      redirect("/login");
+    }
+    // Tidak perlu redirect ke /sale jika sudah login
+  }, [status]);
   const pathname = usePathname();
 
   const getActivePage = (): PageType => {
