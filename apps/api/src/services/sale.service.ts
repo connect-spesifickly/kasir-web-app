@@ -14,7 +14,7 @@ class SaleService {
     });
     // Untuk akses cepat nanti, ubah array menjadi Map (Object)
     const productMap = new Map<string, Product>(
-      productsInCart.map((p) => [
+      productsInCart.map((p: any) => [
         p.id as string,
         {
           ...p,
@@ -122,19 +122,12 @@ class SaleService {
       },
     });
 
-    const transformedSales = sales.map(
-      (sale: {
-        id: any;
-        transactionTime: any;
-        totalAmount: any;
-        _count: { saleDetails: any };
-      }) => ({
-        id: sale.id,
-        transactionTime: sale.transactionTime,
-        totalAmount: sale.totalAmount,
-        totalItems: sale._count.saleDetails,
-      })
-    );
+    const transformedSales = sales.map((sale: any) => ({
+      id: sale.id,
+      transactionTime: sale.transactionTime,
+      totalAmount: sale.totalAmount,
+      totalItems: sale._count.saleDetails,
+    }));
     const totalSales = await prisma.sale.count({ where: filter });
     return { sales: transformedSales, total: totalSales };
   }
@@ -180,8 +173,8 @@ class SaleService {
     });
 
     // Flatten ke bentuk per item
-    const details = sales.flatMap((sale) =>
-      sale.saleDetails.map((detail) => ({
+    const details = sales.flatMap((sale: any) =>
+      sale.saleDetails.map((detail: any) => ({
         transactionDate: sale.transactionTime,
         invoiceNumber: sale.id,
         productCode: detail.product?.productCode || "",

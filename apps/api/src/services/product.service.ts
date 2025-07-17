@@ -29,7 +29,7 @@ class ProductService {
       stockGreaterThan,
       categoryId,
     } = query;
-    const where: Prisma.ProductWhereInput = {};
+    const where: any = {};
 
     if (typeof isActive !== "undefined") {
       where.isActive = isActive === "true" || isActive === true;
@@ -59,41 +59,42 @@ class ProductService {
     // Tambahkan sorting best-selling
     if (orderBy === "bestSelling") {
       // Query aggregate: produk + total terjual
-      const products = (await prisma.$queryRaw(
-        Prisma.sql`
-          SELECT 
-            p.id,
-            p.product_code,
-            p.product_name,
-            p.cost_price,
-            p.price,
-            p.stock,
-            p.min_stock,
-            p.is_active,
-            p.created_at,
-            p.category_id,
-            COALESCE(SUM(sd.quantity), 0) as "totalSold"
-          FROM "products" p
-          LEFT JOIN "sale_details" sd ON sd.product_id = p.id
-          WHERE p."is_active" = true
-          ${categoryId ? Prisma.sql`AND p."category_id" = ${categoryId}` : Prisma.empty}
-          ${search ? Prisma.sql`AND (p."product_name" ILIKE ${"%" + search + "%"} OR p."product_code" ILIKE ${"%" + search + "%"})` : Prisma.empty}
-          GROUP BY 
-            p.id,
-            p.product_code,
-            p.product_name,
-            p.cost_price,
-            p.price,
-            p.stock,
-            p.min_stock,
-            p.is_active,
-            p.created_at,
-            p.category_id
-          ORDER BY "totalSold" DESC
-          LIMIT ${Number(take) || 12}
-          OFFSET ${Number(skip) || 0}
-        `
-      )) as any[];
+      let sql = `
+        SELECT 
+          p.id,
+          p.product_code,
+          p.product_name,
+          p.cost_price,
+          p.price,
+          p.stock,
+          p.min_stock,
+          p.is_active,
+          p.created_at,
+          p.category_id,
+          COALESCE(SUM(sd.quantity), 0) as "totalSold"
+        FROM "products" p
+        LEFT JOIN "sale_details" sd ON sd.product_id = p.id
+        WHERE p."is_active" = true
+      `;
+      if (categoryId) sql += ` AND p."category_id" = '${categoryId}'`;
+      if (search)
+        sql += ` AND (p."product_name" ILIKE '%${search}%' OR p."product_code" ILIKE '%${search}%')`;
+      sql += ` GROUP BY 
+        p.id,
+        p.product_code,
+        p.product_name,
+        p.cost_price,
+        p.price,
+        p.stock,
+        p.min_stock,
+        p.is_active,
+        p.created_at,
+        p.category_id
+        ORDER BY "totalSold" DESC
+        LIMIT ${Number(take) || 12}
+        OFFSET ${Number(skip) || 0}
+      `;
+      const products = (await prisma.$queryRawUnsafe(sql)) as any[];
       const total = await prisma.product.count({
         where,
       });
@@ -141,7 +142,7 @@ class ProductService {
   }
 
   async update(id: string, data: any) {
-    const updateData: Prisma.ProductUpdateInput = {};
+    const updateData: any = {};
     if (data.productCode) updateData.productCode = data.productCode;
     if (data.productName) updateData.productName = data.productName;
     if (data.price) updateData.price = data.price;
