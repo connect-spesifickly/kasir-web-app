@@ -48,3 +48,13 @@ export interface RestockData {
   quantityAdded: number;
   newCostPrice: number;
 }
+
+export interface Category {
+  id: string;
+  name: string;
+}
+
+export interface ProductApiResponse {
+  products: Product[];
+  total: number;
+}

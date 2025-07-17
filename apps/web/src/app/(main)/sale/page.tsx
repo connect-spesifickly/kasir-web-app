@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { ProductGrid } from "./_components/product-grid";
 import { DesktopCart } from "./_components/card-desktop";
 import { MobileCartModal } from "./_components/mobile-cart-modal";
-import { useProducts } from "@/hooks/use-products";
+import { useProductsInfinite } from "@/hooks/use-products";
 import { useCart } from "@/hooks/use-cart";
 import { PageHeader } from "./_components/sale-header";
 import { toast } from "sonner";
@@ -13,7 +13,8 @@ import { api } from "@/utils/axios";
 import { useSession } from "next-auth/react";
 import { IoIosWarning } from "react-icons/io";
 import { useCategories } from "@/hooks/use-products";
-// Tambahkan type untuk produk low stock
+import { Category } from "@/lib/types";
+
 interface ProductLowStock {
   id: string;
   productName: string;
@@ -27,12 +28,15 @@ export default function KasirPage() {
   const [isPaymentOpen, setIsPaymentOpen] = React.useState(false);
   const [selectedCategory, setSelectedCategory] = React.useState<string>("");
   const { data: session, status } = useSession();
-  const { products, loading, refetch } = useProducts({
-    search: searchTerm,
-    isActive: true,
-    stockGreaterThan: 0,
-    categoryId: selectedCategory || undefined,
-  });
+
+  const { products, loading, loadingMore, hasMore, loadMore, refetch } =
+    useProductsInfinite({
+      search: searchTerm,
+      isActive: true,
+      stockGreaterThan: 0,
+      categoryId: selectedCategory || undefined,
+    });
+
   const { categories, loading: loadingCategories } = useCategories();
   const {
     cart,
@@ -44,6 +48,7 @@ export default function KasirPage() {
     processPayment,
     isProcessing,
   } = useCart();
+
   // Handler functions
   const handlePayment = async () => {
     const sale = await processPayment();
@@ -60,10 +65,16 @@ export default function KasirPage() {
   const totalItems = getTotalItems();
   const totalPrice = getTotalPrice();
 
+  // Refetch data ketika halaman dibuka
+  React.useEffect(() => {
+    if (status === "authenticated") {
+      refetch();
+    }
+  }, [status, refetch]);
+
   React.useEffect(() => {
     // Fetch low stock products saat dashboard dibuka
     const fetchLowStock = async () => {
-      console.log("mulai fetch");
       try {
         const res = await api.get("/products/low-stock", {
           headers: {
@@ -76,7 +87,6 @@ export default function KasirPage() {
           ? (res.data as { data: ProductLowStock[] }).data
           : [];
         if (products.length > 0) {
-          // Style ini paling menyatu dengan desain Kasir Anda
           toast.warning(
             <div>
               <div style={{ fontWeight: "bold", marginBottom: "8px" }}>
@@ -91,12 +101,10 @@ export default function KasirPage() {
               </ul>
             </div>,
             {
-              // Gunakan warna merah yang sama dengan badge stok kritis Anda
               icon: <IoIosWarning size={24} color="#dc3545" />,
               style: {
-                background: "#FFFFFF", // Cocok dengan background kartu produk
-                color: "#1A202C", // Warna teks standar Anda
-                // Aksen merah, konsisten dengan sinyal 'danger' di UI
+                background: "#FFFFFF",
+                color: "#1A202C",
                 borderLeft: "5px solid #dc3545",
                 borderRadius: "8px",
                 boxShadow:
@@ -111,19 +119,19 @@ export default function KasirPage() {
         console.error("Error fetching low stock products");
       }
     };
-    if (status == "loading") return undefined;
+    if (status === "loading") return;
     fetchLowStock();
   }, [session, status]);
 
   return (
     <div className="w-full h-full relative">
-      <div className="sticky top-16  z-40 bg-background border-b ">
+      <div className="sticky top-16 z-40 bg-background border-b">
         <PageHeader
           totalItems={totalItems}
           onOpenMobileCart={handleOpenMobileCart}
         />
       </div>
-      <div className="flex flex-col w-full ">
+      <div className="flex flex-col w-full">
         <div className="flex flex-1 flex-col gap-4 p-2 md:p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Product Selection */}
@@ -136,7 +144,6 @@ export default function KasirPage() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
                 />
-                {/* Dropdown kategori */}
                 <div className="relative w-full md:w-auto min-w-[160px] flex-1">
                   <select
                     id="categoryFilter"
@@ -146,7 +153,7 @@ export default function KasirPage() {
                     disabled={loadingCategories}
                   >
                     <option value="">Semua Kategori</option>
-                    {categories.map((cat) => (
+                    {categories.map((cat: Category) => (
                       <option key={cat.id} value={cat.id}>
                         {cat.name}
                       </option>
@@ -158,6 +165,9 @@ export default function KasirPage() {
               <ProductGrid
                 products={products}
                 loading={loading}
+                loadingMore={loadingMore}
+                hasMore={hasMore}
+                onLoadMore={loadMore}
                 onAddToCart={addToCart}
               />
             </div>
