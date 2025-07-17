@@ -236,7 +236,10 @@ export default function PenyesuaianStokPage() {
                             colSpan={6}
                             className="text-center py-8 text-muted-foreground"
                           >
-                            {STOCK_ADJUSTMENT_MESSAGES.EMPTY_DATA}
+                            <div className="flex flex-col items-center gap-2">
+                              <Package className="h-12 w-12 text-muted-foreground " />
+                              <p>{STOCK_ADJUSTMENT_MESSAGES.EMPTY_DATA}</p>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ) : (

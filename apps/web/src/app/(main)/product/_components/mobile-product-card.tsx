@@ -2,7 +2,13 @@ import { Product } from "@/lib/types";
 import { CardSkeleton } from "./card-skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Edit, EyeOff, Eye, Package } from "lucide-react";
+import {
+  Edit,
+  EyeOff,
+  Eye,
+  Package,
+  Package as PackageIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StockBadge } from "./stock-badge";
 import { formatRupiah } from "@/lib/utils";
@@ -41,79 +47,91 @@ export const ProductCards = ({
 
   return (
     <>
-      <div className="space-y-4">
-        {products.map((product) => (
-          <Card
-            key={product.id}
-            className={product.isActive ? "" : "bg-gray-100"}
-          >
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle
-                  className={`text-base ${product.isActive ? "" : "line-through text-gray-500"}`}
-                >
-                  {product.productName}
-                </CardTitle>
-                <div className="flex gap-2">
-                  <Badge variant="outline">{product.productCode}</Badge>
-                  <span
-                    className={`px-2 py-1 rounded text-xs font-semibold ${product.isActive ? "bg-green-100 text-green-800" : "bg-gray-200 text-gray-600"}`}
+      {products.length === 0 ? (
+        <Card>
+          <CardContent className="p-8 text-center">
+            <PackageIcon className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <p className="text-muted-foreground">Tidak ada data product</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {products.map((product) => (
+            <Card
+              key={product.id}
+              className={product.isActive ? "" : "bg-gray-100"}
+            >
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle
+                    className={`text-base ${product.isActive ? "line-through text-gray-500" : ""}`}
                   >
-                    {product.isActive ? "Aktif" : "Nonaktif"}
-                  </span>
+                    {product.productName}
+                  </CardTitle>
+                  <div className="flex gap-2">
+                    <Badge variant="outline">{product.productCode}</Badge>
+                    <span
+                      className={`px-2 py-1 rounded text-xs font-semibold ${product.isActive ? "bg-green-100 text-green-800" : "bg-gray-200 text-gray-600"}`}
+                    >
+                      {product.isActive ? "Aktif" : "Nonaktif"}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-lg font-bold text-primary">
-                  {formatRupiah(Number(product.price))}
-                </span>
-                <StockBadge stock={product.stock} minStock={product.minStock} />
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  className="flex-1 flex-col !p-2 gap-0 "
-                  onClick={() => onEdit(product)}
-                  disabled={!product.isActive}
-                >
-                  <Edit className="h-3 w-3 " />
-                  <div className="text-[11px]">Edit</div>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex-1 flex-col !p-2 gap-0 "
-                  onClick={() => onRestock(product)}
-                  disabled={!product.isActive}
-                >
-                  <Package className="h-3 w-3 " />
-                  <div className="text-[11px]">Restock</div>
-                </Button>
-                {product.isActive ? (
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-lg font-bold text-primary">
+                    {formatRupiah(Number(product.price))}
+                  </span>
+                  <StockBadge
+                    stock={product.stock}
+                    minStock={product.minStock}
+                  />
+                </div>
+                <div className="flex gap-2">
                   <Button
                     variant="outline"
                     className="flex-1 flex-col !p-2 gap-0 "
-                    onClick={() => onDeactivate(product)}
+                    onClick={() => onEdit(product)}
+                    disabled={!product.isActive}
                   >
-                    <EyeOff className="h-3 w-3 " />
-                    <div className="text-[11px]"> Nonaktif</div>
+                    <Edit className="h-3 w-3 " />
+                    <div className="text-[11px]">Edit</div>
                   </Button>
-                ) : (
                   <Button
-                    variant="default"
-                    className="flex-1 flex-col !p-2 gap-0 bg-green-100 text-green-800 hover:bg-green-200 border-green-200"
-                    onClick={() => onActivate(product)}
+                    variant="outline"
+                    className="flex-1 flex-col !p-2 gap-0 "
+                    onClick={() => onRestock(product)}
+                    disabled={!product.isActive}
                   >
-                    <Eye className="h-3 w-3 " />
-                    <div className="text-[11px]"> Aktifkan</div>
+                    <Package className="h-3 w-3 " />
+                    <div className="text-[11px]">Restock</div>
                   </Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                  {product.isActive ? (
+                    <Button
+                      variant="outline"
+                      className="flex-1 flex-col !p-2 gap-0 "
+                      onClick={() => onDeactivate(product)}
+                    >
+                      <EyeOff className="h-3 w-3 " />
+                      <div className="text-[11px]"> Nonaktif</div>
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="default"
+                      className="flex-1 flex-col !p-2 gap-0 bg-green-100 text-green-800 hover:bg-green-200 border-green-200"
+                      onClick={() => onActivate(product)}
+                    >
+                      <Eye className="h-3 w-3 " />
+                      <div className="text-[11px]"> Aktifkan</div>
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
       {products.length > 0 && (
         <div className="flex justify-between items-center mt-4">
           <Button
