@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { SessionProvider } from "next-auth/react";
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,9 +30,17 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
-        <SessionProvider>{children}</SessionProvider>
+        <Suspense
+          fallback={
+            <div className="flex items-center w-full justify-center min-h-screen text-sm">
+              Loading data, please stand by
+            </div>
+          }
+        >
+          <SessionProvider>{children}</SessionProvider>
 
-        <Toaster />
+          <Toaster />
+        </Suspense>
       </body>
     </html>
   );
