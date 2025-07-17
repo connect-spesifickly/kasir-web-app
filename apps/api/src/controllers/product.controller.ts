@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { ApiResponse } from "../helpers/api-response";
 import productService from "../services/product.service";
-import { error } from "console";
 import { ResponseError } from "../helpers/error";
 
 class ProductController {

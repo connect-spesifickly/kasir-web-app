@@ -33,7 +33,6 @@ export default function Login() {
   };
   async function handleSubmit(values: FormValues) {
     setIsLogin(true);
-    console.log("Submittzing login with values:", values);
     try {
       const result = await signIn("credentials", {
         email: values.email,

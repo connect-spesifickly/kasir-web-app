@@ -39,7 +39,6 @@ export default function ResetPassword() {
 
   async function handleSubmit(values: FormValues) {
     setIsResetPassword(true);
-    console.log("Submittzing ResetPassword with values:", values);
     try {
       await api.post("/auth/reset-password", {
         newPassword: values.newPassword,

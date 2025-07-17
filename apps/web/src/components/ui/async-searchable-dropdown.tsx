@@ -65,7 +65,6 @@ export function AsyncSearchableDropdown({
         })
       )
         .then((res) => {
-          console.log("[AsyncDropdown] API response:", res.data);
           const data = Array.isArray(
             (res.data as { data: { data: Product[] } }).data?.data
           )
