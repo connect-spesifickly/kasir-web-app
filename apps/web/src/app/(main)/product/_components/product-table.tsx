@@ -45,6 +45,7 @@ export const ProductTable = ({
   onSortStock,
   sortDirectionStock,
   onSortDate,
+  sortDirectionDate,
   onSortName,
   sortDirectionName,
   sortBy = "stock",
@@ -62,6 +63,7 @@ export const ProductTable = ({
   onSortStock: () => void;
   sortDirectionStock: "asc" | "desc";
   onSortDate: () => void;
+  sortDirectionDate: "asc" | "desc";
   onSortName: () => void;
   sortDirectionName: "asc" | "desc";
   sortBy?: string;
@@ -118,7 +120,7 @@ export const ProductTable = ({
             <div className="flex items-center justify-end">
               Tgl Dibuat
               {sortBy === "createdAt" ? (
-                sortDirectionStock === "asc" ? ( // Anda bisa ganti ini dengan state sort date sendiri
+                sortDirectionDate === "asc" ? (
                   <ChevronUp className="w-4 h-4 ml-1" />
                 ) : (
                   <ChevronDown className="w-4 h-4 ml-1" />

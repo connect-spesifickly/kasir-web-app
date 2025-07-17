@@ -45,6 +45,10 @@ export default function ProdukPage() {
   const [sortDirection, setSortDirection] = React.useState<"asc" | "desc">(
     "asc"
   );
+  // Tambahkan state khusus untuk tanggal
+  const [sortDirectionDate, setSortDirectionDate] = React.useState<
+    "asc" | "desc"
+  >("desc");
   const [categoryId, setCategoryId] = React.useState<string>("all");
   const [isActive, setIsActive] = React.useState<string>("all");
   const { categories } = useCategories();
@@ -155,10 +159,12 @@ export default function ProdukPage() {
   // Handler untuk klik header kolom tanggal
   const handleSortDate = () => {
     if (sortBy === "createdAt") {
+      setSortDirectionDate((prev) => (prev === "asc" ? "desc" : "asc"));
       setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
     } else {
       setSortBy("createdAt");
       setSortDirection("desc"); // default direction untuk tanggal
+      setSortDirectionDate("desc");
     }
     setPage(1);
   };
@@ -285,6 +291,7 @@ export default function ProdukPage() {
                     sortBy === "stock" ? sortDirection : "asc"
                   }
                   onSortDate={handleSortDate}
+                  sortDirectionDate={sortDirectionDate}
                   onSortName={handleSortName}
                   sortDirectionName={
                     sortBy === "productName" ? sortDirection : "asc"

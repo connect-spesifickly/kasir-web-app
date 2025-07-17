@@ -52,6 +52,8 @@ class ProductService {
       order = { stock: orderDirection === "desc" ? "desc" : "asc" };
     } else if (orderBy === "productName") {
       order = { productName: orderDirection === "desc" ? "desc" : "asc" };
+    } else if (orderBy === "createdAt") {
+      order = { createdAt: orderDirection === "desc" ? "desc" : "asc" };
     }
 
     // Tambahkan sorting best-selling
