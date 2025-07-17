@@ -9,8 +9,12 @@ const envFile = NODE_ENV === "development" ? ".env.local" : ".env";
 config({ path: resolve(__dirname, `../${envFile}`) });
 config({ path: resolve(__dirname, `../${envFile}.local`), override: true });
 
+// CORS origin dinamis dari env, support multi-origin (pisah koma)
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(",").map((o) => o.trim())
+  : ["http://localhost:3000"];
 export const corsOptions: CorsOptions = {
-  origin: ["http://localhost:3000"],
+  origin: allowedOrigins,
   credentials: true,
 };
 
