@@ -35,6 +35,7 @@ export default function KasirPage() {
       isActive: true,
       stockGreaterThan: 0,
       categoryId: selectedCategory || undefined,
+      orderBy: "bestSelling", // urutkan produk terlaris
     });
 
   const { categories, loading: loadingCategories } = useCategories();

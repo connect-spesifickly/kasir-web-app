@@ -54,6 +54,64 @@ class ProductService {
       order = { productName: orderDirection === "desc" ? "desc" : "asc" };
     }
 
+    // Tambahkan sorting best-selling
+    if (orderBy === "bestSelling") {
+      // Query aggregate: produk + total terjual
+      const products = (await prisma.$queryRaw(
+        Prisma.sql`
+          SELECT 
+            p.id,
+            p.product_code,
+            p.product_name,
+            p.cost_price,
+            p.price,
+            p.stock,
+            p.min_stock,
+            p.is_active,
+            p.created_at,
+            p.category_id,
+            COALESCE(SUM(sd.quantity), 0) as "totalSold"
+          FROM "products" p
+          LEFT JOIN "sale_details" sd ON sd.product_id = p.id
+          WHERE p."is_active" = true
+          ${categoryId ? Prisma.sql`AND p."category_id" = ${categoryId}` : Prisma.empty}
+          ${search ? Prisma.sql`AND (p."product_name" ILIKE ${"%" + search + "%"} OR p."product_code" ILIKE ${"%" + search + "%"})` : Prisma.empty}
+          GROUP BY 
+            p.id,
+            p.product_code,
+            p.product_name,
+            p.cost_price,
+            p.price,
+            p.stock,
+            p.min_stock,
+            p.is_active,
+            p.created_at,
+            p.category_id
+          ORDER BY "totalSold" DESC
+          LIMIT ${Number(take) || 12}
+          OFFSET ${Number(skip) || 0}
+        `
+      )) as any[];
+      const total = await prisma.product.count({
+        where,
+      });
+      const mappedProducts = products.map((p: any) => ({
+        id: p.id,
+        productCode: p.product_code,
+        productName: p.product_name,
+        costPrice: p.cost_price,
+        price: p.price,
+        stock: p.stock,
+        minStock: p.min_stock,
+        isActive: p.is_active,
+        createdAt: p.created_at,
+        categoryId: p.category_id,
+        totalSold: Number(p.totalSold),
+        // categoryName: null, // bisa diisi jika perlu join kategori
+      }));
+      return { data: mappedProducts, total };
+    }
+
     const [products, total] = await Promise.all([
       prisma.product.findMany({
         where,

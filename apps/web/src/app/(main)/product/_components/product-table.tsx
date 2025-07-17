@@ -9,7 +9,6 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  TableFooter,
 } from "@/components/ui/table";
 import { StockBadge } from "./stock-badge";
 import { Button } from "@/components/ui/button";
@@ -242,10 +241,10 @@ export const ProductTable = ({
           ))
         )}
       </TableBody>
-      <TableFooter>
-        <TableRow className="bg-gray-50/60 ">
-          <TableCell colSpan={7}>
-            <div className="flex items-center justify-between">
+      <tfoot className="bg-gray-50/60 ">
+        <tr>
+          <td colSpan={7} className="px-2">
+            <div className="flex items-center justify-between my-2">
               <div className="text-sm text-muted-foreground">
                 Page {currentPage} of {totalPages || 1}
               </div>
@@ -268,9 +267,9 @@ export const ProductTable = ({
                 </Button>
               </div>
             </div>
-          </TableCell>
-        </TableRow>
-      </TableFooter>
+          </td>
+        </tr>
+      </tfoot>
     </Table>
   );
 };

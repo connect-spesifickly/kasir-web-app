@@ -309,7 +309,7 @@ export default function PenyesuaianStokPage() {
                     <tfoot className="bg-gray-50/60 ">
                       <tr>
                         <td colSpan={6} className="px-2">
-                          <div className="flex items-center justify-between mt-2">
+                          <div className="flex items-center justify-between my-2">
                             <div className="text-sm text-muted-foreground">
                               Page {page} of {totalPages || 1}
                             </div>
