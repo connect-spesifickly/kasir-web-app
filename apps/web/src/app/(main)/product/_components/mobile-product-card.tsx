@@ -64,7 +64,7 @@ export const ProductCards = ({
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle
-                    className={`text-base ${product.isActive ? "line-through text-gray-500" : ""}`}
+                    className={`text-base ${!product.isActive ? "line-through text-gray-500" : ""}`}
                   >
                     {product.productName}
                   </CardTitle>

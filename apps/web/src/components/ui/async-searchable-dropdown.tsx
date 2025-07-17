@@ -114,7 +114,7 @@ export function AsyncSearchableDropdown({
         });
       })
       .finally(() => setLoading(false));
-  }, [value]);
+  }, [options, value]);
 
   const handleSelect = (optionValue: string) => {
     onValueChange(optionValue);
