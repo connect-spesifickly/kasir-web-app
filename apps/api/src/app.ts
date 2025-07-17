@@ -29,7 +29,16 @@ export default class App {
   private configure(): void {
     this.app.use(cors(corsOptions));
     this.app.options("*", (req, res) => {
-      res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+      // Dynamic CORS origin for manual OPTIONS
+      const allowedOrigins = process.env.CORS_ORIGIN
+        ? process.env.CORS_ORIGIN.split(",").map((o) => o.trim())
+        : ["http://localhost:3000"];
+      const reqOrigin = req.headers.origin;
+      if (reqOrigin && allowedOrigins.includes(reqOrigin)) {
+        res.header("Access-Control-Allow-Origin", reqOrigin);
+      } else {
+        res.header("Access-Control-Allow-Origin", "");
+      }
       res.header(
         "Access-Control-Allow-Methods",
         "GET, POST, PUT, DELETE, OPTIONS"
