@@ -41,7 +41,6 @@ export function DateFilter({
               value={dateFrom}
               onChange={(e) => onDateFromChange(e.target.value)}
               max={dateTo}
-              className="!pr-3"
             />
           </div>
           <div>
@@ -55,7 +54,6 @@ export function DateFilter({
               onChange={(e) => onDateToChange(e.target.value)}
               min={dateFrom}
               max={new Date().toISOString().split("T")[0]}
-              className="!pr-3"
             />
           </div>
           <Button onClick={onApplyFilter} disabled={loading || refreshing}>
