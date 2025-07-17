@@ -33,7 +33,7 @@ export default function BusinessReportPage() {
   // Hanya fetch sekali di awal
   useEffect(() => {
     fetchReports();
-  }, []);
+  }, [fetchReports]);
 
   // Handler Terapkan Filter
   const handleApplyFilter = () => {
