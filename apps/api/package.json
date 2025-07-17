@@ -6,7 +6,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --exec ts-node src/index.ts",
     "build": "tsc",
-    "prisma:migrate": "dotenv -e .env.local -- npx prisma migrate dev"
+    "prisma:migrate": "dotenv -e .env.local -- npx prisma migrate dev",
+    "start": "node dist/src/index.js"
   },
   "keywords": [],
   "author": "",
