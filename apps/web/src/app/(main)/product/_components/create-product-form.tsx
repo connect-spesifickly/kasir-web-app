@@ -94,7 +94,7 @@ export const CreateProductForm = ({
         <Input
           id="productCode"
           name="productCode"
-          placeholder="KOP001"
+          placeholder="PRD-X"
           required
         />
       </div>
@@ -103,7 +103,7 @@ export const CreateProductForm = ({
         <Input
           id="productName"
           name="productName"
-          placeholder="Kopi Arabica 250g"
+          placeholder="Produk X"
           required
         />
       </div>
