@@ -15,14 +15,14 @@ export const putOwnerAccessToken = async (user?: UserLogin, email?: string) => {
   if (!dataBundleUser) throw new ResponseError(401, "unauthorize email");
 
   const accessToken = sign(dataBundleUser, JWT_ACCESS_SECRET, {
-    expiresIn: "3h",
+    expiresIn: "3d",
   });
 
   const refreshToken = sign(
     { email: dataBundleUser.email },
     JWT_REFRESH_SECRET,
     {
-      expiresIn: "7h",
+      expiresIn: "7d",
     }
   );
 
