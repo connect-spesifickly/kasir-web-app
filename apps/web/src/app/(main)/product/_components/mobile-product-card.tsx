@@ -123,7 +123,7 @@ export const ProductCards = ({
                   )}
                   <Button
                     variant="outline"
-                    className="flex-1 bg-red-600 flex-col !p-2 gap-0 text-red-200 border-red-200 hover:bg-red-400"
+                    className="flex-1 bg-red-600 flex-col !p-2 gap-0 text-white border-red-200 hover:bg-red-400"
                     onClick={() => onDelete(product)}
                   >
                     <Trash2 className="h-3 w-3 " />
