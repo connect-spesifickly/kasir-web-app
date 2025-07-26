@@ -132,19 +132,31 @@ class ProductController {
 
   createCategory = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { name } = req.body;
-      if (!name) throw new ResponseError(400, "Name must be filled");
-      const category = await productService.createCategory(name);
+      const result = await productService.createCategory(req.body.name);
       ApiResponse({
         res,
         statusCode: 201,
         message: "Category created",
-        data: category,
+        data: result,
       });
     } catch (error) {
       next(error);
     }
   };
+
+  async delete(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await productService.delete(req.params.id);
+      ApiResponse({
+        res,
+        statusCode: 200,
+        message: "Product deleted successfully",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new ProductController();

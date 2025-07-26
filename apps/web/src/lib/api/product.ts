@@ -125,6 +125,14 @@ export const productApi = {
     );
     return response.data.data;
   },
+  delete: async (id: string, token?: string) => {
+    const response = await api.delete<ProductResponse>(`/products/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data.data;
+  },
 };
 
 export const restockProductApi = async (

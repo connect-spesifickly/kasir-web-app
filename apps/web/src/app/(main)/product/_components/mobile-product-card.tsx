@@ -8,6 +8,7 @@ import {
   Eye,
   Package,
   Package as PackageIcon,
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StockBadge } from "./stock-badge";
@@ -19,6 +20,7 @@ export const ProductCards = ({
   onRestock,
   onDeactivate,
   onActivate,
+  onDelete,
   currentPage,
   totalPages,
   onNextPage,
@@ -30,6 +32,7 @@ export const ProductCards = ({
   onRestock: (product: Product) => void;
   onDeactivate: (product: Product) => void;
   onActivate: (product: Product) => void;
+  onDelete: (product: Product) => void;
   currentPage: number;
   totalPages: number;
   onNextPage: () => void;
@@ -98,15 +101,7 @@ export const ProductCards = ({
                     <Edit className="h-3 w-3 " />
                     <div className="text-[11px]">Edit</div>
                   </Button>
-                  <Button
-                    variant="outline"
-                    className="flex-1 flex-col !p-2 gap-0 "
-                    onClick={() => onRestock(product)}
-                    disabled={!product.isActive}
-                  >
-                    <Package className="h-3 w-3 " />
-                    <div className="text-[11px]">Restock</div>
-                  </Button>
+
                   {product.isActive ? (
                     <Button
                       variant="outline"
@@ -126,6 +121,25 @@ export const ProductCards = ({
                       <div className="text-[11px]"> Aktifkan</div>
                     </Button>
                   )}
+                  <Button
+                    variant="outline"
+                    className="flex-1 bg-red-600 flex-col !p-2 gap-0 text-red-200 border-red-200 hover:bg-red-400"
+                    onClick={() => onDelete(product)}
+                  >
+                    <Trash2 className="h-3 w-3 " />
+                    <div className="text-[11px]">Hapus</div>
+                  </Button>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    className="flex-1 flex-col !p-2 gap-0 "
+                    onClick={() => onRestock(product)}
+                    disabled={!product.isActive}
+                  >
+                    <Package className="h-3 w-3 " />
+                    <div className="text-[11px]">Restock</div>
+                  </Button>
                 </div>
               </CardContent>
             </Card>

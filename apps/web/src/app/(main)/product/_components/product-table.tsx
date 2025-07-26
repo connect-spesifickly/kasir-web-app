@@ -22,6 +22,7 @@ import {
   ChevronsUpDown,
   MoreVertical,
   Package as PackageIcon,
+  Trash2,
 } from "lucide-react";
 import { formatRupiah } from "@/lib/utils";
 import {
@@ -38,6 +39,7 @@ export const ProductTable = ({
   onRestock,
   onDeactivate,
   onActivate,
+  onDelete,
   currentPage,
   totalPages,
   onNextPage,
@@ -56,6 +58,7 @@ export const ProductTable = ({
   onRestock: (product: Product) => void;
   onDeactivate: (product: Product) => void;
   onActivate: (product: Product) => void;
+  onDelete: (product: Product) => void;
   currentPage: number;
   totalPages: number;
   onNextPage: () => void;
@@ -236,6 +239,12 @@ export const ProductTable = ({
                         <Eye className="h-4 w-4 mr-2" /> Aktifkan
                       </DropdownMenuItem>
                     )}
+                    <DropdownMenuItem
+                      onClick={() => onDelete(product)}
+                      className="text-red-600 focus:text-red-600"
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" /> Hapus
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>

@@ -250,6 +250,37 @@ class ProductService {
     if (!name) throw new ResponseError(400, "Nama category harus diisi");
     return prisma.category.create({ data: { name } });
   }
+
+  async delete(id: string) {
+    // Check if product has any sales
+    const salesCount = await prisma.saleDetail.count({
+      where: { productId: id },
+    });
+
+    if (salesCount > 0) {
+      throw new ResponseError(
+        400,
+        "Cannot delete product that has sales transactions"
+      );
+    }
+
+    // Check if product has any stock adjustments
+    const adjustmentsCount = await prisma.stockAdjustment.count({
+      where: { productId: id },
+    });
+
+    if (adjustmentsCount > 0) {
+      throw new ResponseError(
+        400,
+        "Cannot delete product that has stock adjustments"
+      );
+    }
+
+    // If no sales or adjustments, proceed with deletion
+    return prisma.product.delete({
+      where: { id },
+    });
+  }
 }
 
 export default new ProductService();

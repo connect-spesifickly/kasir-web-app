@@ -302,30 +302,59 @@ export function useProducts(params?: UseProductsParams) {
   };
 
   const activateProduct = async (id: string) => {
+    if (!token) {
+      toast.error("You must be logged in to activate a product");
+      return;
+    }
+
     try {
       await productApi.activate(id, token);
+      toast.success("Product activated successfully");
       mutate();
-      globalMutate(
-        (key) => Array.isArray(key) && key[0] === "products-infinite"
+    } catch (error: unknown) {
+      const errorMessage =
+        error && typeof error === "object" && "response" in error
+          ? (error.response as { data?: { message?: string } })?.data?.message
+          : "Failed to activate product";
+      console.log(errorMessage);
+      toast.error("Gagal mengaktifkan produk");
+    }
+  };
+
+  const deleteProduct = async (id: string) => {
+    if (!token) {
+      toast.error("You must be logged in to delete a product");
+      return;
+    }
+
+    try {
+      await productApi.delete(id, token);
+      toast.success("Product deleted successfully");
+      mutate();
+    } catch (error: unknown) {
+      const errorMessage =
+        error && typeof error === "object" && "response" in error
+          ? (error.response as { data?: { message?: string } })?.data?.message
+          : "Failed to delete product";
+      console.log(errorMessage);
+      toast.error(
+        "Gagal menghapus produk, product sudah pernah ditransaksikan atau disesuaikan"
       );
-      toast("Produk berhasil diaktifkan");
-    } catch (err) {
-      toast("Gagal mengaktifkan produk");
-      throw err;
     }
   };
 
   return {
     products,
+    total,
     loading: isLoading,
     error,
-    total,
     createProduct,
     updateProduct,
-    restockProduct,
     deactivateProduct,
     activateProduct,
-    refetch: mutate,
+    deleteProduct,
+    restockProduct,
+    mutate,
   };
 }
 

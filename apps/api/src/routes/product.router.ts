@@ -19,6 +19,7 @@ export const productRouter = () => {
   router.patch("/:id", validateUpdateProduct, ProductController.update);
   router.patch("/:id/activate", ProductController.activate);
   router.patch("/:id/deactivate", ProductController.deactivate);
+  router.delete("/:id", ProductController.delete);
   router.post(
     "/:id/restock",
     validateRestockProduct,

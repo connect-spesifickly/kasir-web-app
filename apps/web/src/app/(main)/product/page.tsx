@@ -19,6 +19,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { CreateProductForm } from "./_components/create-product-form";
 import { UpdateProductForm } from "./_components/update-product-form";
 import { RestockForm } from "./_components/re-stock-form";
@@ -35,6 +45,9 @@ export default function ProdukPage() {
   const [isCreating, setIsCreating] = React.useState(false);
   const [isUpdating, setIsUpdating] = React.useState(false);
   const [isRestocking, setIsRestocking] = React.useState(false);
+  const [productToDelete, setProductToDelete] = React.useState<Product | null>(
+    null
+  );
 
   // State pagination
   const [page, setPage] = React.useState(1);
@@ -61,6 +74,7 @@ export default function ProdukPage() {
     updateProduct,
     deactivateProduct,
     activateProduct,
+    deleteProduct,
     restockProduct: restockProductApi,
     total,
   } = useProducts({
@@ -137,6 +151,21 @@ export default function ProdukPage() {
       await activateProduct(product.id);
     } catch (error) {
       console.error("Error activating product:", error);
+    }
+  };
+
+  const handleDeleteProduct = (product: Product) => {
+    setProductToDelete(product);
+  };
+
+  const confirmDeleteProduct = async () => {
+    if (!productToDelete) return;
+
+    try {
+      await deleteProduct(productToDelete.id);
+      setProductToDelete(null);
+    } catch (error) {
+      console.error("Error deleting product:", error);
     }
   };
 
@@ -285,6 +314,7 @@ export default function ProdukPage() {
                   onRestock={handleRestockClick}
                   onDeactivate={handleDeactivateProduct}
                   onActivate={handleActivateProduct}
+                  onDelete={handleDeleteProduct}
                   currentPage={page}
                   totalPages={totalPages}
                   onNextPage={handleNextPage}
@@ -314,6 +344,7 @@ export default function ProdukPage() {
               onRestock={handleRestockClick}
               onDeactivate={handleDeactivateProduct}
               onActivate={handleActivateProduct}
+              onDelete={handleDeleteProduct}
               currentPage={page}
               totalPages={totalPages}
               onNextPage={handleNextPage}
@@ -373,6 +404,33 @@ export default function ProdukPage() {
               )}
             </DialogContent>
           </Dialog>
+
+          {/* Delete Confirmation Dialog */}
+          <AlertDialog
+            open={!!productToDelete}
+            onOpenChange={() => setProductToDelete(null)}
+          >
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Hapus Produk</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Apakah Anda yakin ingin menghapus produk &ldquo;
+                  {productToDelete?.productName}&rdquo;? Produk hanya dapat
+                  dihapus jika belum pernah ada transaksi penjualan atau
+                  penyesuaian stok.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Batal</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={confirmDeleteProduct}
+                  className="bg-red-600 hover:bg-red-700"
+                >
+                  Hapus
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
     </div>
